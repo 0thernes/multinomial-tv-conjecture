@@ -1,0 +1,94 @@
+name: Formal Verification & Reproducibility CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  lean-verify:
+    name: Lean 4 Proof & Axiom Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install elan (Lean version manager)
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Fetch Mathlib olean cache
+        working-directory: lean
+        run: lake exe cache get
+
+      - name: Build Lean 4 proof library
+        working-directory: lean
+        run: lake build
+
+      - name: Verify zero sorry / admit / custom axiom declarations
+        run: |
+          if grep -rnE '\b(sorry|admit|axiom)\b' lean/MultinomialTVConjecture lean/MultinomialTVConjecture.lean; then
+            echo "ERROR: Forbidden sorry/admit/axiom token detected!"
+            exit 1
+          fi
+          echo "PASS: Zero sorry/admit/axiom declarations in library modules."
+
+      - name: Audit axioms for all 19 exported theorems
+        working-directory: lean
+        run: |
+          lake env lean VerifyAxioms.lean | tee axioms.log
+          # Every theorem line must depend exclusively on [propext, Classical.choice, Quot.sound]
+          BAD=$(grep "depends on axioms:" axioms.log | grep -v "\[propext, Classical.choice, Quot.sound\]" || true)
+          if [ -n "$BAD" ]; then
+            echo "ERROR: Unexpected axiom dependency detected:"
+            echo "$BAD"
+            exit 1
+          fi
+          COUNT=$(grep -c "depends on axioms:" axioms.log)
+          echo "PASS: All $COUNT audited theorems depend strictly on [propext, Classical.choice, Quot.sound]."
+
+  python-verify:
+    name: Exact Rational & 80-Digit Numerical Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install mpmath
+        run: pip install mpmath
+
+      - name: Run independent exact-rational and 80-digit verification
+        run: python scripts/verify_conjecture.py
+
+  latex-build:
+    name: Build Manuscript PDF (Tectonic)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Tectonic
+        run: |
+          curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
+          sudo mv tectonic /usr/local/bin/tectonic
+          tectonic --version
+
+      - name: Compile paper/main.tex
+        working-directory: paper
+        run: |
+          mkdir -p build
+          tectonic -X compile main.tex --outdir build
+
+      - name: Upload compiled manuscript PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: Donahue_2026_Conjecture_7_7_Multinomial_TV
+          path: paper/build/main.pdf
