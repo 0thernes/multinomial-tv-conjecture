@@ -1,0 +1,17 @@
+name: Question
+description: Ask about the proof, Lean formalization, or reproduction steps.
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+    validations:
+      required: true
+  - type: checkboxes
+    id: faq
+    attributes:
+      label: Checks
+      options:
+        - label: I checked docs/faq.md and README.md.
+          required: true

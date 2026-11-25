@@ -1,111 +1,155 @@
-# Resolution and Lean 4 Verification of Conjecture 7.7 on Multinomial Discrete Total Variation
+# Proof of Conjecture 7.7 on the Second-Order Variance Constant of Multinomial Discrete Total Variation
 
-[![Formal Verification & Reproducibility CI](https://github.com/0thernes/multinomial-tv-conjecture/actions/workflows/ci.yml/badge.svg)](https://github.com/0thernes/multinomial-tv-conjecture/actions/workflows/ci.yml)
-[![Lean 4.35.0](https://img.shields.io/badge/Lean_4-v4.35.0_%7C_Zero_Sorry_%7C_Standard_Axioms-2ea44f.svg)](lean/VerifyAxioms.lean)
-[![ORCID](https://img.shields.io/badge/ORCID-0009--0006--8168--9648-A6CE39.svg)](https://orcid.org/0009-0006-8168-9648)
-[![License: MIT / CC BY 4.0](https://img.shields.io/badge/License-MIT_(code)_%7C_CC_BY_4.0_(paper)-blue.svg)](LICENSE)
+[![Lean 4.35.0 & 6-Kernel Verify](https://github.com/0thernes/multinomial-tv-conjecture/actions/workflows/lean-verify.yml/badge.svg)](https://github.com/0thernes/multinomial-tv-conjecture/actions/workflows/lean-verify.yml)
+[![Cross-Platform CI](https://github.com/0thernes/multinomial-tv-conjecture/actions/workflows/ci.yml/badge.svg)](https://github.com/0thernes/multinomial-tv-conjecture/actions/workflows/ci.yml)
+[![Lean Blueprint](https://img.shields.io/badge/Lean%204-Interactive%20Blueprint-0284c7)](https://0thernes.github.io/multinomial-tv-conjecture/blueprint/)
+[![License: Apache-2.0](https://img.shields.io/badge/Code%20License-Apache--2.0-blue.svg)](LICENSE)
+[![Docs: CC BY 4.0](https://img.shields.io/badge/Paper%20%26%20Docs-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS)
+[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
-> **Author:** Alexander Stephen Donahue, **0thernes LLC** (`0_0@0thernes.art`)  
-> **Manuscript PDF:** [`dist/Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf`](dist/Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf) · **arXiv Source Bundle:** [`dist/arxiv_submission.tar.gz`](dist/arxiv_submission.tar.gz)
+A complete, machine-checked **Lean 4.35.0** formal proof (verified across **6 independent proof kernels**), independent exact-rational and 80-digit Python verification suite, interactive Lean 4 Blueprint, and AMS-LaTeX preprint resolving **Conjecture 7.7 (`conj:atriangle`)** of Nikola Banić and Neven Elezović, *Discrete total variation under the multinomial, Part 2: variance under the uniform null* (`arXiv:2610.17046v1`, 2026), together with its cyclic corollary in Part 5 (`arXiv:2611.14735v1`, Theorem 5.2).
 
-This repository contains a complete, self-contained mathematical proof, publication-ready LaTeX manuscript, independent arbitrary-precision numerical verification suite, and sorry-free **Lean 4** formal verification of **Conjecture 7.7** (`conj:atriangle`, *"Closed form of the adjacent second-order constant"*) from:
-
-- **N. Banić and N. Elezović**, *Discrete total variation under the multinomial, Part 2: variance under the uniform null*, [arXiv:2610.17046v1](https://arxiv.org/abs/2610.17046v1) (2026).
-- Confirmed still open as of November 2026 in **Part 5**, *Discrete total variation under the multinomial, Part 5: cyclic total variation*, [arXiv:2611.14735v1](https://arxiv.org/abs/2611.14735v1) (2026).
+**Author:** Alexander Stephen Donahue · Independent Researcher, Spokane, WA, USA · ORCID [0009-0006-8168-9648](https://orcid.org/0009-0006-8168-9648) · `0_0@0thernes.art`
+**Status:** Active research preprint (`v2.0.0`, 2026-11-25) — **NOT externally peer reviewed**; independent human line-by-line statement-fidelity audit remains open (see [docs/statement-fidelity.md](docs/statement-fidelity.md) and [LIMITATIONS.md](LIMITATIONS.md)).
 
 ---
 
-## Main Theorem (Now Proved and Machine-Checked)
+## Main Theorem (Conjecture 7.7 Proved)
 
-For uniform three-bin multinomial counts $(X_1, X_2, X_3) \sim \mathrm{Mult}(\ell; \frac{1}{3}, \frac{1}{3}, \frac{1}{3})$, consider the adjacent skeleton
-$$h_{\mathrm{adj}}(\ell) := \mathbb{E}\bigl[|X_2 - X_1|\,|X_3 - X_2|\bigr] = 3^{-\ell}\sum_{\substack{x_1+x_2+x_3=\ell \\ x_i \ge 0}} \frac{\ell!}{x_1!\,x_2!\,x_3!}\,|x_2 - x_1|\,|x_3 - x_2|.$$
-With $c_L := \frac{2\sqrt{3}}{3\pi} + \frac{1}{9}$ and $a_* := -\frac{2\sqrt{3}}{9\pi}$, define for each residue class $r \in \{0, 1, 2\}$ the $1/\ell$ limit
-$$b_r := \lim_{\substack{\ell \to \infty \\ \ell \equiv r \pmod 3}} \ell\bigl(h_{\mathrm{adj}}(\ell) - c_L \ell - a_*\bigr),$$
-and set $d_0 := \frac{1}{3}(b_0 + b_1 + b_2)$, $a_\triangle := \frac{1}{32} + \frac{\pi}{9}(b_0 + b_1 + b_2)$, and $\gamma_2 := \frac{64 a_\triangle - 3}{32\pi}$.
+For $(X_1, X_2, X_3) \sim \mathrm{Mult}(L; \tfrac{1}{3}, \tfrac{1}{3}, \tfrac{1}{3})$, define the adjacent pair expectation $h_{\mathrm{adj}}(L) := \mathbb{E}[|X_2 - X_1|\,|X_3 - X_2|]$, $c_L := \frac{2\sqrt{3}}{3\pi} + \frac{1}{9}$, and $a_* := -\frac{2\sqrt{3}}{9\pi}$. For each residue class $r \in \{0, 1, 2\}$, the $1/L$-order limit
+$$b_r := \lim_{\substack{L \to \infty \\ L \equiv r \pmod{3}}} L\bigl(h_{\mathrm{adj}}(L) - c_L L - a_*\bigr)$$
+exists and equals:
 
-**Theorem (`MultinomialTV.conjecture_7_7`):**
-$$b_0 = \frac{32\sqrt{3}}{81\pi}, \qquad b_1 = b_2 = -\frac{22\sqrt{3}}{81\pi}, \qquad d_0 = -\frac{4\sqrt{3}}{81\pi},$$
+$$b_0 = \frac{32\sqrt{3}}{81\pi}, \qquad b_1 = b_2 = -\frac{22\sqrt{3}}{81\pi}, \qquad d_0 = \frac{b_0 + b_1 + b_2}{3} = -\frac{4\sqrt{3}}{81\pi},$$
+
 $$b_r = d_0 + \frac{4\sqrt{3}}{9\pi}\cos\!\left(\frac{2\pi r}{3}\right) \quad (r \in \{0, 1, 2\}),$$
-$$a_\triangle = \frac{1}{32} - \frac{4\sqrt{3}}{243}, \qquad \gamma_2 = -\frac{1}{32\pi} - \frac{8\sqrt{3}}{243\pi}.$$
 
-### Unconditional Consequences for Discrete Total Variation Variance
+$$a_\triangle = \frac{1}{32} + \frac{\pi}{9}(b_0 + b_1 + b_2) = \frac{1}{32} - \frac{4\sqrt{3}}{243}, \qquad \gamma_2 = \frac{64 a_\triangle - 3}{32\pi} = -\frac{1}{32\pi} - \frac{8\sqrt{3}}{243\pi}.$$
 
-Combining Theorem 1.1 with Theorem 7.6 of [arXiv:2610.17046v1](https://arxiv.org/abs/2610.17046v1) and Theorem 5.2 / Proposition 6.2 of [arXiv:2611.14735v1](https://arxiv.org/abs/2611.14735v1) makes the $O(N^{-2})$ variance coefficients of both the linear statistic $d = \sum_{i=1}^{n-1}|X_{i+1}-X_i|$ and the cyclic statistic $d^c = \sum_{i=1}^{n}|X_{i+1}-X_i|$ **unconditional** for all $n \ge 5$:
-$$\gamma(n) = -\frac{n(n+1)}{32\pi} - \frac{8\sqrt{3}\,n(n-2)}{243\pi} + \frac{n-1}{8\pi n}, \qquad \gamma_c(n) = -\frac{n(n+4)}{32\pi} - \frac{8\sqrt{3}\,n^2}{243\pi},$$
-together with the degenerate small-bin regimes $\gamma(3; N)$, $\gamma(4; N)$ and the exact algebraic input $\gamma_2$ entering the sub-leading ridge-mode constant $C_{1/2} = 2\gamma_2 K_0^{3/2}/\beta_1 \approx -42.0471$.
+Conditioned on Theorem 7.6 of Banić & Elezović Part 2 (`arXiv:2610.17046v1`) and Theorem 5.2 of Part 5 (`arXiv:2611.14735v1`), substituting $a_\triangle$ immediately gives the exact closed-form $O(N^{-2})$ variance coefficients for all $n \ge 5$:
+$$\gamma(n) = -\frac{n(n+1)}{32\pi} - \frac{8\sqrt{3}\,n(n-2)}{243\pi} + \frac{n-1}{8\pi n}, \qquad \gamma_c(n) = -\frac{n(n+4)}{32\pi} - \frac{8\sqrt{3}\,n^2}{243\pi}.$$
 
 ---
 
-## Key Mathematical Insight
+## 5-Second Proof Verification (Verbatim `#print axioms` Output)
 
-The Fourier/characteristic-function approach in [arXiv:2610.17046v1](https://arxiv.org/abs/2610.17046v1) required evaluating two-dimensional Hadamard finite-part distributional pairings at order $\ell^{-5/2}$. We bypass two-dimensional distributions completely via an **exact combinatorial 2D-to-1D reduction**:
-1. $S_3$-symmetrization folds the simplex $\Delta_\ell$ onto the strict wedge $a < b < c$.
-2. Two exact finite-difference telescopes plus a 6-way orbit partition collapse $h_{\mathrm{adj}}(\ell)$ identically into the central trinomial probability $p_{3q}(q) = (3q)!/(3^{3q}(q!)^3)$ and three 1D normalized central sums $A(q), B(q), C(q)$.
-3. Sharp non-asymptotic Stirling bounds ($\frac{1}{12n} - \frac{1}{15n^3} \le R(n) \le \frac{1}{12n}$), consecutive-ratio Gaussian tail bounds beyond $K_q = \lfloor q^{5/8} \rfloor$, and a self-contained cubic Euler–Maclaurin theorem for $t^{2j+1}e^{-3t^2}$ (capturing the exact $-\frac{h^2}{12}$ Bernoulli shift at $j=0$) yield $A(q), B(q), C(q)$ to $o(q^{-1})$ and close all three residue classes.
+Every theorem in the formalization—**576 theorems** exhaustively checked by `Lean.collectAxioms` in [lean/VerifyAxioms.lean](lean/VerifyAxioms.lean)—depends strictly on Lean's three standard classical axioms `[propext, Classical.choice, Quot.sound]`, with **zero `sorry`**, **zero `admit`**, **zero custom `axiom`**, **zero `native_decide`**, and **zero `unsafe`** anywhere in `lean/MultinomialTVConjecture/` or `lean/Solution.lean`.
+
+Verbatim output of `cd lean && lake env lean VerifyAxioms.lean` (enforced against `results/lean-axioms-all.log` by `scripts/check_readme_axioms.py --require-exhaustive` in CI):
+
+```text
+'MultinomialTV.hAdj_eq_nested_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.hAdj_mod0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.hAdj_mod1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.hAdj_mod2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.tendsto_hAdj_mod0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.tendsto_hAdj_mod1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.tendsto_hAdj_mod2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.conjecture_7_7_aTriangle' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.conjecture_7_7_gamma2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.conjecture_7_7_d0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.bRes_cosine_formula' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.conjecture_7_7' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.gamma_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.gamma_cyclic_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.ComparatorTarget.target_conjecture_7_7' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.ComparatorTarget.target_gamma_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 576 theorems across MultinomialTV — 0 disallowed axioms.
+```
 
 ---
 
-## Repository Structure & Lean 4 Audit
+## Six-Kernel Verification & Non-Vacuity Stack
 
-| Path | Role | Size / Verification |
+To separate statement auditing from proof internals, [lean/Challenge.lean](lean/Challenge.lean) (~105 lines) imports **only Mathlib** (zero files from our proof library) and states the 6 target theorems verbatim. [lean/Solution.lean](lean/Solution.lean) proves those exact declarations without `sorry`, and `lake comparator --config comparator.json --paranoid` checks exported proof terms across **six independent kernels**:
+
+| Verification Check | Tool / File | Scope |
 |---|---|---|
-| [`lean/MultinomialTVConjecture/Combinatorial.lean`](lean/MultinomialTVConjecture/Combinatorial.lean) | Exact 2D-to-1D reduction (`hAdj_mod0`, `hAdj_mod1`, `hAdj_mod2`) | 1,615 lines · 0 `sorry` |
-| [`lean/MultinomialTVConjecture/StirlingRefined.lean`](lean/MultinomialTVConjecture/StirlingRefined.lean) | Non-asymptotic Stirling bounds & $O(q^{-3})$ central expansion | 399 lines · 0 `sorry` |
-| [`lean/MultinomialTVConjecture/GaussianEulerMaclaurin.lean`](lean/MultinomialTVConjecture/GaussianEulerMaclaurin.lean) | Cubic odd-Gaussian Euler–Maclaurin theorem (`oddGauss_sum_approx`) | 608 lines · 0 `sorry` |
-| [`lean/MultinomialTVConjecture/LocalAsymptotics.lean`](lean/MultinomialTVConjecture/LocalAsymptotics.lean) | Consecutive-ratio tails, local Taylor expansions, `tendsto_sumA/B/C` | 1,997 lines · 0 `sorry` |
-| [`lean/MultinomialTVConjecture/Main.lean`](lean/MultinomialTVConjecture/Main.lean) | Fidelity check `hAdj_eq_nested_sum`, `conjecture_7_7`, `gamma_[cyclic_]closed_form` | 341 lines · 0 `sorry` |
-| [`lean/VerifyAxioms.lean`](lean/VerifyAxioms.lean) | `#print axioms` audit across all 19 exported theorems | `[propext, Classical.choice, Quot.sound]` |
-| [`paper/main.tex`](paper/main.tex) | Complete AMS-LaTeX manuscript + BibTeX ([`refs.bib`](paper/refs.bib)) | Compiles cleanly with Tectonic / pdfLaTeX |
-| [`dist/Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf`](dist/Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf) | Typeset publication PDF | Ready to read / archive |
-| [`dist/arxiv_submission.tar.gz`](dist/arxiv_submission.tar.gz) | Self-contained arXiv LaTeX + `.bbl` + vector PDF figures bundle | Verified standalone compile |
-| [`scripts/verify_conjecture.py`](scripts/verify_conjecture.py) | Exact rational ($\ell=3\dots45$, $0/1$ error) & 80-digit Richardson audit | Matches closed forms to $< 3\times 10^{-55}$ |
-| [`scripts/generate_figures.py`](scripts/generate_figures.py) | Reproducible publication vector figure generator | Produces `paper/figures/*.pdf` |
+| **Official C++ kernel** | `lean 4.35.0` / `lake build` | All 576 theorems across `MultinomialTVConjecture`, `Solution`, `VerifyAxioms` |
+| **Five independent external kernels** | `lake comparator --config comparator.json --paranoid` (`leanchecker-paranoid`, `lean4lean`, `nanoda 0.4.19`, `con-leche`, `con-ron`) | All 6 headline theorems (`Challenge.lean` vs. `Solution.lean`) |
+| **Exhaustive axiom audit** | `lean/VerifyAxioms.lean` (`Lean.collectAxioms`) | 576/576 theorems strictly within `[propext, Classical.choice, Quot.sound]` |
+| **Batteries / Mathlib linters** | `lake exe runLinter MultinomialTVConjecture` | 0 warnings across 15 linters (`autoImplicit = false`) |
+| **Non-vacuity & adversarial refutations** | `lean/MultinomialTVConjecture/NonVacuity.lean` | 18 witnesses (`hAdj 0..5`, strict signs, `aTriangle ≠ 1/32`, `d0 ≠ 0`, `n=5`) |
+| **Exact rational & 80-digit numerical oracle** | `scripts/verify_conjecture.py` & `tests/` | Exact `Fraction` equality for $L=3..45$ (0/1 error); 28-pt Richardson error $< 3 \times 10^{-55}$ (>54 digits) |
+
+See [docs/statement-fidelity.md](docs/statement-fidelity.md) for the declaration-by-declaration mapping to Banić & Elezović (`arXiv:2610.17046v1`), and [CLAIMS.md](CLAIMS.md) for explicit falsification criteria ("What Would Prove Us Wrong").
 
 ---
 
-## Reproducing All Results Locally
+## Quickstart
 
-### 1. Lean 4 Machine-Checked Verification (`v4.35.0`)
+Verify the formal proof and independent numerical checks from a clean clone:
+
 ```bash
+git clone https://github.com/0thernes/multinomial-tv-conjecture.git
+cd multinomial-tv-conjecture
+
+# 1. Install pinned Python verification & test dependencies
+python3 -m pip install -r requirements.txt
+
+# 2. Fetch pinned Mathlib cache, build Lean 4.35.0 proofs, audit axioms & run 6-kernel comparator
 cd lean
-lake exe cache get   # fetches prebuilt Mathlib oleans
-lake build
+lake exe cache get
+lake build MultinomialTVConjecture Challenge Solution VerifyAxioms
 lake env lean VerifyAxioms.lean
-```
-Expected axiom audit: all 19 theorems print strictly `[propext, Classical.choice, Quot.sound]`.
+lake comparator --config comparator.json --paranoid   # Linux with bubblewrap
+cd ..
 
-### 2. Independent Exact-Rational & 80-Digit Numerical Audit
-```bash
-pip install mpmath
-python scripts/verify_conjecture.py
+# 3. Run independent exact rational + 80-digit checks, pytest ladder, citations, Blueprint & repo audit
+python3 scripts/verify_conjecture.py
+python3 -m pytest -v tests/
+python3 scripts/check_citations.py
+python3 scripts/check_readme_axioms.py --require-exhaustive
+python3 scripts/build_blueprint.py
+python3 scripts/build_site.py
 ```
 
-### 3. Rebuilding Figures and Manuscript PDF
+Full step-by-step instructions for Linux, macOS, and Windows appear in [REPLICATION.md](REPLICATION.md).
+
+---
+
+## Usage
+
+Common one-word workflows via `just` (see [justfile](justfile) and [scripts/dev.sh](scripts/dev.sh)):
+
 ```bash
-uv run --with matplotlib --with mpmath --with numpy python scripts/generate_figures.py
-cd paper && tectonic -X compile main.tex --outdir build
+just verify-lean     # Build Lean, scan forbidden tokens, run VerifyAxioms + 6-kernel comparator
+just verify-numeric  # Run exact rational (L=3..45) and 80-digit mpmath checks
+just test            # Run full pytest ladder (exact, Hypothesis, negative, regression, golden, mutation, stability)
+just blueprint       # Validate every \lean{...} tag and build interactive SVG dependency Blueprint
+just paper           # Compile AMS-LaTeX preprint via Tectonic & build byte-reproducible arXiv bundle
+just reproduce       # End-to-end clean reproduction & Build Standard v1.2.0 audit
+just audit           # Score repository against Build Standard v1.2.0 (90 items)
 ```
 
 ---
 
-## Citation
+## Repository Structure
 
-If you build upon this proof or Lean 4 formalization, please cite [`CITATION.cff`](CITATION.cff) or use:
+| Path | Description |
+|---|---|
+| `lean/MultinomialTVConjecture/` | Core Lean 4.35.0 proof (`Combinatorial`, `StirlingRefined`, `GaussianEulerMaclaurin`, `LocalAsymptotics`, `Main`, `NonVacuity`) |
+| `lean/Challenge.lean`, `Solution.lean`, `comparator.json` | Isolated Mathlib-only target statements & 6-kernel comparator bridge |
+| `lean/VerifyAxioms.lean` | Exhaustive `Lean.collectAxioms` metaprogram + 43 explicit `#print axioms` checks |
+| `paper/main.tex`, `paper/refs.bib`, `paper/figures/` | AMS-LaTeX manuscript source (`v2.0.0`), verified BibTeX, and publication figures |
+| `dist/` | Compiled PDF (`Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf`) and byte-reproducible `arxiv_submission.tar.gz` |
+| `blueprint/src/content.tex` | Lean 4 dependency Blueprint validated against `lean/` by `scripts/build_blueprint.py` |
+| `scripts/` | Independent numerical verifier, arXiv bundler, axiom/citation/Blueprint/site/manifest/Build Standard scripts |
+| `tests/` | Automated `pytest` + `hypothesis` test ladder |
+| `docs/` | Architecture, statement-fidelity table, verification stack, ADRs, threat model, operations, FAQ, glossary, red-team review |
+| `results/`, `data/MANIFEST.sha256` | Live axiom/comparator/linter/citation logs and cryptographic SHA-256 artifact manifest |
 
-```bibtex
-@misc{donahue2026conjecture77,
-  author       = {Alexander Stephen Donahue},
-  title        = {Resolution and Lean 4 Formal Verification of Conjecture 7.7 on the Second-Order Variance of Multinomial Discrete Total Variation},
-  year         = {2026},
-  month        = nov,
-  howpublished = {0thernes LLC, GitHub Repository},
-  url          = {https://github.com/0thernes/multinomial-tv-conjecture},
-  note         = {ORCID: 0009-0006-8168-9648; Lean 4 v4.35.0 formal verification}
-}
-```
+---
 
-## Methodology & Licensing
+## Maintenance Status
 
-- **Transparent methodology:** The proof discovery, Lean 4 formalization, verification scripts, and manuscript preparation were conducted by the author with interactive AI assistance. Mathematical correctness is established independently of authoring provenance by the Lean 4 kernel (`v4.35.0`) with zero `sorry` and strictly standard logical axioms.
-- **License:** Dual-licensed under the **MIT License** (Lean 4 & Python code) and **CC BY 4.0** (manuscript, PDF, and figures); see [`LICENSE`](LICENSE).
-- **Primary problem provenance:** Conjecture 7.7 is due to N. Banić and N. Elezović ([arXiv:2610.17046v1](https://arxiv.org/abs/2610.17046v1), [arXiv:2611.14735v1](https://arxiv.org/abs/2611.14735v1)). No third-party arXiv paper sources are redistributed in this repository.
+**Status: Active** (repostatus: `active`). The formal proof of Conjecture 7.7 is complete and frozen at `v2.0.0`. Maintenance covers toolchain updates if requested, recording external human statement-fidelity audits in [docs/statement-fidelity.md](docs/statement-fidelity.md) and clean-room replications in [REPLICATION.md](REPLICATION.md), and logging any errata in [ERRATA.md](ERRATA.md).
+
+## Citation & Licensing
+
+- **Code, Lean 4 proofs, scripts, and tests:** [Apache License 2.0](LICENSE) (`SPDX-License-Identifier: Apache-2.0`).
+- **Manuscript, figures, Blueprint, and documentation:** [CC BY 4.0](LICENSE-DOCS) (`SPDX-License-Identifier: CC-BY-4.0`).
+- **Attribution & third-party notices:** See [NOTICE](NOTICE), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), [CITATION.cff](CITATION.cff), and [formalization.yaml](formalization.yaml).

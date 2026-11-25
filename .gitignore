@@ -4,7 +4,7 @@ lean/.lake/
 *.ilean
 *.trace
 
-# LaTeX auxiliary and build files (release artifacts live in dist/)
+# LaTeX auxiliary and build files (frozen release artifacts live in dist/)
 paper/build/
 paper/*.aux
 paper/*.bbl
@@ -16,10 +16,19 @@ paper/*.out
 paper/*.synctex.gz
 paper/*.toc
 
-# Python cache
+# Generated site, release, and CI scratch outputs
+build/
+release-dist/
+results/lean-axioms-ci.log
+
+# Python caches, test caches, and local virtual environments
 __pycache__/
 *.py[cod]
 .venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
 
 # OS / editor noise
 .DS_Store

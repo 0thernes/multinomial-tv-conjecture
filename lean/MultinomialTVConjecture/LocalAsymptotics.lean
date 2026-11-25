@@ -190,8 +190,11 @@ lemma p3q_left_ratio_le (q k : ℕ) (hq : 1 ≤ q) (hk : k ≤ q) :
 
 /-! ### Part 2: Cutoff `K_cut q = ⌊q^(5/8)⌋` and super-polynomial tail bounds -/
 
+/-- Eighth root `q^(1/8)` used to define the local Gaussian cutoff `K_cut q = ⌊q^(5/8)⌋`. -/
 noncomputable def w8 (q : ℕ) : ℝ := Real.sqrt (Real.sqrt (Real.sqrt (q : ℝ)))
 
+/-- Local cutoff index `⌊q^(5/8)⌋` separating the Gaussian core from super-polynomial tails. -/
+@[nolint defsWithUnderscore]
 noncomputable def K_cut (q : ℕ) : ℕ := Nat.floor (Real.sqrt (q : ℝ) * w8 q)
 
 lemma w8_pos {q : ℕ} (hq : 1 ≤ q) : 0 < w8 q := by
@@ -322,6 +325,7 @@ lemma exp_cutoff_bound {q : ℕ} (hq : 10 ^ 8 ≤ q) :
 
 /-! ### Part 3: 5-term logarithm Taylor bound on `[-1/2, 1/2]` -/
 
+/-- Five-term Taylor polynomial of `log (1 + v)` on `[-1/2, 1/2]`. -/
 noncomputable def logPoly5 (v : ℝ) : ℝ :=
   v - v ^ 2 / 2 + v ^ 3 / 3 - v ^ 4 / 4 + v ^ 5 / 5
 
@@ -429,10 +433,13 @@ lemma abs_log_one_add_sub_logPoly5_le {v : ℝ} (hv : |v| ≤ 1 / 2) :
 
 /-! ### Part 4: Local logarithmic and exponential ratio expansion -/
 
+/-- Cubic local log-ratio perturbation polynomial in `(t, ε)`. -/
+@[nolint defsWithUnderscore]
 noncomputable def R_approx (t ε : ℝ) : ℝ :=
   -ε * t ^ 3 + ε ^ 2 * (-(3 / 2 : ℝ) * t ^ 4 + (3 / 2 : ℝ) * t ^ 2) +
     ε ^ 3 * (-(3 / 2 : ℝ) * t ^ 5 + t ^ 3)
 
+/-- Cubic Taylor polynomial `1 + x + x^2/2 + x^3/6` of `exp x`. -/
 noncomputable def T3 (x : ℝ) : ℝ := 1 + x + x ^ 2 / 2 + x ^ 3 / 6
 
 /-- Elementary Lipschitz bound for `exp` on `(-∞, 1]`: `|exp a - exp b| ≤ 3 * |a - b|`. -/

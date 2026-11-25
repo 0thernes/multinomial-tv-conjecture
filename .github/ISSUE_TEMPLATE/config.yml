@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/0thernes/multinomial-tv-conjecture/security/advisories/new
+    about: Report privately. Never open a public issue for security or soundness vulnerabilities.
+  - name: Questions and replication reports
+    url: https://github.com/0thernes/multinomial-tv-conjecture/discussions
+    about: Ask in Discussions or post clean-room replication results. Check docs/faq.md first.

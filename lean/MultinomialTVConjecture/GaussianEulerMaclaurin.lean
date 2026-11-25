@@ -189,9 +189,11 @@ lemma integral_oddGauss (j : ℕ) (M : ℝ) :
 
 /-! ### Part 3: Cubic Euler-Maclaurin on `[0, K h]` via a single Fundamental Theorem of Calculus -/
 
-/-- Bernoulli-like polynomials `P1, P2, P3` scaled to `[0, h]`. -/
+/-- First Bernoulli-like polynomial `P1` scaled to `[0, h]`. -/
 noncomputable def emP1 (h u : ℝ) : ℝ := u - h / 2
+/-- Second Bernoulli-like polynomial `P2` scaled to `[0, h]`. -/
 noncomputable def emP2 (h u : ℝ) : ℝ := u ^ 2 / 2 - h * u / 2 + h ^ 2 / 12
+/-- Third Bernoulli-like polynomial `P3` scaled to `[0, h]`. -/
 noncomputable def emP3 (h u : ℝ) : ℝ := u ^ 3 / 6 - h * u ^ 2 / 4 + h ^ 2 * u / 12
 
 lemma emP3_abs_le {h u : ℝ} (hu0 : 0 ≤ u) (huh : u ≤ h) : |emP3 h u| ≤ h ^ 3 := by

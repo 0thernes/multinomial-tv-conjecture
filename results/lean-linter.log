@@ -1,0 +1,5 @@
+Running linter on specified modules: [MultinomialTVConjecture]
+-- Linting passed for MultinomialTVConjecture.
+
+warning: batteries: repository has local changes:
+  Z:\[Vibe Coded (AI)]\ANTIGRAVITY\multinomial-tv-conjecture\lean\.lake/packages\batteries

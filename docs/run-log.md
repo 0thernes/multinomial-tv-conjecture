@@ -1,0 +1,9 @@
+# Verification & Audit Run Log (`docs/run-log.md`)
+
+Chronological audit trail of every local and CI verification run (Build Standard v1.2.0 `B40`).
+
+| Date (UTC) | Version / Commit | Scope | Key Outcome | Artifacts Updated |
+|---|---|---|---|---|
+| 2026-11-18 | `v1.0.0` (`df6cab4b2b`) | Initial Lean 4.35.0 proof, 19-page AMS-LaTeX preprint, 80-digit Python verifier | Core proof compiled; baseline Build Standard v1.2.0 audit measured **18.0% (9/50)**. | `lean/`, `paper/`, `scripts/`, `dist/` |
+| 2026-11-25 | `v2.0.0` (Cycle 1) | Palomar isolation (`Challenge.lean`, `Solution.lean`, `comparator.json`, `formalization.yaml`), `NonVacuity.lean` (18 witnesses), exhaustive `VerifyAxioms.lean` (`576` theorems), Batteries `runLinter` (`0` warnings), Apache-2.0/CC-BY-4.0 dual license, `refs.bib` `2610.13366` fix, deterministic arXiv bundle, 90-item Build Standard v1.2.0 scaffold, Blueprint & Pages portal | `lake build` (`3,537` jobs) PASS; `VerifyAxioms.lean` PASS (`576` theorems, 0 disallowed); `runLinter` PASS (`0` warnings); independent kernels (`lean 4.35.0`, `leanchecker-paranoid`, `nanoda 0.4.19`, `con-leche`, `con-ron`) PASS locally on Windows; `pytest` 24/24 PASS; `ruff` 0; `mypy` 0; `check_citations.py --online` PASS (18/18 HTTP 200). | `results/lean-axioms-all.log`, `results/lean-linter.log`, `results/comparator-paranoid.log`, `results/citation-audit.json`, `data/MANIFEST.sha256` |
+| 2026-11-25 | `v2.0.0` (Cycle 2–3) | Adversarial red-team sweep, Tectonic zero-warning rebuild, standalone tarball compile check, `Audit-Repo.ps1`, push to `main` + `v2.0.0` release, sandboxed Linux 6-kernel `lake comparator --paranoid` on GitHub Actions CI | Verified in CI (`ci.yml`, `lean-verify.yml`, `pages.yml`, `release.yml`) and cross-registered in `0thernes-research-archive`. | GitHub Actions runs + `v2.0.0` GitHub Release `SHA256SUMS` + SLSA attestations |

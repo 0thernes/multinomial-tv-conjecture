@@ -1,51 +1,58 @@
 cff-version: 1.2.0
-message: "If you use this proof, manuscript, or Lean 4 formalization, please cite it as below."
+message: "If you use this proof, Lean 4 formalization, or verification code, please cite it as below."
 type: software
-title: "Proof and Lean 4 Formal Verification of Conjecture 7.7 on the Second-Order Variance of Multinomial Discrete Total Variation"
+title: "Proof of Conjecture 7.7 on the Second-Order Variance Constant of Multinomial Discrete Total Variation"
+version: "2.0.0"
+date-released: "2026-11-25"
+url: "https://github.com/0thernes/multinomial-tv-conjecture"
+repository-code: "https://github.com/0thernes/multinomial-tv-conjecture"
+license: "Apache-2.0"
 authors:
   - family-names: "Donahue"
     given-names: "Alexander Stephen"
     orcid: "https://orcid.org/0009-0006-8168-9648"
-    affiliation: "0thernes LLC"
+    affiliation: "Independent Researcher, Spokane, WA, USA"
     email: "0_0@0thernes.art"
-version: "1.0.0"
-date-released: "2026-11-20"
-repository-code: "https://github.com/0thernes/multinomial-tv-conjecture"
-url: "https://github.com/0thernes/multinomial-tv-conjecture"
-license: "MIT"
 keywords:
-  - "discrete total variation"
-  - "multinomial distribution"
-  - "asymptotic variance"
-  - "goodness-of-fit testing"
-  - "comb test"
-  - "Euler-Maclaurin summation"
-  - "Stirling expansion"
-  - "Lean 4"
-  - "formal verification"
-  - "Mathlib"
+  - multinomial distribution
+  - discrete total variation
+  - asymptotic variance
+  - Euler-Maclaurin summation
+  - Lean 4
+  - formal verification
+  - six-kernel verification
+  - Conjecture 7.7
 references:
   - type: article
+    title: "Discrete total variation under the multinomial, Part 1: expectation under the uniform null"
     authors:
       - family-names: "Banić"
         given-names: "Nikola"
       - family-names: "Elezović"
         given-names: "Neven"
+    year: 2026
+    identifiers:
+      - type: other
+        value: "arXiv:2610.13366"
+  - type: article
     title: "Discrete total variation under the multinomial, Part 2: variance under the uniform null"
+    authors:
+      - family-names: "Banić"
+        given-names: "Nikola"
+      - family-names: "Elezović"
+        given-names: "Neven"
     year: 2026
     identifiers:
       - type: other
         value: "arXiv:2610.17046v1"
-        description: "arXiv preprint stating Conjecture 7.7"
   - type: article
+    title: "Discrete total variation under the multinomial, Part 5: cyclic total variation"
     authors:
       - family-names: "Banić"
         given-names: "Nikola"
       - family-names: "Elezović"
         given-names: "Neven"
-    title: "Discrete total variation under the multinomial, Part 5: cyclic total variation"
     year: 2026
     identifiers:
       - type: other
         value: "arXiv:2611.14735v1"
-        description: "arXiv preprint confirming Conjecture 7.7 open and establishing conditional cyclic variance"

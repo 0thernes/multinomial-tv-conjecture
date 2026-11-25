@@ -1,94 +1,65 @@
-name: Formal Verification & Reproducibility CI
+name: CI (Cross-Platform Tests, Audits & Linters)
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  lean-verify:
-    name: Lean 4 Proof & Axiom Audit
-    runs-on: ubuntu-latest
+  test-matrix:
+    name: Tests & Verification (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install elan (Lean version manager)
-        run: |
-          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> $GITHUB_PATH
-
-      - name: Fetch Mathlib olean cache
-        working-directory: lean
-        run: lake exe cache get
-
-      - name: Build Lean 4 proof library
-        working-directory: lean
-        run: lake build
-
-      - name: Verify zero sorry / admit / custom axiom declarations
-        run: |
-          if grep -rnE '\b(sorry|admit|axiom)\b' lean/MultinomialTVConjecture lean/MultinomialTVConjecture.lean; then
-            echo "ERROR: Forbidden sorry/admit/axiom token detected!"
-            exit 1
-          fi
-          echo "PASS: Zero sorry/admit/axiom declarations in library modules."
-
-      - name: Audit axioms for all 19 exported theorems
-        working-directory: lean
-        run: |
-          lake env lean VerifyAxioms.lean | tee axioms.log
-          # Every theorem line must depend exclusively on [propext, Classical.choice, Quot.sound]
-          BAD=$(grep "depends on axioms:" axioms.log | grep -v "\[propext, Classical.choice, Quot.sound\]" || true)
-          if [ -n "$BAD" ]; then
-            echo "ERROR: Unexpected axiom dependency detected:"
-            echo "$BAD"
-            exit 1
-          fi
-          COUNT=$(grep -c "depends on axioms:" axioms.log)
-          echo "PASS: All $COUNT audited theorems depend strictly on [propext, Classical.choice, Quot.sound]."
-
-  python-verify:
-    name: Exact Rational & 80-Digit Numerical Audit
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Install mpmath
-        run: pip install mpmath
-
-      - name: Run independent exact-rational and 80-digit verification
+      - name: Install pinned Python dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run independent exact rational & 80-digit verifier
         run: python scripts/verify_conjecture.py
+      - name: Run full pytest ladder
+        run: python -m pytest -v tests/
+      - name: Run citation, axiom-sync, Blueprint, site, and manifest audits
+        run: |
+          python scripts/check_citations.py
+          python scripts/check_readme_axioms.py --require-exhaustive
+          python scripts/build_blueprint.py
+          python scripts/build_site.py
+          python scripts/generate_manifest.py --verify
 
-  latex-build:
-    name: Build Manuscript PDF (Tectonic)
+  lint-and-audit:
+    name: Report-Only Linters, Security & Build Standard Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Tectonic
-        run: |
-          curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
-          sudo mv tectonic /usr/local/bin/tectonic
-          tectonic --version
-
-      - name: Compile paper/main.tex
-        working-directory: paper
-        run: |
-          mkdir -p build
-          tectonic -X compile main.tex --outdir build
-
-      - name: Upload compiled manuscript PDF
-        uses: actions/upload-artifact@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          name: Donahue_2026_Conjecture_7_7_Multinomial_TV
-          path: paper/build/main.pdf
+          python-version: "3.12"
+      - name: Install pinned Python dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Report-only linters (ruff & mypy)
+        continue-on-error: true
+        run: |
+          python -m ruff check scripts/ tests/
+          python -m mypy --ignore-missing-imports scripts/
+      - name: Build Standard v1.2.0 repo audit
+        run: bash scripts/audit-repo.sh .
+      - name: Secret scan (gitleaks, report-only)
+        uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,15 @@
+Multinomial TV Conjecture (Conjecture 7.7 of Banić & Elezović, 2026)
+Copyright 2026 Alexander S. Donahue (Independent Researcher, Spokane, WA, USA)
+ORCID: https://orcid.org/0009-0006-8168-9648
+Repository: https://github.com/0thernes/multinomial-tv-conjecture
+
+Dual-License Boundary:
+- Software, Lean 4 formal proofs, scripts, tests, and CI workflows (`lean/`, `scripts/`,
+  `tests/`, `.github/`, `justfile`): Apache License, Version 2.0 (see `LICENSE`).
+- Research manuscript, LaTeX source, figures, blueprint, and documentation (`paper/`,
+  `docs/`, `blueprint/`, `*.md`): Creative Commons Attribution 4.0 International
+  (CC BY 4.0; see `LICENSE-DOCS`).
+
+External Dependencies & Third-Party Attribution:
+See `THIRD_PARTY_NOTICES.md` for full license details of Lean 4, Mathlib4, Batteries,
+Tectonic, and Python verification packages.

@@ -1,0 +1,30 @@
+# multinomial-tv-conjecture
+
+> Complete Lean 4.35.0 formal proof (6-kernel verified), independent exact/80-digit Python verification, interactive Blueprint, and AMS-LaTeX preprint resolving Conjecture 7.7 of Banić & Elezović (arXiv:2610.17046v1, 2026) on the second-order variance constant of multinomial discrete total variation (`a_triangle = 1/32 - 4*sqrt(3)/243`).
+
+Author: Alexander S. Donahue (Independent Researcher, Spokane, WA, USA; ORCID 0009-0006-8168-9648).
+License: Apache-2.0 (code/Lean) · CC-BY-4.0 (paper/docs).
+
+## Key Entry Points
+- [README.md](README.md): Overview, Quickstart, verbatim `#print axioms` 5-second proof block, and 6-kernel verification summary.
+- [AGENTS.md](AGENTS.md): Canonical instructions, workflow rules, and verification invariants.
+- [CLAIMS.md](CLAIMS.md): Numbered claims ledger with explicit falsification criteria.
+- [LIMITATIONS.md](LIMITATIONS.md): Formal verification boundary and real-vs-metaphor disclosures.
+- [REPLICATION.md](REPLICATION.md): Step-by-step clean-clone reproduction protocol and log.
+- [docs/statement-fidelity.md](docs/statement-fidelity.md): Line-by-line mapping from Lean declarations to Banić & Elezović (2026).
+- [formalization.yaml](formalization.yaml): Palomar-compatible provenance, toolchain, and AI disclosure metadata.
+
+## Lean 4 Formalization
+- [lean/Challenge.lean](lean/Challenge.lean): Isolated Mathlib-only specification of the 6 target theorems.
+- [lean/Solution.lean](lean/Solution.lean): Sorry-free proofs checked against `Challenge.lean` by 6 independent kernels.
+- [lean/VerifyAxioms.lean](lean/VerifyAxioms.lean): Exhaustive `Lean.collectAxioms` metaprogram and explicit `#print axioms`.
+- [lean/MultinomialTVConjecture/Main.lean](lean/MultinomialTVConjecture/Main.lean): Main proof of `conjecture_7_7`, `gamma_closed_form`, `gamma_cyclic_closed_form`.
+- [lean/MultinomialTVConjecture/NonVacuity.lean](lean/MultinomialTVConjecture/NonVacuity.lean): 18 concrete small-L, sign, and adversarial false-constant refutation witnesses.
+
+## Paper, Scripts & Docs
+- [paper/main.tex](paper/main.tex): Complete AMS-LaTeX preprint (v2.0.0).
+- [blueprint/src/content.tex](blueprint/src/content.tex): Lean 4 theorem dependency Blueprint source.
+- [scripts/verify_conjecture.py](scripts/verify_conjecture.py): Independent exact rational and 80-digit `mpmath` verification.
+- [docs/architecture.md](docs/architecture.md): Proof and verification architecture.
+- [docs/verification.md](docs/verification.md): 6-kernel and Python test-ladder audit specification.
+- [docs/reviews/red-team-2026-11-25.md](docs/reviews/red-team-2026-11-25.md): Complete 3-cycle, 10-class hardening audit log.

@@ -71,13 +71,15 @@ lemma p3q_center_pos (q : ℕ) : 0 < p3q q q := by
   have hT := T_pos q q (3 * q - 2 * q)
   positivity
 
-/-- The three normalized 1D central sums `A(q)`, `B(q)`, `C(q)`. -/
+/-- The first normalized 1D central sum `A(q)`. -/
 noncomputable def sumA (q : ℕ) : ℝ :=
   (∑ k ∈ Finset.Icc 1 q, (p3q q (q + k) - p3q q (q - k))) / p3q q q
 
+/-- The second normalized 1D central sum `B(q)`. -/
 noncomputable def sumB (q : ℕ) : ℝ :=
   (∑ k ∈ Finset.Icc 1 q, ((k : ℝ) / (q : ℝ)) * (p3q q (q + k) + p3q q (q - k))) / p3q q q
 
+/-- The third normalized 1D central sum `C(q)`. -/
 noncomputable def sumC (q : ℕ) : ℝ :=
   (∑ k ∈ Finset.Icc 1 q, (((k : ℝ) / (q : ℝ)) ^ 2) * (p3q q (q + k) - p3q q (q - k))) / p3q q q
 
@@ -1040,6 +1042,7 @@ lemma uvSum_master (L : ℕ) (hL : 3 ≤ L) :
 
 /-! ### Part 4: Exact formulas for the three residue classes `3q`, `3q + 1`, `3q - 1` -/
 
+/-- Signed 1D trinomial sum splitting `3 * x` above and below `m`. -/
 noncomputable def sgnSum (m : ℕ) : ℝ :=
   ∑ x ∈ Finset.range (m / 2 + 1),
     (if 3 * x > m then T x x (m - 2 * x)

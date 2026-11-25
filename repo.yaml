@@ -1,0 +1,117 @@
+# yaml-language-server: $schema=./repo-standard.schema.json
+# Project manifest for Build Standard for LLMs v1.2.0.
+standard: "1.2.0"
+name: "multinomial-tv-conjecture"
+description: "Complete Lean 4.35.0 formal proof (6-kernel verified), independent exact/80-digit computation, Blueprint, and AMS-LaTeX preprint proving Conjecture 7.7 of Banić & Elezović (2026) on the second-order variance constant of multinomial discrete total variation."
+owner: "Alexander S. Donahue (0thernes)"
+year: "2026"
+project_type: research
+stack: [python, other]
+flags:
+  public: true
+  package: false
+  visual: false
+  ui: false
+  native: false
+  ai: false
+  personal_data: false
+  service: false
+  deployed: false
+  api: false
+  perf: false
+  concurrent: false
+  numeric: true
+  experimental: true
+  ml: false
+  formal: true
+items:
+  A01: {status: done, evidence: "README.md"}
+  A02: {status: done, evidence: "README.md badge ribbon"}
+  A03: {status: done, evidence: "README.md Quickstart"}
+  A04: {status: done, evidence: "README.md Usage"}
+  A05: {status: n/a, note: "Mathematical formalization and paper repository, no interactive UI"}
+  A06: {status: done, evidence: "LICENSE (Apache-2.0) and LICENSE-DOCS (CC-BY-4.0)"}
+  A07: {status: done, evidence: "CHANGELOG.md"}
+  A08: {status: done, evidence: "VERSION (2.0.0) matched with CHANGELOG.md, CITATION.cff, formalization.yaml, lean/lakefile.toml"}
+  A09: {status: done, evidence: "tests/test_exact_and_properties.py and tests/test_repo_integrity.py"}
+  A10: {status: done, evidence: ".github/workflows/ci.yml and .github/workflows/lean-verify.yml"}
+  A11: {status: done, evidence: ".github/workflows/release.yml"}
+  A12: {status: done, evidence: ".gitignore"}
+  A13: {status: done, evidence: ".gitattributes and .editorconfig"}
+  A14: {status: done, evidence: "CONTRIBUTING.md"}
+  A15: {status: done, evidence: "CODE_OF_CONDUCT.md"}
+  A16: {status: done, evidence: "SECURITY.md"}
+  A17: {status: done, evidence: "SUPPORT.md"}
+  A18: {status: done, evidence: ".github/ISSUE_TEMPLATE/{bug,feature,question,config}.yml; zero PR template (R4)"}
+  A19: {status: done, evidence: "GitHub About description and topics set via gh repo edit"}
+  A20: {status: done, evidence: "docs/index.md, docs/architecture.md, docs/verification.md, docs/statement-fidelity.md"}
+  A21: {status: done, evidence: "docs/adr/0001-combinatorial-2d-to-1d-reduction.md and 0002-dual-licensing-and-six-kernel-verification.md"}
+  A22: {status: done, evidence: "CITATION.cff"}
+  A23: {status: done, evidence: "main branch with verified author identity"}
+  A24: {status: done, evidence: "No secrets, build output, or >5 MB files tracked"}
+  A25: {status: done, evidence: ".github/workflows/ci.yml runs ubuntu-latest, windows-latest, macos-latest"}
+  A26: {status: done, evidence: "docs/media/social-preview.svg"}
+  A27: {status: done, evidence: ".github/workflows/pages.yml deploys Blueprint and portal"}
+  A28: {status: n/a, note: "Research proof repository, not an installable package"}
+  A29: {status: done, evidence: "ROADMAP.md"}
+  A30: {status: done, evidence: ".github/labels.tsv with all 10 finding classes"}
+  A31: {status: done, evidence: "justfile"}
+  A32: {status: done, evidence: "AGENTS.md, CLAUDE.md, GEMINI.md, .cursor/rules/build-standard.mdc, llms.txt, llms-full.txt"}
+  A33: {status: done, evidence: "docs/configuration.md"}
+  A34: {status: n/a, note: "Not a long-running service or daemon"}
+  A35: {status: done, evidence: "docs/operations.md documents git bundle and offsite mirror"}
+  A36: {status: n/a, note: "Static GitHub Pages only; no deployed application backend"}
+  A37: {status: n/a, note: "No speed or latency performance claims"}
+  A38: {status: n/a, note: "No interactive application UI"}
+  A39: {status: done, evidence: "NOTICE and THIRD_PARTY_NOTICES.md"}
+  A40: {status: n/a, note: "Code neither calls nor ships an AI model; authoring AI disclosure is in formalization.yaml and LIMITATIONS.md"}
+  A41: {status: n/a, note: "Research proof repository, not a library with public API"}
+  A42: {status: done, evidence: "README.md Maintenance Status section and repostatus badge"}
+  A43: {status: n/a, note: "Research repository; runnable commands live in README Quickstart/Usage and justfile"}
+  A44: {status: done, evidence: "docs/faq.md and docs/glossary.md"}
+  A45: {status: n/a, note: "Collects, stores, and processes zero personal data"}
+  B01: {status: done, evidence: "justfile reproduce recipe and REPLICATION.md"}
+  B02: {status: done, evidence: "lean/lean-toolchain, lean/lake-manifest.json, requirements.txt"}
+  B03: {status: done, evidence: "Deterministic exact rational/80-digit checks and byte-reproducible arXiv tarball verified in tests/"}
+  B04: {status: done, evidence: "CLAIMS.md"}
+  B05: {status: done, evidence: "Each claim C1-C6 mapped to executable Lean/pytest falsification checks"}
+  B06: {status: done, evidence: "NonVacuity.lean adversarial refutations + negative tests in tests/test_exact_and_properties.py"}
+  B07: {status: done, evidence: "Regression tests in tests/test_repo_integrity.py for E-2026-001..004"}
+  B08: {status: done, evidence: "Golden rational table and axiom-log snapshot tests in tests/"}
+  B09: {status: n/a, note: "No network API or external wire protocol exposed"}
+  B10: {status: done, evidence: "Hypothesis property-based tests in tests/test_exact_and_properties.py"}
+  B11: {status: done, evidence: "Differential check comparing 2D multinomial expectation against 1D exact reduction and Stirling/Gaussian asymptotic predictors"}
+  B12: {status: done, evidence: "Exact rational Fraction oracle against mpmath 80-digit and asymptotic closed forms"}
+  B13: {status: done, evidence: "Automated mutant-rejection test suite in tests/test_exact_and_properties.py"}
+  B14: {status: done, evidence: "Metamorphic mod-3 residue-shift, permutation-symmetry, and rescaling tests in tests/test_exact_and_properties.py"}
+  B15: {status: n/a, note: "No native C/C++/asm code"}
+  B16: {status: n/a, note: "No native C/C++/asm code"}
+  B17: {status: done, evidence: "ruff check in ci.yml and Lean Batteries runLinter in lean-verify.yml (report-only)"}
+  B18: {status: done, evidence: "mypy in ci.yml and Lean 4 dependent type checker with autoImplicit=false"}
+  B19: {status: n/a, note: "Deterministic single-threaded mathematical verification"}
+  B20: {status: done, evidence: "Multi-precision 50/80/120-dps stability and catastrophic-cancellation tests in tests/test_exact_and_properties.py"}
+  B21: {status: n/a, note: "No networked service or external runtime dependency"}
+  B22: {status: done, evidence: "lean/ formalization verified by 6 independent kernels via lake comparator --paranoid"}
+  B23: {status: n/a, note: "Deductive Lean 4 real-analysis theorem proving rather than state-machine model checking"}
+  B24: {status: done, evidence: "Proofs written directly in Lean 4.35.0 dependent type theory"}
+  B25: {status: n/a, note: "No unsafe systems code; verification scripts cross-checked against exact rational arithmetic and Lean 4"}
+  B26: {status: n/a, note: "No speed or performance claims"}
+  B27: {status: n/a, note: "No speed or performance claims"}
+  B28: {status: done, evidence: "Deterministic exact enumeration + fixed-seed Hypothesis/cross-check controls in tests/"}
+  B29: {status: n/a, note: "Exact asymptotic theorem and exact rational arithmetic, not frequentist hypothesis testing"}
+  B30: {status: n/a, note: "Exact algebraic constants and proven O(1/L^2) bounds, not sample confidence intervals"}
+  B31: {status: n/a, note: "No multiple statistical hypothesis testing"}
+  B32: {status: n/a, note: "Deductive mathematical proof of published Conjecture 7.7, not a prospective empirical trial"}
+  B33: {status: n/a, note: "No ML models trained or evaluated"}
+  B34: {status: n/a, note: "Code neither calls nor ships generative AI"}
+  B35: {status: done, evidence: "gitleaks report-only scan in .github/workflows/ci.yml"}
+  B36: {status: done, evidence: "docs/threat-model.md"}
+  B37: {status: done, evidence: ".github/workflows/release.yml generates SHA256SUMS"}
+  B38: {status: done, evidence: ".github/workflows/release.yml and lean-verify.yml run actions/attest-build-provenance"}
+  B39: {status: done, evidence: "data/MANIFEST.sha256 generated by scripts/generate_manifest.py"}
+  B40: {status: done, evidence: "docs/run-log.md"}
+  B41: {status: done, evidence: "LIMITATIONS.md (including Real vs. Metaphor section)"}
+  B42: {status: done, evidence: "CLAIMS.md Explicit Falsification Protocol (What Would Prove Us Wrong)"}
+  B43: {status: done, evidence: "REPLICATION.md"}
+  B44: {status: done, evidence: "REPLICATION.md dated replication table"}
+  B45: {status: done, evidence: "docs/reviews/red-team-2026-11-25.md"}

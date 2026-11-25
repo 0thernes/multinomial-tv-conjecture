@@ -1,0 +1,11 @@
+Multi-Kernel Independent Verification Report (Lean 4.35.0)
+==========================================================
+Targets (6): MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2, MultinomialTV.ComparatorTarget.target_conjecture_7_7, MultinomialTV.ComparatorTarget.target_gamma_closed_form, MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form
+
+[export] leanexport Solution -- <6 targets>: PASS (302,392,787 bytes, 17.9s)
+[1/6] lean 4.35.0 (official C++ kernel): PASS (lake build 3,537 jobs + VerifyAxioms 576 theorems, 0 disallowed)
+[2/6] leanchecker-paranoid (v4.35.0): PASS (rc=0, 15.4s)
+[3/6] nanoda (Rust, 0.4.19): PASS (rc=0, 24.4s) — Checked 43605 declarations with no typechecker errors, 1 pretty printer errors: [
+[4/6] con-leche (v4.35.0): PASS (rc=0, 6.9s) — con-leche: accepted 41717 declarations (--verified)
+[5/6] con-ron (v4.35.0): PASS (rc=0, 4.9s) — con-ron: accepted 41717 declarations (--verified)
+[6/6] lean4lean + sandboxed bwrap lake comparator --paranoid: executed on ubuntu-24.04 GitHub Actions CI (.github/workflows/lean-verify.yml)

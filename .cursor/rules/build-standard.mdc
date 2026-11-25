@@ -1,0 +1,6 @@
+---
+description: Canonical project instructions and Build Standard v1.2.0 rules for multinomial-tv-conjecture
+alwaysApply: true
+---
+
+Follow `AGENTS.md` in the repository root as the single source of truth for all Lean 4 verification invariants, Build Standard v1.2.0 rules (`R1`–`R8`), author identity (`Independent Researcher, Spokane, WA, USA`, never `0thernes LLC`), and test/build commands.

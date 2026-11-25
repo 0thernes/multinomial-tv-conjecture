@@ -1,0 +1,17 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0",
+    "MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1",
+    "MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2",
+    "MultinomialTV.ComparatorTarget.target_conjecture_7_7",
+    "MultinomialTV.ComparatorTarget.target_gamma_closed_form",
+    "MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}

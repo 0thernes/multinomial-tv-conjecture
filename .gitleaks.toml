@@ -1,0 +1,11 @@
+title = "gitleaks config for multinomial-tv-conjecture"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Exclude generated audit scripts containing regex patterns for secret scanning"
+paths = [
+  '''^scripts/audit-repo\.sh$''',
+  '''^scripts/Audit-Repo\.ps1$''',
+]

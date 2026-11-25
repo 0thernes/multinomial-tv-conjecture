@@ -61,7 +61,8 @@ def sums_abc_exact(q: int) -> tuple[Fraction, Fraction, Fraction, Fraction]:
 
 def h_adj_1d_exact(L: int) -> Fraction:
     """Exact 1D reduction formulas hAdj_mod0, hAdj_mod1, hAdj_mod2."""
-    assert L >= 3
+    if L < 3:
+        raise ValueError(f"1D reduction requires L >= 3, got {L}")
     r = L % 3
     if r == 0:
         q = L // 3

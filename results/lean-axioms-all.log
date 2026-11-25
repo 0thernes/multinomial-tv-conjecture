@@ -1,0 +1,52 @@
+'MultinomialTV.hAdj_eq_nested_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.hAdj_mod0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.hAdj_mod1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.hAdj_mod2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.p3q_center_expansion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.oddGauss_sum_approx' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.tendsto_sumA' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.tendsto_sumB' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.tendsto_sumC' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.tendsto_hAdj_mod0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.tendsto_hAdj_mod1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.tendsto_hAdj_mod2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.conjecture_7_7_aTriangle' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.conjecture_7_7_gamma2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.conjecture_7_7_d0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.bRes_cosine_formula' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.conjecture_7_7' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.gamma_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.gamma_cyclic_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.hAdj_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.hAdj_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.hAdj_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.hAdj_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.hAdj_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.hAdj_five' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.bRes_zero_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.bRes_one_neg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.bRes_zero_ne_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.d0_neg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.aTriangle_lt_one_div_32' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.aTriangle_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.gamma2_neg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.adversarial_aTriangle_ne_one_div_32' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MultinomialTV.NonVacuity.adversarial_d0_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.adversarial_residue_limits_not_constant' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MultinomialTV.NonVacuity.gamma_closed_form_witness_n5' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.NonVacuity.gamma_cyclic_closed_form_witness_n5' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.ComparatorTarget.target_conjecture_7_7' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.ComparatorTarget.target_gamma_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 576 theorems across MultinomialTV — 0 disallowed axioms.

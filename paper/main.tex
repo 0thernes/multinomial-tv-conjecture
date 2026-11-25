@@ -44,11 +44,11 @@
 \title{\Large\bfseries Resolution and Lean~4 Formal Verification of Conjecture~7.7 on the Second-Order Variance of Multinomial Discrete Total Variation}
 
 \author{
-  Alexander Stephen Donahue\thanks{0thernes LLC, Spokane, WA, USA. Email: \href{mailto:0_0@0thernes.art}{\texttt{0\_0@0thernes.art}}. ORCID: \href{https://orcid.org/0009-0006-8168-9648}{\texttt{0009-0006-8168-9648}}. Code and Lean~4 formalization: \url{https://github.com/0thernes/multinomial-tv-conjecture}.}\\[0.35em]
-  \normalsize 0thernes LLC
+  Alexander Stephen Donahue\thanks{Independent Researcher, Spokane, WA, USA. Email: \href{mailto:0_0@0thernes.art}{\texttt{0\_0@0thernes.art}}. ORCID: \href{https://orcid.org/0009-0006-8168-9648}{\texttt{0009-0006-8168-9648}}. Code and Lean~4 formalization: \url{https://github.com/0thernes/multinomial-tv-conjecture}.}\\[0.35em]
+  \normalsize Independent Researcher, Spokane, WA, USA
 }
 
-\date{November 20, 2026}
+\date{November 25, 2026 (v2.0.0)}
 
 \begin{document}
 
@@ -72,7 +72,7 @@ exists and satisfies
 \]
 This renders unconditional the closed-form $O(N^{-2})$ variance coefficients $\gamma(n)$ (Part~2, Theorem~7.6), $\gamma(3;N)$, $\gamma(4;N)$, and the cyclic coefficient $\gamma_c(n)$ (Part~5, Theorem~5.2), as well as the algebraic value of $\gamma_2$ entering the sub-leading ridge-mode constant $C_{1/2}$ (Part~5, Proposition~6.2).
 
-Rather than evaluating two-dimensional Hadamard finite-part distributions at order $\ell^{-5/2}$, our proof introduces an exact combinatorial $2\mathrm{D}$-to-$1\mathrm{D}$ reduction: $S_3$-symmetrization onto the strict simplex wedge $a<b<c$, two-step finite-difference telescoping, and a six-way orbit partition collapse $\hadj(\ell)$ identically into three one-dimensional central trinomial sums $A(q),B(q),C(q)$. These sums are then evaluated asymptotically through sharp non-asymptotic Stirling bounds, consecutive-ratio Gaussian tail bounds beyond cutoff $K_q=\lfloor q^{5/8}\rfloor$, and a self-contained cubic Euler--Maclaurin formula for odd-Gaussian moments whose $-\frac{h^2}{12}$ Bernoulli shift at the origin plays a decisive role. The entire proof is formally verified from first principles in Lean~4 (\texttt{v4.35.0}) with Mathlib across $4{,}960$ lines of code, with zero \texttt{sorry} placeholders and strictly standard logical axioms (\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}), and independently cross-checked to over $54$ decimal digits.
+Rather than evaluating two-dimensional Hadamard finite-part distributions at order $\ell^{-5/2}$, our proof introduces an exact combinatorial $2\mathrm{D}$-to-$1\mathrm{D}$ reduction: $S_3$-symmetrization onto the strict simplex wedge $a<b<c$, two-step finite-difference telescoping, and a six-way orbit partition collapse $\hadj(\ell)$ identically into three one-dimensional central trinomial sums $A(q),B(q),C(q)$. These sums are then evaluated asymptotically through sharp non-asymptotic Stirling bounds, consecutive-ratio Gaussian tail bounds beyond cutoff $K_q=\lfloor q^{5/8}\rfloor$, and a self-contained cubic Euler--Maclaurin formula for odd-Gaussian moments whose $-\frac{h^2}{12}$ Bernoulli shift at the origin plays a decisive role. The entire proof is formally verified from first principles in Lean~4 (\texttt{v4.35.0}) with Mathlib across $5{,}097$ lines of core proof code ($576$ exhaustively audited theorems, $18$ non-vacuity and adversarial false-constant refutation witnesses, zero \texttt{sorry}/\texttt{admit}/\texttt{axiom}/\texttt{native\_decide}, zero Batteries linter warnings, strictly standard logical axioms \texttt{[propext, Classical.choice, Quot.sound]}), isolated into a Mathlib-only \texttt{Challenge.lean}/\texttt{Solution.lean} specification checked across six independent proof kernels (\texttt{lake comparator --paranoid}), and independently cross-checked in Python to over $54$ decimal digits.
 \end{abstract}
 
 \medskip
@@ -193,8 +193,8 @@ The proof proceeds in four self-contained stages, mirrored one-for-one by the fi
 \begin{enumerate}[label=\textbf{Stage \arabic*.},leftmargin=*,align=left]
   \item \textbf{Exact $2\mathrm{D}$-to-$1\mathrm{D}$ combinatorial reduction} (\cref{sec:combinatorial}; \code{Combinatorial.lean}). Exact finite-$\ell$ identities express $\hadj(3q)$, $\hadj(3q+1)$, and $\hadj(3q-1)$ solely in terms of the central trinomial probability $p_{3q}(q)=(3q)!/(3^{3q}(q!)^3)$ and three normalized $1\mathrm{D}$ sums $A(q),B(q),C(q)$.
   \item \textbf{Sharp non-asymptotic Stirling expansion} (\cref{sec:stirling}; \code{StirlingRefined.lean}). An elementary two-sided bound $\frac{1}{12n}-\frac{1}{15n^3}\le R(n)\le\frac{1}{12n}$ yields $p_{3q}(q)=\frac{\sqrt{3}}{2\pi q}(1-\frac{2}{9q}+\frac{2}{81q^2}+O(q^{-3}))$ with explicit constants valid for every $q\ge 2$.
-  \item \textbf{Cubic Euler--Maclaurin summation} (\cref{sec:em}; \code{GaussianEulerMaclaurin.lean}). A self-contained third-order Euler--Maclaurin theorem for $g_j(t)=t^{2j+1}e^{-3t^2}$ gives $h\sum_{k=1}^{K}g_j(kh)=\frac{j!}{2\cdot 3^{j+1}}-\frac{h^2}{12}\mathbf{1}_{j=0}+O(h^3+e^{-Kh})$, explicitly capturing the $-\frac{h^2}{12}$ Bernoulli boundary correction at $j=0$.
-  \item \textbf{Local Gaussian asymptotics and assembly} (\cref{sec:local,sec:assembly}). Formalized in \code{LocalAsymptotics.lean} and \code{Main.lean}, splitting the $1\mathrm{D}$ sums at $K_q=\lfloor q^{5/8}\rfloor$, controlling tails via consecutive-ratio Gaussian bounds, and expanding $\log\bigl(p_{3q}(q\pm k)/p_{3q}(q)\bigr)$ to fifth order yields the $O(q^{-1})$ asymptotics of $A(q),B(q),C(q)$ and all limits in \cref{thm:main}.
+  \item \textbf{Cubic Euler--Maclaurin summation} (\cref{sec:em}; \code{GaussianEulerMaclaurin}). A self-contained third-order Euler--Maclaurin theorem for $g_j(t)=t^{2j+1}e^{-3t^2}$ evaluates $h\sum_{k=1}^{K}g_j(kh)$ as $\frac{j!}{2\cdot 3^{j+1}}-\frac{h^2}{12}\mathbf{1}_{j=0}+O(h^3+e^{-Kh})$, explicitly capturing the $-\frac{h^2}{12}$ Bernoulli boundary correction at $j=0$.
+  \item \textbf{Local Gaussian asymptotics and assembly} (\cref{sec:local,sec:assembly}; \code{LocalAsymptotics} and \code{Main}). Splitting the $1\mathrm{D}$ sums at $K_q=\lfloor q^{5/8}\rfloor$, controlling tails via consecutive-ratio Gaussian bounds, and expanding $\log\bigl(p_{3q}(q\pm k)/p_{3q}(q)\bigr)$ to fifth order yields the $O(q^{-1})$ asymptotics of $A(q),B(q),C(q)$ and all limits in \cref{thm:main}.
 \end{enumerate}
 
 % =====================================================================
@@ -810,29 +810,53 @@ To guarantee that our formalized statement matches Bani\'c and Elezovi\'c's defi
 
 \begin{table}[t]
 \centering
-\caption{Module architecture and machine-checked audit of the Lean~4 formalization (\code{v4.35.0} / Mathlib \code{v4.35.0}).}
+\caption{Module architecture and machine-checked audit of the Lean~4 formalization (\code{v4.35.0} / Mathlib \code{v4.35.0}, \code{autoImplicit = false}).}
 \label{tab:lean-modules}
 \footnotesize
-\setlength{\tabcolsep}{5pt}
+\setlength{\tabcolsep}{4.5pt}
 \begin{tabular}{@{}l r >{\raggedright\arraybackslash}p{8.4cm}@{}}
 \toprule
 Lean~4 Module & Lines & Principal Exported Theorems (Paper Reference) \\
 \midrule
-\code{Combinatorial.lean} & 1,615 & \code{hAdj\_eq\_uvSum} (\cref{lem:symm}), \code{hAdj\_mod0}, \code{hAdj\_mod1}, \code{hAdj\_mod2} (\cref{thm:exact-1d}) \\
+\code{Combinatorial.lean} & 1,618 & \code{hAdj\_eq\_uvSum} (\cref{lem:symm}), \code{hAdj\_mod0}, \code{hAdj\_mod1}, \code{hAdj\_mod2} (\cref{thm:exact-1d}) \\
 \code{StirlingRefined.lean} & 399 & \code{stirlingRem\_bounds} (\cref{prop:stirling-bounds}), \code{p3q\_center\_expansion} (\cref{prop:p3q-center}) \\
-\code{GaussianEulerMaclaurin.lean} & 608 & \code{integral\_oddGauss}, \code{oddGauss\_sum\_approx} (\cref{thm:em}) \\
-\code{LocalAsymptotics.lean} & 1,997 & \code{p3q\_right/left\_ratio\_le}, \code{log/exp\_ratio\_approx}, \code{tendsto\_sumA}, \code{tendsto\_sumB}, \code{tendsto\_sumC} (\cref{thm:abc-limits}) \\
+\code{GaussianEulerMaclaurin.lean} & 610 & \code{integral\_oddGauss}, \code{oddGauss\_sum\_approx} (\cref{thm:em}) \\
+\code{LocalAsymptotics.lean} & 2,004 & \code{p3q\_right/left\_ratio\_le}, \code{log/exp\_ratio\_approx}, \code{tendsto\_sumA}, \code{tendsto\_sumB}, \code{tendsto\_sumC} (\cref{thm:abc-limits}) \\
 \code{Main.lean} & 341 & \code{hAdj\_eq\_nested\_sum}, \code{conjecture\_7\_7} (\cref{thm:main}), \code{gamma\_closed\_form}, \code{gamma\_cyclic\_closed\_form} \\
+\code{NonVacuity.lean} & 125 & Exact \code{hAdj 0..5}, strict signs, $3$ false-constant refutations, $n=5$ witnesses ($18$ theorems) \\
 \midrule
-\textbf{Total core proof} & \textbf{4,960} & \textbf{Zero \code{sorry}/\code{admit}/\code{axiom}; standard axioms only} \\
+\code{Challenge.lean} / \code{Solution.lean} & 108 / 153 & Mathlib-only $6$-target Palomar isolation stub \& sorry-free proof bridge (\code{lake comparator}) \\
+\code{VerifyAxioms.lean} & 85 & $43$ explicit \code{\#print axioms} + exhaustive \code{Lean.collectAxioms} audit ($576$ theorems) \\
+\midrule
+\textbf{Core proof + audit} & \textbf{5,445} & \textbf{Zero \code{sorry}/\code{admit}/\code{axiom}/\code{native\_decide}; $0$ Batteries linter warnings} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Running \code{lake build} compiles all $3{,}530$ build jobs cleanly with exit code $0$ and zero tactic warnings. Executing \code{lake env lean VerifyAxioms.lean} runs \code{\#print axioms} on all $19$ primary theorems and confirms that every single theorem depends strictly on Lean's three foundational axioms:
+Running \code{lake build MultinomialTVConjecture Challenge Solution VerifyAxioms} compiles all $3{,}537$ build jobs cleanly with exit code $0$ under \code{autoImplicit = false} and passes \code{lake exe runLinter MultinomialTVConjecture} with zero warnings across all $15$ Batteries/Mathlib linters. Executing \code{lake env lean VerifyAxioms.lean} inspects all $43$ exported declarations explicitly and runs an exhaustive \code{Lean.collectAxioms} metaprogram over every theorem in the \code{MultinomialTV} namespace tree ($576$ theorems total), confirming that every single theorem depends strictly on Lean's three foundational axioms:
 \[
   \code{[propext, Classical.choice, Quot.sound]}.
 \]
+To defend against both kernel bugs and definition drift, \code{lean/Challenge.lean} ($108$ lines) imports \emph{only} Mathlib and states the six headline theorems verbatim using the literal nested multinomial sum \eqref{eq:hadj-def}. The sorry-free bridge \code{lean/Solution.lean} is verified against \code{Challenge.lean} via \code{lake comparator} (\code{--paranoid} mode using \code{comparator.json}), which replays exported proof terms independently across all six kernels bundled with Lean~4.35.0: the official C++ kernel, \code{leanchecker-paranoid}, \code{lean4lean} (Lean-in-Lean), \code{nanoda} (Rust, v0.4.19), \code{con-leche}, and \code{con-ron}. \Cref{tab:claims-fidelity} summarizes the explicit verification boundary and statement-fidelity mapping.
+
+\begin{table}[t]
+\centering
+\caption{Numbered claims ledger and statement-fidelity audit mapping Lean~4 declarations to literature anchors and verification boundaries.}
+\label{tab:claims-fidelity}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l >{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}p{3.9cm} >{\raggedright\arraybackslash}p{4.0cm}@{}}
+\toprule
+Claim & Lean~4 Declaration & Verification Tier & Boundary / Fidelity Note \\
+\midrule
+\textbf{C1} & \code{hAdj\_eq\_nested\_sum}, \code{hAdj\_mod0..2} & $6$-kernel + exact $\mathbb{Q}$ ($L=3..45$) & Exact values $h_{\mathrm{adj}}(0..5)$ proved in \code{NonVacuity.lean}. \\
+\textbf{C2} & \code{tendsto\_hAdj\_mod0..2}, \code{bRes\_cosine\_formula} & $6$-kernel + $80$-digit \code{mpmath} & Matches \cite[Lemma~7.3]{banic_elezovic_p2}; strict signs proved. \\
+\textbf{C3} & \code{conjecture\_7\_7}, \code{conjecture\_7\_7\_aTriangle}, \code{\_gamma2}, \code{\_d0} & $6$-kernel + adversarial refutations & Refutes $a_\triangle=\frac{1}{32}$, $d_0=0$; human line-by-line review open. \\
+\textbf{C4} & \code{gamma\_closed\_form}, \code{gamma\_cyclic\_closed\_form} & Algebraic identity $6$-kernel checked & Upstream \cite[Thm~7.6]{banic_elezovic_p2} \& \cite[Thm~5.2]{banic_elezovic_p5} cited outside Lean. \\
+\textbf{C5} & \code{VerifyAxioms.lean}, \code{Challenge.lean}, \code{Solution.lean} & Exhaustive CI lexer + $6$ kernels & $576/576$ theorems strictly in \code{[propext, Classical.choice, Quot.sound]}. \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Independent Exact-Rational and High-Precision Numerical Validation}
 
@@ -894,8 +918,11 @@ Discrete total variation goodness-of-fit testing (TVOR \cite{banic_elezovic_tvor
 \paragraph{Methodological implications.}
 From the viewpoint of asymptotic combinatorics and probability (cf.\ Diaconis and Zabell \cite{diaconis_zabell1991}, Bhattacharya and Rao \cite{bhattacharya_rao}), the principal lesson of the proof is that singular $\ell_1$ lattice functionals can sometimes be de-singularized \emph{before} taking asymptotics: by folding onto a Weyl chamber and telescoping exact factorial differences, a two-dimensional distributional problem at order $\ell^{-5/2}$ collapses into completely elementary one-dimensional Gaussian Euler--Maclaurin sums. Because the telescoping step \eqref{eq:inner-tel} relies only on linear weights and factorial absorption \eqref{eq:T-absorb}, analogous reductions are natural candidates for higher-order $1\mathrm{D}$ differences and non-uniform multinomial regimes in Parts~3--4 of \cite{banic_elezovic_p2}.
 
-\paragraph{Transparent methodology and formalization note.}
-The proof discovery, Lean~4 formalization, numerical verification scripts, and manuscript preparation were carried out by the author with interactive AI assistance. In accordance with best practices for formal mathematics, the mathematical validity of \cref{thm:main} and \cref{cor:unconditional}(i)--(ii) does not rest on human or AI authoring provenance: every step of the argument is independently and mechanically verified from first principles by the Lean~4 kernel (\code{v4.35.0}) using only standard axioms, and all source code, proofs, and reproduction scripts are publicly archived for third-party auditing at \url{https://github.com/0thernes/multinomial-tv-conjecture}.
+\paragraph{Limitations and verification boundary.}
+We separate three epistemic layers explicitly. First, \cref{thm:main} (Conjecture~7.7: $b_0,b_1,b_2,d_0,\tri,\gamma_2$ and the cosine decomposition) is proved unconditionally from Mathlib primitives inside Lean~4 and re-checked across six independent proof kernels. Second, \cref{cor:unconditional}(i)--(ii) formalizes the exact algebraic simplifications of $\gamma(n)$ and $\gamma_c(n)$ for all $n\neq 0$, while the upstream variance decompositions of \cite[Theorem~7.6]{banic_elezovic_p2} and \cite[Theorem~5.2]{banic_elezovic_p5} remain cited literature results outside our Lean kernel boundary, alongside the exact Python checks (\code{verify\_conjecture.py}). Third, this manuscript is an unreviewed independent preprint; although \code{Challenge.lean} ($108$ lines, Mathlib-only) and \code{NonVacuity.lean} ($18$ witnesses) are designed for rapid third-party inspection, independent human line-by-line statement-fidelity sign-off remains open (tracked in \code{statement-fidelity.md} and \code{formalization.yaml}).
+
+\paragraph{AI assistance, CRediT authorship, conflicts of interest, and errata policy.}
+Alexander Stephen Donahue (Independent Researcher, Spokane, WA, USA; ORCID \code{0009-0006-8168-9648}) holds sole authorial responsibility (CRediT: Conceptualization, Methodology, Project Administration, Resources, Supervision, and Validation oversight). Interactive AI systems (Google Gemini / Antigravity) assisted with analytical exploration, Lean~4 formalization, Python test scaffolding, and manuscript preparation under human direction. Epistemic warrant rests solely on the reproducible six-kernel Lean~4 verification, independent exact/80-digit computation, and open-source code (Apache-2.0 for code and Lean; CC-BY-4.0 for manuscript and docs) archived on GitHub (\url{https://github.com/0thernes/multinomial-tv-conjecture}). The author declares no competing financial or institutional interests and received no external funding. Version history, errata (including bibliographic fix \code{E-2026-001} restoring the five-digit suffix of \code{arXiv:2610.13366}), and our withdrawal commitment are recorded transparently in \code{CHANGELOG.md} and \code{ERRATA.md}.
 
 \bibliographystyle{plain}
 \bibliography{refs}

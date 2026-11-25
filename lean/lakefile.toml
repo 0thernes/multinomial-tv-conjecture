@@ -1,6 +1,11 @@
 name = "MultinomialTVConjecture"
-version = "0.1.0"
-defaultTargets = ["MultinomialTVConjecture"]
+version = "2.0.0"
+defaultTargets = ["MultinomialTVConjecture", "Solution"]
+lintDriver = "batteries/runLinter"
+
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
 
 [[require]]
 name = "mathlib"
@@ -9,3 +14,12 @@ rev = "v4.35.0"
 
 [[lean_lib]]
 name = "MultinomialTVConjecture"
+
+[[lean_lib]]
+name = "Challenge"
+
+[[lean_lib]]
+name = "Solution"
+
+[[lean_lib]]
+name = "VerifyAxioms"
