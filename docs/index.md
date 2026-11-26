@@ -18,6 +18,6 @@ Welcome to the documentation for **Multinomial TV Conjecture (`v2.3.0`)** — th
 
 ## Decisions & Reference
 - [ADR 0001: Exact 2D-to-1D Combinatorial Reduction](adr/0001-combinatorial-2d-to-1d-reduction.md)
-- [ADR 0002: Apache-2.0 / CC-BY-4.0 Dual Licensing & 6-Kernel Isolation](adr/0002-dual-licensing-and-six-kernel-verification.md)
+- [ADR 0002: Apache-2.0 / CC-BY-4.0 Dual Licensing & Comparator Isolation](adr/0002-dual-licensing-and-six-kernel-verification.md)
 - [FAQ](faq.md)
 - [Glossary](glossary.md)

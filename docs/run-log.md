@@ -2,6 +2,8 @@
 
 Chronological audit trail of every local and CI verification run (Build Standard v1.2.0 `B40`).
 
+> **Correction (2026-11-26):** The entries below are kept as written. Where they say "6-kernel" or "6 independent kernels", read six checker runs of `lake comparator --paranoid`, two of which are the Lean kernel (paranoid and default mode). The CI step called a "live negative kernel rejection" check supplies a proof of a different statement and passes on any error, so it does not test falsity; the refutation of `aTriangle = 1/32` is the proved theorem `adversarial_aTriangle_ne_one_div_32`. See [ERRATA.md](../ERRATA.md).
+
 | Date (UTC) | Version / Commit | Scope | Key Outcome | Artifacts Updated |
 |---|---|---|---|---|
 | 2026-11-18 | `v1.0.0` (`df6cab4b2b`) | Initial Lean 4.35.0 proof, 19-page AMS-LaTeX preprint, 80-digit Python verifier | Core proof compiled; baseline Build Standard v1.2.0 audit measured **18.0% (9/50)**. | `lean/`, `paper/`, `scripts/`, `dist/` |

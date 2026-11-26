@@ -13,7 +13,7 @@ flowchart TD
     D --> E
     E --> F["Conjecture 7.7 + gamma(n), gamma_c(n)"]
     F --> G["NonVacuity.lean<br/>20 Concrete & Adversarial Witnesses"]
-    F --> H["Solution.lean vs Challenge.lean<br/>6-Kernel lake comparator --paranoid (8 Targets)"]
+    F --> H["Solution.lean vs Challenge.lean<br/>lake comparator --paranoid, six checker runs (8 Targets)"]
 ```
 
 ## Module Breakdown
