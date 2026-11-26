@@ -2,7 +2,7 @@
 
 ## Mathematical Proof Pipeline
 
-The Lean 4 formalization resolves Conjecture 7.7 of Banić & Elezović (`arXiv:2610.17046v1`) through a five-stage reduction that replaces an intractable 2D triangular-lattice asymptotic expansion with three elementary 1D sums:
+The Lean 4 formalization proves Conjecture 7.7 of Banić & Elezović (`arXiv:2610.17046v1`, an unrefereed arXiv preprint) through a five-stage reduction that replaces an intractable 2D triangular-lattice asymptotic expansion with three elementary 1D sums:
 
 ```mermaid
 flowchart TD
@@ -27,7 +27,7 @@ flowchart TD
 | `lean/MultinomialTVConjecture/Main.lean` | Exact nested-sum equivalence, residue limits `b_0, b_1, b_2`, Conjecture 7.7, and linear/cyclic/small-bin `γ` formulas | `hAdj_eq_nested_sum`, `tendsto_hAdj_mod0..2`, `conjecture_7_7`, `gamma_closed_form`, `gamma_cyclic_closed_form`, `gamma3_closed_form`, `gamma4_closed_form` |
 | `lean/MultinomialTVConjecture/NonVacuity.lean` | Concrete exact rational evaluations `hAdj 0..5`, strict sign bounds, 3 false-constant refutations, `n ∈ {3,4,5}` witnesses | `hAdj_zero..five`, `adversarial_*`, `gamma*_witness_*` |
 | `lean/Challenge.lean` | 100% Mathlib-only target statements (8 intentional `sorry` stubs, zero proof-library imports) | `MultinomialTV.ComparatorTarget.target_*` |
-| `lean/Solution.lean` | Sorry-free bridge proving `Challenge.lean` targets via `MultinomialTVConjecture.Main` | Same 8 declarations, verified by 6 kernels |
+| `lean/Solution.lean` | Sorry-free bridge proving `Challenge.lean` targets via `MultinomialTVConjecture.Main` | Same 8 declarations, replayed by six comparator checker runs |
 | `lean/VerifyAxioms.lean` | Exhaustive `Lean.collectAxioms` metaprogram + 49 explicit `#print axioms` checks | Emits `ALL_THEOREMS_AXIOM_AUDIT_PASS` |
 
 ## Independent Verification Layer
