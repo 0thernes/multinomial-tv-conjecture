@@ -64,6 +64,7 @@ case "$cmd" in
     python3 scripts/build_blueprint.py
     python3 scripts/build_site.py
     python3 scripts/generate_manifest.py --verify
+    python3 scripts/stamp_timestamps.py --verify
     bash scripts/audit-repo.sh .
     ;;
   release)

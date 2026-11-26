@@ -12,8 +12,8 @@
   </defs>
   <rect width="1280" height="640" fill="url(#bg)"/>
   <rect x="64" y="56" width="1152" height="528" rx="24" fill="#0f172a" fill-opacity="0.72" stroke="#1e3a8a" stroke-width="2"/>
-  <rect x="108" y="102" width="420" height="36" rx="18" fill="#0c4a6e" stroke="#38bdf8" stroke-width="1.5"/>
-  <text x="318" y="126" fill="#e0f2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle" letter-spacing="1.4">LEAN 4.35.0 · 6-KERNEL VERIFIED · V2.0.0</text>
+  <rect x="108" y="102" width="540" height="36" rx="18" fill="#0c4a6e" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="378" y="126" fill="#e0f2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle" letter-spacing="1.4">LEAN 4.35.0 (MODULE SPEC) · 6-KERNEL VERIFIED · V2.3.0</text>
   <text x="108" y="212" fill="#f8fafc" font-family="Segoe UI, system-ui, sans-serif" font-size="52" font-weight="800">Conjecture 7.7 Proved</text>
   <text x="108" y="264" fill="#cbd5e1" font-family="Segoe UI, system-ui, sans-serif" font-size="25" font-weight="500">Second-Order Variance Constant of Multinomial Discrete Total Variation</text>
   <rect x="108" y="302" width="1064" height="106" rx="14" fill="#0b1224" stroke="#334155" stroke-width="1.5"/>
@@ -27,7 +27,7 @@
   <text x="640" y="492" fill="#e0e7ff" font-family="Segoe UI, system-ui, sans-serif" font-size="14" text-anchor="middle">Strictly [propext, Classical.choice, Quot.sound]</text>
   <rect x="836" y="438" width="336" height="68" rx="12" fill="#172554" fill-opacity="0.8" stroke="#38bdf8" stroke-width="1.5"/>
   <text x="1004" y="468" fill="#bae6fd" font-family="Segoe UI, system-ui, sans-serif" font-size="18" font-weight="700" text-anchor="middle">Exact + 80-Digit Verified</text>
-  <text x="1004" y="492" fill="#e0f2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="14" text-anchor="middle">18 NonVacuity witnesses · Banić &amp; Elezović (2026)</text>
+  <text x="1004" y="492" fill="#e0f2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="14" text-anchor="middle">20 NonVacuity witnesses · Banić &amp; Elezović (2026)</text>
   <line x1="108" y1="532" x2="1172" y2="532" stroke="url(#accent)" stroke-width="2" stroke-opacity="0.5"/>
   <text x="108" y="562" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="17">Alexander S. Donahue · Independent Researcher · ORCID 0009-0006-8168-9648</text>
   <text x="1172" y="562" fill="#38bdf8" font-family="Consolas, monospace" font-size="17" text-anchor="end">github.com/0thernes/multinomial-tv-conjecture</text>

@@ -13,13 +13,32 @@ ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "build" / "site"
 
 
+def parse_audited_theorem_count() -> int:
+    log_path = ROOT / "results" / "lean-axioms-all.log"
+    if log_path.is_file():
+        m = re.search(r"checked\s+(\d+)\s+theorems", log_path.read_text(encoding="utf-8", errors="ignore"))
+        if m:
+            return int(m.group(1))
+    return 0
+
+
+def parse_nonvacuity_count() -> int:
+    nv_path = ROOT / "lean" / "MultinomialTVConjecture" / "NonVacuity.lean"
+    if nv_path.is_file():
+        return len(re.findall(r"^\s*theorem\s+", nv_path.read_text(encoding="utf-8", errors="ignore"), re.M))
+    return 0
+
+
 def render_portal() -> str:
     version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    theorem_count = parse_audited_theorem_count()
+    nonvac_count = parse_nonvacuity_count()
     return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none';"/>
   <title>Multinomial TV Conjecture · v{version}</title>
   <meta name="description" content="Complete Lean 4.35.0 6-kernel verified proof of Conjecture 7.7 of Banić &amp; Elezović (arXiv:2610.17046v1) on the second-order variance constant of multinomial discrete total variation."/>
   <meta property="og:title" content="Multinomial TV Conjecture · v{version}"/>
@@ -80,12 +99,12 @@ def render_portal() -> str:
         <p>Every Lean file carries a Lean 4.35.0 <code>module</code> header. Isolated Mathlib-only <code>Challenge.lean</code> is matched against sorry-free <code>Solution.lean</code> via sandboxed <code>lake comparator --paranoid</code> (Lean 4.35.0, leanchecker-paranoid, lean4lean, nanoda, con-leche, con-ron) plus live negative kernel rejection in CI.</p>
       </article>
       <article class="card">
-        <h2>576 Exhaustively Audited Theorems</h2>
-        <p>Zero <code>sorry</code>, zero <code>admit</code>, zero custom axioms, zero <code>native_decide</code>, zero Batteries linter warnings. All 576 theorems under <code>MultinomialTV</code> depend strictly on <code>[propext, Classical.choice, Quot.sound]</code>.</p>
+        <h2>{theorem_count} Exhaustively Audited Theorems</h2>
+        <p>Zero <code>sorry</code>, zero <code>admit</code>, zero custom axioms, zero <code>native_decide</code>, zero Batteries or Mathlib style-linter warnings. All {theorem_count} named and module-private theorems under <code>MultinomialTV</code> depend strictly on <code>[propext, Classical.choice, Quot.sound]</code>.</p>
       </article>
       <article class="card">
         <h2>Non-Vacuity, Oracles &amp; Provenance</h2>
-        <p>18 concrete small-L, sign, and adversarial false-constant refutation witnesses in <code>NonVacuity.lean</code>, independent exact rational (L=3..45) &amp; 80-digit <code>mpmath</code> checks (&lt;3e-55), Sigstore SLSA Rekor attestations, DigiCert RFC 3161 TSA, and Bitcoin OpenTimestamps.</p>
+        <p>{nonvac_count} concrete small-L, sign, small-n, and adversarial false-constant refutation witnesses in <code>NonVacuity.lean</code>, independent exact rational (L=3..45) &amp; 80-digit <code>mpmath</code> checks (&lt;3e-55), Sigstore SLSA Rekor attestations, DigiCert RFC 3161 TSA, and Bitcoin OpenTimestamps.</p>
       </article>
     </div>
     <div class="note">

@@ -123,7 +123,7 @@ def test_regression_e2026_004_axiom_log_and_readme_sync() -> None:
     assert log_path.is_file()
     log_text = log_path.read_text(encoding="utf-8")
     decls = cra.parse_log(log_text)
-    assert len(decls) == 43
+    assert len(decls) == 49
     for name, axioms in decls.items():
         assert axioms <= cra.ALLOWED, f"Non-standard axiom in {name}: {axioms}"
     assert cra.EXHAUSTIVE_RE.search(log_text), "Missing ALL_THEOREMS_AXIOM_AUDIT_PASS sentinel"
@@ -262,7 +262,53 @@ def test_blueprint_and_site_build_cleanly() -> None:
 
     bp_nodes = json.loads((ROOT / "build" / "site" / "blueprint" / "blueprint.json").read_text(encoding="utf-8"))
     nonvac = next(n for n in bp_nodes if n["id"] == "prop:nonvac")
-    assert len(nonvac["lean"]) == 18, f"Expected all 18 NonVacuity theorems in Blueprint, got {len(nonvac['lean'])}"
+    assert len(nonvac["lean"]) == 20, f"Expected all 20 NonVacuity theorems in Blueprint, got {len(nonvac['lean'])}"
+
+    # Verify strict CSP, SRI integrity on external CDN scripts, and dynamic audited theorem count on portal (F-47, F-52)
+    portal_html = (ROOT / "build" / "site" / "index.html").read_text(encoding="utf-8")
+    bp_html = (ROOT / "build" / "site" / "blueprint" / "index.html").read_text(encoding="utf-8")
+    assert 'http-equiv="Content-Security-Policy"' in portal_html
+    assert 'http-equiv="Content-Security-Policy"' in bp_html
+    ax_m = cra.EXHAUSTIVE_RE.search((ROOT / "results" / "lean-axioms-all.log").read_text(encoding="utf-8"))
+    assert ax_m is not None
+    assert f"{ax_m.group(1)} Exhaustively Audited Theorems" in portal_html
+    for html_txt in (portal_html, bp_html):
+        for tag in re.findall(r"<(?:script|link)\b[^>]+https?://[^>]+>", html_txt):
+            assert 'integrity="sha384-' in tag, f"External CDN resource missing sha384 SRI: {tag}"
+            assert 'crossorigin="anonymous"' in tag, f"External CDN resource missing crossorigin: {tag}"
+
+
+def test_mathlib_standard_linter_and_version_hygiene() -> None:
+    """Verify Playbook #5 Mathlib style linter set in lakefile.toml and zero stale version labels."""
+    lakefile = (ROOT / "lean" / "lakefile.toml").read_text(encoding="utf-8")
+    assert "weak.linter.mathlibStandardSet = true" in lakefile
+
+    ver = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    assert f"(v{ver})" in (ROOT / "llms.txt").read_text(encoding="utf-8")
+    assert f"V{ver}" in (ROOT / "docs" / "media" / "social-preview.svg").read_text(encoding="utf-8")
+
+
+def test_zero_broken_relative_markdown_links() -> None:
+    """Ensure every relative Markdown link across root and docs/ resolves to an existing file."""
+    md_link_re = re.compile(r'!?\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
+    broken: list[str] = []
+    for md in sorted(ROOT.rglob("*.md")):
+        if any(p in md.parts for p in (".git", ".venv", "build", "lean")):
+            continue
+        if md.relative_to(ROOT).as_posix() == "docs/build-standard.md":
+            continue
+        txt = re.sub(r"```.*?```", "", md.read_text(encoding="utf-8", errors="ignore"), flags=re.S)
+        for m in md_link_re.finditer(txt):
+            href = m.group(1)
+            if href.startswith(("http://", "https://", "mailto:", "#")):
+                continue
+            target = href.split("#", 1)[0].split("?", 1)[0]
+            if not target:
+                continue
+            dest = (ROOT / target.lstrip("/")) if target.startswith("/") else (md.parent / target).resolve()
+            if not dest.exists():
+                broken.append(f"{md.relative_to(ROOT).as_posix()} -> {href}")
+    assert broken == [], f"Broken relative Markdown links: {broken}"
 
 
 def test_regression_e2026_006_and_010_statement_fidelity_and_paper_parity() -> None:

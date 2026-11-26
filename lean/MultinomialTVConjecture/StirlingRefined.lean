@@ -2,9 +2,9 @@
 Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander S. Donahue
-SPDX-FileCopyrightText: 2026 Alexander S. Donahue
-SPDX-License-Identifier: Apache-2.0
 -/
+-- SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+-- SPDX-License-Identifier: Apache-2.0
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Stirling

@@ -18,11 +18,11 @@ License: Apache-2.0 (code/Lean) · CC-BY-4.0 (paper/docs).
 - [lean/Challenge.lean](lean/Challenge.lean): Isolated Mathlib-only specification of the 6 target theorems.
 - [lean/Solution.lean](lean/Solution.lean): Sorry-free proofs checked against `Challenge.lean` by 6 independent kernels.
 - [lean/VerifyAxioms.lean](lean/VerifyAxioms.lean): Exhaustive `Lean.collectAxioms` metaprogram and explicit `#print axioms`.
-- [lean/MultinomialTVConjecture/Main.lean](lean/MultinomialTVConjecture/Main.lean): Main proof of `conjecture_7_7`, `gamma_closed_form`, `gamma_cyclic_closed_form`.
-- [lean/MultinomialTVConjecture/NonVacuity.lean](lean/MultinomialTVConjecture/NonVacuity.lean): 18 concrete small-L, sign, and adversarial false-constant refutation witnesses.
+- [lean/MultinomialTVConjecture/Main.lean](lean/MultinomialTVConjecture/Main.lean): Main proof of `conjecture_7_7`, `gamma_closed_form`, `gamma_cyclic_closed_form`, `gamma3_closed_form`, `gamma4_closed_form`.
+- [lean/MultinomialTVConjecture/NonVacuity.lean](lean/MultinomialTVConjecture/NonVacuity.lean): 20 concrete small-L, small-n, sign, and adversarial false-constant refutation witnesses.
 
 ## Paper, Scripts & Docs
-- [paper/main.tex](paper/main.tex): Complete AMS-LaTeX preprint (v2.0.0).
+- [paper/main.tex](paper/main.tex): Complete AMS-LaTeX preprint (v2.3.0).
 - [blueprint/src/content.tex](blueprint/src/content.tex): Lean 4 theorem dependency Blueprint source.
 - [scripts/verify_conjecture.py](scripts/verify_conjecture.py): Independent exact rational and 80-digit `mpmath` verification.
 - [docs/architecture.md](docs/architecture.md): Proof and verification architecture.

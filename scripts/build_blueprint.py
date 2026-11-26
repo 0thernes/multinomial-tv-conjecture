@@ -287,8 +287,11 @@ def render_html(nodes: list[dict[str, Any]]) -> str:
             f'<div class="meta"><b>Lean ({len(n["lean"])}):</b> <span class="decl-list">{decls}</span><br/>'
             f'<b>Uses:</b> {deps}</div></article>'
         )
+    nonvac_node = next((n for n in nodes if n["id"] == "prop:nonvac"), None)
+    nonvac_count = len(nonvac_node["lean"]) if nonvac_node is not None else 0
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; font-src 'self' https://cdnjs.cloudflare.com data:; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none';"/>
 <title>Multinomial TV Conjecture · Lean 4 Dependency Blueprint</title>
 <script>window.MathJax={{tex:{{inlineMath:[["$","$"]]}}}};</script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml-full.min.js" integrity="sha384-dCtf/9Xgzj8edI30iIEsxNfjUQ0zj2AXa3eUdgjsx8odUmpURZx5Z7aDZmV781et" crossorigin="anonymous"></script>
@@ -333,7 +336,7 @@ a:focus-visible,.btn:focus-visible,.search:focus-visible{{outline:2px solid #38b
 <main id="main">
 <p><a href="../">&larr; Back to Multinomial TV Conjecture Portal</a></p>
 <h1>Lean 4.35.0 Dependency Blueprint (Conjecture 7.7)</h1>
-<p class="sub">{len(nodes)} formal nodes &middot; {total_decls} statically validated Lean 4 declarations linked to exact GitHub source lines across <code>MultinomialTVConjecture</code>, <code>NonVacuity</code> (18/18), and the 6-kernel Comparator Bridge. Click any DAG node to highlight its transitive dependency cone.</p>
+<p class="sub">{len(nodes)} formal nodes &middot; {total_decls} statically validated Lean 4 declarations linked to exact GitHub source lines across <code>MultinomialTVConjecture</code>, <code>NonVacuity</code> ({nonvac_count}/{nonvac_count}), and the 6-kernel Comparator Bridge. Click any DAG node to highlight its transitive dependency cone.</p>
 <div class="toolbar" role="region" aria-label="Blueprint filters">
   <input id="q" class="search" type="search" placeholder="Filter nodes or Lean declarations (e.g., hAdj_mod0, NonVacuity, conjecture_7_7)..." aria-label="Filter blueprint nodes"/>
   <button class="btn active" data-stage="all" aria-pressed="true">All ({len(nodes)})</button>

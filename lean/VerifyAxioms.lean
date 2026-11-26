@@ -2,9 +2,9 @@
 Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander S. Donahue
-SPDX-FileCopyrightText: 2026 Alexander S. Donahue
-SPDX-License-Identifier: Apache-2.0
 -/
+-- SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+-- SPDX-License-Identifier: Apache-2.0
 module
 
 public meta import Lean
@@ -21,9 +21,9 @@ import all Solution
 # Exhaustive Axiom Audit for Multinomial TV Conjecture (Conjecture 7.7)
 
 Prints `#print axioms` for:
-  - All 19 primary theorems in `MultinomialTV`
-  - All 18 non-vacuity and adversarial-refutation theorems in `MultinomialTV.NonVacuity`
-  - All 6 isolated comparator target theorems in `MultinomialTV.ComparatorTarget`
+  - All 21 primary theorems in `MultinomialTV`
+  - All 20 non-vacuity and adversarial-refutation theorems in `MultinomialTV.NonVacuity`
+  - All 8 isolated comparator target theorems in `MultinomialTV.ComparatorTarget`
 PLUS runs an exhaustive `Lean.collectAxioms` metaprogram auditing EVERY single `theorem`
 declaration across the entire `MultinomialTV` namespace tree.
 
@@ -51,8 +51,10 @@ Every theorem must depend strictly on `[propext, Classical.choice, Quot.sound]` 
 #print axioms MultinomialTV.conjecture_7_7
 #print axioms MultinomialTV.gamma_closed_form
 #print axioms MultinomialTV.gamma_cyclic_closed_form
+#print axioms MultinomialTV.gamma3_closed_form
+#print axioms MultinomialTV.gamma4_closed_form
 
--- Non-vacuity witnesses and adversarial definition checks (18 declarations)
+-- Non-vacuity witnesses and adversarial definition checks (20 declarations)
 #print axioms MultinomialTV.NonVacuity.hAdj_zero
 #print axioms MultinomialTV.NonVacuity.hAdj_one
 #print axioms MultinomialTV.NonVacuity.hAdj_two
@@ -71,14 +73,18 @@ Every theorem must depend strictly on `[propext, Classical.choice, Quot.sound]` 
 #print axioms MultinomialTV.NonVacuity.adversarial_residue_limits_not_constant
 #print axioms MultinomialTV.NonVacuity.gamma_closed_form_witness_n5
 #print axioms MultinomialTV.NonVacuity.gamma_cyclic_closed_form_witness_n5
+#print axioms MultinomialTV.NonVacuity.gamma3_closed_form_witness_N0
+#print axioms MultinomialTV.NonVacuity.gamma4_closed_form_witness_N0
 
--- Isolated Mathlib-only Comparator solution bridge (6 declarations)
+-- Isolated Mathlib-only Comparator solution bridge (8 declarations)
 #print axioms MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0
 #print axioms MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1
 #print axioms MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2
 #print axioms MultinomialTV.ComparatorTarget.target_conjecture_7_7
 #print axioms MultinomialTV.ComparatorTarget.target_gamma_closed_form
 #print axioms MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form
+#print axioms MultinomialTV.ComparatorTarget.target_gamma3_closed_form
+#print axioms MultinomialTV.ComparatorTarget.target_gamma4_closed_form
 
 -- Exhaustive Metaprogram Audit: EVERY named & module-private theorem across all project modules
 open Lean Elab Command in

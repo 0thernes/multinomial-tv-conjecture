@@ -7,7 +7,9 @@
     "MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2",
     "MultinomialTV.ComparatorTarget.target_conjecture_7_7",
     "MultinomialTV.ComparatorTarget.target_gamma_closed_form",
-    "MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form"
+    "MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form",
+    "MultinomialTV.ComparatorTarget.target_gamma3_closed_form",
+    "MultinomialTV.ComparatorTarget.target_gamma4_closed_form"
   ],
   "permitted_axioms": [
     "propext",

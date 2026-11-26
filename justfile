@@ -20,7 +20,7 @@ test:
 # Report-only linters & type checks (ruff, mypy, Lean Batteries runLinter)
 lint:
     python3 -m ruff check scripts/ tests/ || true
-    python3 -m mypy --ignore-missing-imports scripts/ || true
+    python3 -m mypy --ignore-missing-imports scripts/ tests/ || true
     bash scripts/dev.sh lint
 
 # Build Lean libraries, scan forbidden tokens, run VerifyAxioms, sync README, and run 6-kernel lake comparator --paranoid

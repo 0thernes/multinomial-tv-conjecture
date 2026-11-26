@@ -12,8 +12,8 @@ flowchart TD
     B --> D
     D --> E
     E --> F["Conjecture 7.7 + gamma(n), gamma_c(n)"]
-    F --> G["NonVacuity.lean<br/>18 Concrete & Adversarial Witnesses"]
-    F --> H["Solution.lean vs Challenge.lean<br/>6-Kernel lake comparator --paranoid"]
+    F --> G["NonVacuity.lean<br/>20 Concrete & Adversarial Witnesses"]
+    F --> H["Solution.lean vs Challenge.lean<br/>6-Kernel lake comparator --paranoid (8 Targets)"]
 ```
 
 ## Module Breakdown
@@ -24,11 +24,11 @@ flowchart TD
 | `lean/MultinomialTVConjecture/StirlingRefined.lean` | Quantitative Robbins-type Stirling remainder with $O(q^{-3})$ control | `p3q_center_expansion` |
 | `lean/MultinomialTVConjecture/GaussianEulerMaclaurin.lean` | Euler–Maclaurin approximation of the odd-lattice Gaussian sum | `oddGauss_sum_approx` |
 | `lean/MultinomialTVConjecture/LocalAsymptotics.lean` | Local Gaussian/Laplace asymptotics for the three 1D residual sums | `tendsto_sumA`, `tendsto_sumB`, `tendsto_sumC` |
-| `lean/MultinomialTVConjecture/Main.lean` | Exact nested-sum equivalence, residue limits `b_0, b_1, b_2`, Conjecture 7.7, and linear/cyclic `γ` formulas | `hAdj_eq_nested_sum`, `tendsto_hAdj_mod0..2`, `conjecture_7_7`, `gamma_closed_form`, `gamma_cyclic_closed_form` |
-| `lean/MultinomialTVConjecture/NonVacuity.lean` | Concrete exact rational evaluations `hAdj 0..5`, strict sign bounds, 3 false-constant refutations, `n=5` witnesses | `hAdj_zero..five`, `adversarial_*`, `gamma_*_witness_n5` |
-| `lean/Challenge.lean` | 100% Mathlib-only target statements (6 intentional `sorry` stubs, zero proof-library imports) | `MultinomialTV.ComparatorTarget.target_*` |
-| `lean/Solution.lean` | Sorry-free bridge proving `Challenge.lean` targets via `MultinomialTVConjecture.Main` | Same 6 declarations, verified by 6 kernels |
-| `lean/VerifyAxioms.lean` | Exhaustive `Lean.collectAxioms` metaprogram + 43 explicit `#print axioms` checks | Emits `ALL_THEOREMS_AXIOM_AUDIT_PASS` |
+| `lean/MultinomialTVConjecture/Main.lean` | Exact nested-sum equivalence, residue limits `b_0, b_1, b_2`, Conjecture 7.7, and linear/cyclic/small-bin `γ` formulas | `hAdj_eq_nested_sum`, `tendsto_hAdj_mod0..2`, `conjecture_7_7`, `gamma_closed_form`, `gamma_cyclic_closed_form`, `gamma3_closed_form`, `gamma4_closed_form` |
+| `lean/MultinomialTVConjecture/NonVacuity.lean` | Concrete exact rational evaluations `hAdj 0..5`, strict sign bounds, 3 false-constant refutations, `n ∈ {3,4,5}` witnesses | `hAdj_zero..five`, `adversarial_*`, `gamma*_witness_*` |
+| `lean/Challenge.lean` | 100% Mathlib-only target statements (8 intentional `sorry` stubs, zero proof-library imports) | `MultinomialTV.ComparatorTarget.target_*` |
+| `lean/Solution.lean` | Sorry-free bridge proving `Challenge.lean` targets via `MultinomialTVConjecture.Main` | Same 8 declarations, verified by 6 kernels |
+| `lean/VerifyAxioms.lean` | Exhaustive `Lean.collectAxioms` metaprogram + 49 explicit `#print axioms` checks | Emits `ALL_THEOREMS_AXIOM_AUDIT_PASS` |
 
 ## Independent Verification Layer
 

@@ -58,9 +58,18 @@ jobs:
         continue-on-error: true
         run: |
           python -m ruff check scripts/ tests/
-          python -m mypy --ignore-missing-imports scripts/
+          python -m mypy --ignore-missing-imports scripts/ tests/
       - name: Build Standard v1.2.0 repo audit
         run: bash scripts/audit-repo.sh .
+      - name: Dependency vulnerability scan (osv-scanner v2.7.1 SHA-256 verified, report-only)
+        continue-on-error: true
+        run: |
+          OSV_VER="2.7.1"
+          OSV_SHA256="fb7dab19a8bd9bbe5c3189f09d4b7ee1820c9553a23bac202648a56efd2f6ee8"
+          curl -fsSL "https://github.com/google/osv-scanner/releases/download/v${OSV_VER}/osv-scanner_linux_amd64" -o /tmp/osv-scanner
+          echo "${OSV_SHA256}  /tmp/osv-scanner" | sha256sum -c -
+          chmod +x /tmp/osv-scanner
+          /tmp/osv-scanner scan --lockfile=requirements.txt
       - name: Secret scan (gitleaks, report-only)
         uses: gitleaks/gitleaks-action@v2
         continue-on-error: true

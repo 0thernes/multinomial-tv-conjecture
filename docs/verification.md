@@ -5,16 +5,16 @@ This repository enforces defense-in-depth verification across **three independen
 ## Layer 1: Lean 4.35.0 & 6 Independent Proof Kernels
 
 1. **Strict Compiler Hygiene (`lean/lakefile.toml` & Palomar `module` headers):**
-   - `autoImplicit = false` and `relaxedAutoImplicit = false` eliminate accidental free variables in theorem statements.
-   - All 10 `.lean` files carry Lean 4.35.0 `module` headers (`public import` + `@[expose] public section`) and REUSE/SPDX Apache-2.0 headers, compiling with zero compiler warnings.
+   - `autoImplicit = false`, `relaxedAutoImplicit = false`, and `weak.linter.mathlibStandardSet = true` (`weak.linter.style.longLine = false`) enforce Mathlib style hygiene and eliminate accidental free variables in theorem statements.
+   - All 10 `.lean` files carry Lean 4.35.0 `module` headers (`public import` + `@[expose] public section`) and REUSE/SPDX Apache-2.0 headers, compiling with zero compiler or style-linter warnings.
    - Pinned toolchain `leanprover/lean4:v4.35.0` and pinned Mathlib4/Batteries lockfile (`lean/lake-manifest.json`).
 2. **Forbidden-Token Lexer (`.github/workflows/lean-verify.yml`):**
    - Comment- and string-aware nested Lean lexer scans every `.lean` proof file in `lean/MultinomialTVConjecture/` and `lean/Solution.lean` for `sorry`, `admit`, `axiom` (including `public`/`private`/`protected`/`noncomputable`), `partial def`/`theorem`, `native_decide`, `unsafe`, `implemented_by`, and `@[extern]`, and asserts every file carries a `module` header. Zero hits required.
 3. **Exhaustive Axiom Audit (`lean/VerifyAxioms.lean`):**
-   - Runs `#print axioms` on all 43 exported declarations (19 primary + 18 `NonVacuity` + 6 `ComparatorTarget`) AND a Lean metaprogram (`import all` across all proof modules) iterating `Lean.collectAxioms` over **every** named and module-private theorem (**723 theorems total**), emitting `ALL_THEOREMS_AXIOM_AUDIT_PASS` only if every theorem lies strictly within `[propext, Classical.choice, Quot.sound]`.
+   - Runs `#print axioms` on all 49 exported declarations (21 primary + 20 `NonVacuity` + 8 `ComparatorTarget`) AND a Lean metaprogram (`import all` across all proof modules) iterating `Lean.collectAxioms` over **every** named and module-private theorem (**730 theorems total**), emitting `ALL_THEOREMS_AXIOM_AUDIT_PASS` only if every theorem lies strictly within `[propext, Classical.choice, Quot.sound]`.
    - `scripts/check_readme_axioms.py --require-exhaustive` verifies that `README.md`'s verbatim `#print axioms` block and exact theorem count match `results/lean-axioms-all.log` line-for-line.
 4. **Six-Kernel Comparator (`lake comparator --config comparator.json --paranoid`):**
-   - Compares isolated Mathlib-only `lean/Challenge.lean` (6 target stubs, zero proof imports) against sorry-free `lean/Solution.lean` across all 6 independent type-checkers shipped in Lean 4.35.0:
+   - Compares isolated Mathlib-only `lean/Challenge.lean` (8 target stubs, zero proof imports) against sorry-free `lean/Solution.lean` across all 6 independent type-checkers shipped in Lean 4.35.0:
      1. Official Lean 4.35.0 C++ kernel
      2. `leanchecker-paranoid` (v4.35.0)
      3. `lean4lean` (v4.35.0, Lean-in-Lean kernel)
@@ -22,7 +22,7 @@ This repository enforces defense-in-depth verification across **three independen
      5. `con-leche` (v4.35.0)
      6. `con-ron` (v4.35.0)
 5. **Non-Vacuity & Adversarial Checks (`lean/MultinomialTVConjecture/NonVacuity.lean`):**
-   - 18 theorems proving concrete exact rational values `hAdj 0..5`, strict sign/ordering bounds (`bRes 0 > 0`, `bRes 1 < 0`, `0 < aTriangle < 1/32`, `d0 < 0`, `gamma2 < 0`), 3 deliberate false-constant refutations (`aTriangle ≠ 1/32`, `d0 ≠ 0`, `¬(bRes 0 = bRes 1 ∧ bRes 1 = bRes 2)`), and concrete `n = 5` witnesses.
+   - 20 theorems proving concrete exact rational values `hAdj 0..5`, strict sign/ordering bounds (`bRes 0 > 0`, `bRes 1 < 0`, `0 < aTriangle < 1/32`, `d0 < 0`, `gamma2 < 0`), 3 deliberate false-constant refutations (`aTriangle ≠ 1/32`, `d0 ≠ 0`, `¬(bRes 0 = bRes 1 ∧ bRes 1 = bRes 2)`), and concrete `n ∈ {3, 4, 5}` witnesses.
 6. **Batteries Linter (`lake exe runLinter MultinomialTVConjecture`):**
    - Runs report-only in CI and logs to `results/lean-linter.log`.
 

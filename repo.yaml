@@ -32,7 +32,7 @@ items:
   A05: {status: done, evidence: "README.md embeds docs/media/social-preview.svg; publication figures in paper/figures/*.pdf and interactive Blueprint"}
   A06: {status: done, evidence: "LICENSE (Apache-2.0) and LICENSE-DOCS (CC-BY-4.0) with REUSE/SPDX headers across all code and TeX files"}
   A07: {status: done, evidence: "CHANGELOG.md"}
-  A08: {status: done, evidence: "VERSION (2.2.0) matched with CHANGELOG.md, CITATION.cff, formalization.yaml, lean/lakefile.toml"}
+  A08: {status: done, evidence: "VERSION (2.3.0) matched with CHANGELOG.md, CITATION.cff, formalization.yaml, lean/lakefile.toml, llms.txt, social-preview.svg"}
   A09: {status: done, evidence: "tests/test_exact_and_properties.py and tests/test_repo_integrity.py"}
   A10: {status: done, evidence: ".github/workflows/ci.yml and .github/workflows/lean-verify.yml"}
   A11: {status: done, evidence: ".github/workflows/release.yml"}
@@ -76,7 +76,7 @@ items:
   B04: {status: done, evidence: "CLAIMS.md"}
   B05: {status: done, evidence: "Each claim C1-C6 mapped to executable Lean/pytest falsification checks"}
   B06: {status: done, evidence: "NonVacuity.lean adversarial refutations + negative tests in tests/test_exact_and_properties.py"}
-  B07: {status: done, evidence: "Regression tests in tests/test_repo_integrity.py and tests/test_exact_and_properties.py for E-2026-001..011"}
+  B07: {status: done, evidence: "Regression tests in tests/test_repo_integrity.py and tests/test_exact_and_properties.py for E-2026-001..014"}
   B08: {status: done, evidence: "Golden rational table and axiom-log snapshot tests in tests/"}
   B09: {status: n/a, note: "No network API or external wire protocol exposed"}
   B10: {status: done, evidence: "Hypothesis property-based tests in tests/test_exact_and_properties.py"}
@@ -104,7 +104,7 @@ items:
   B32: {status: n/a, note: "Deductive mathematical proof of published Conjecture 7.7, not a prospective empirical trial"}
   B33: {status: n/a, note: "No ML models trained or evaluated"}
   B34: {status: n/a, note: "Code neither calls nor ships generative AI"}
-  B35: {status: done, evidence: "gitleaks report-only scan in .github/workflows/ci.yml"}
+  B35: {status: done, evidence: "gitleaks and SHA-256-verified osv-scanner v2.7.1 report-only scans in .github/workflows/ci.yml (no SBOM step per Playbook v1.3 standing rule)"}
   B36: {status: done, evidence: "docs/threat-model.md"}
   B37: {status: done, evidence: ".github/workflows/release.yml generates SHA256SUMS"}
   B38: {status: done, evidence: ".github/workflows/release.yml and lean-verify.yml run actions/attest-build-provenance"}

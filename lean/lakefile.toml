@@ -1,11 +1,14 @@
 name = "MultinomialTVConjecture"
-version = "2.2.0"
+version = "2.3.0"
 defaultTargets = ["MultinomialTVConjecture", "Solution"]
 lintDriver = "batteries/runLinter"
 
 [leanOptions]
 autoImplicit = false
 relaxedAutoImplicit = false
+# Enable Mathlib standard style linter set (Playbook v1.3 #5); allow >100-col dense algebra lines
+weak.linter.mathlibStandardSet = true
+weak.linter.style.longLine = false
 
 [[require]]
 name = "mathlib"

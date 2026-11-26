@@ -2,9 +2,9 @@
 Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander S. Donahue
-SPDX-FileCopyrightText: 2026 Alexander S. Donahue
-SPDX-License-Identifier: Apache-2.0
 -/
+-- SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+-- SPDX-License-Identifier: Apache-2.0
 module
 
 public import MultinomialTVConjecture.Combinatorial
@@ -353,6 +353,48 @@ theorem gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
     let r1 := -((n + 1) / (8 * Real.pi * n))
     n * p1 + 2 * n * q1 + n * (n - 3) * r1 =
       -(n * (n + 4) / (32 * Real.pi)) - 8 * Real.sqrt 3 * n ^ 2 / (243 * Real.pi) := by
+  dsimp only
+  rw [conjecture_7_7_aTriangle]
+  have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
+  field_simp; ring
+
+/-- Unconditional degenerate small-bin formula `γ(3; N)` (Part 2, §7.2; Corollary 1.2(iii)):
+combines the static `n = 3` block `2 p_1(3) + 2 q_1(3)` with the oscillating residue
+contribution `2 (b_{N mod 3} - d_0)`. -/
+theorem gamma3_closed_form (N : ℕ) :
+    let n : ℝ := 3
+    let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
+    let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
+    2 * p1 + 2 * q1 + 2 * (bRes (N % 3) - d0) =
+      -(7 / (24 * Real.pi)) - 8 * Real.sqrt 3 / (81 * Real.pi) +
+        8 * Real.sqrt 3 / (9 * Real.pi) * Real.cos (2 * Real.pi * (N : ℝ) / 3) := by
+  dsimp only
+  have hr : N % 3 = 0 ∨ N % 3 = 1 ∨ N % 3 = 2 := by omega
+  have hbr := bRes_cosine_formula (N % 3) hr
+  have hdiv : (N : ℝ) = 3 * ((N / 3 : ℕ) : ℝ) + ((N % 3 : ℕ) : ℝ) := by
+    exact_mod_cast (Nat.div_add_mod N 3).symm
+  have hcos :
+      Real.cos (2 * Real.pi * ((N % 3 : ℕ) : ℝ) / 3) = Real.cos (2 * Real.pi * (N : ℝ) / 3) := by
+    have harg :
+        2 * Real.pi * (N : ℝ) / 3 =
+          2 * Real.pi * ((N % 3 : ℕ) : ℝ) / 3 + ((N / 3 : ℕ) : ℝ) * (2 * Real.pi) := by
+      rw [hdiv]; ring
+    rw [harg, Real.cos_add_nat_mul_two_pi]
+  rw [hbr, hcos, conjecture_7_7_aTriangle]
+  have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
+  field_simp; ring
+
+/-- Unconditional degenerate small-bin formula `γ(4; N)` (Part 2, §8; Corollary 1.2(iii)):
+combines the static `n = 4` block `3 p_1(4) + 4 q_1(4) + 2 r_1(4)` with the bipartite
+parity term `(-1)^N / (2π)`. -/
+theorem gamma4_closed_form (N : ℕ) :
+    let n : ℝ := 4
+    let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
+    let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
+    let r1 := -((n + 1) / (8 * Real.pi * n))
+    3 * p1 + 4 * q1 + 2 * r1 + (-1 : ℝ) ^ N / (2 * Real.pi) =
+      -(17 / (32 * Real.pi)) - 64 * Real.sqrt 3 / (243 * Real.pi) +
+        (-1 : ℝ) ^ N / (2 * Real.pi) := by
   dsimp only
   rw [conjecture_7_7_aTriangle]
   have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos

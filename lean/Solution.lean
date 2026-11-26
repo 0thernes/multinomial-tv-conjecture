@@ -2,9 +2,9 @@
 Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander S. Donahue
-SPDX-FileCopyrightText: 2026 Alexander S. Donahue
-SPDX-License-Identifier: Apache-2.0
 -/
+-- SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+-- SPDX-License-Identifier: Apache-2.0
 module
 
 public import MultinomialTVConjecture.Main
@@ -161,6 +161,31 @@ theorem target_gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
   dsimp only
   rw [aTriangle_eq_core]
   exact MultinomialTV.gamma_cyclic_closed_form n hn
+
+/-- Target 7: Unconditional degenerate `n = 3` variance coefficient `γ(3; N)` (Part 2, §7.2). -/
+theorem target_gamma3_closed_form (N : ℕ) :
+    let n : ℝ := 3
+    let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
+    let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
+    2 * p1 + 2 * q1 + 2 * (bRes (N % 3) - d0) =
+      -(7 / (24 * Real.pi)) - 8 * Real.sqrt 3 / (81 * Real.pi) +
+        8 * Real.sqrt 3 / (9 * Real.pi) * Real.cos (2 * Real.pi * (N : ℝ) / 3) := by
+  dsimp only
+  rw [aTriangle_eq_core, bRes_eq_core, d0_eq_core]
+  exact MultinomialTV.gamma3_closed_form N
+
+/-- Target 8: Unconditional degenerate `n = 4` variance coefficient `γ(4; N)` (Part 2, §8). -/
+theorem target_gamma4_closed_form (N : ℕ) :
+    let n : ℝ := 4
+    let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
+    let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
+    let r1 := -((n + 1) / (8 * Real.pi * n))
+    3 * p1 + 4 * q1 + 2 * r1 + (-1 : ℝ) ^ N / (2 * Real.pi) =
+      -(17 / (32 * Real.pi)) - 64 * Real.sqrt 3 / (243 * Real.pi) +
+        (-1 : ℝ) ^ N / (2 * Real.pi) := by
+  dsimp only
+  rw [aTriangle_eq_core]
+  exact MultinomialTV.gamma4_closed_form N
 
 end MultinomialTV.ComparatorTarget
 

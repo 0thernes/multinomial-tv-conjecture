@@ -2,9 +2,9 @@
 Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander S. Donahue
-SPDX-FileCopyrightText: 2026 Alexander S. Donahue
-SPDX-License-Identifier: Apache-2.0
 -/
+-- SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+-- SPDX-License-Identifier: Apache-2.0
 module
 
 public import MultinomialTVConjecture.Main
@@ -129,6 +129,35 @@ theorem gamma_cyclic_closed_form_witness_n5 :
       -(45 / (32 * Real.pi)) - 200 * Real.sqrt 3 / (243 * Real.pi) := by
   have h := gamma_cyclic_closed_form 5 (by norm_num)
   dsimp only at h ⊢
+  rw [h]
+  have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
+  field_simp; ring
+
+/-- Non-vacuity witness at `N = 0` for the degenerate `n = 3` formula `γ(3; 0)`. -/
+theorem gamma3_closed_form_witness_N0 :
+    let n : ℝ := 3
+    let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
+    let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
+    2 * p1 + 2 * q1 + 2 * (bRes 0 - d0) =
+      -(7 / (24 * Real.pi)) + 64 * Real.sqrt 3 / (81 * Real.pi) := by
+  have h := gamma3_closed_form 0
+  dsimp only at h ⊢
+  simp only [Nat.zero_mod, Nat.cast_zero, mul_zero, zero_div, Real.cos_zero, mul_one] at h
+  rw [h]
+  have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
+  field_simp; ring
+
+/-- Non-vacuity witness at `N = 0` for the degenerate `n = 4` formula `γ(4; 0)`. -/
+theorem gamma4_closed_form_witness_N0 :
+    let n : ℝ := 4
+    let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
+    let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
+    let r1 := -((n + 1) / (8 * Real.pi * n))
+    3 * p1 + 4 * q1 + 2 * r1 + 1 / (2 * Real.pi) =
+      -(1 / (32 * Real.pi)) - 64 * Real.sqrt 3 / (243 * Real.pi) := by
+  have h := gamma4_closed_form 0
+  dsimp only at h ⊢
+  simp only [pow_zero] at h
   rw [h]
   have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
   field_simp; ring

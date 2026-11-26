@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this proof, Lean 4 formalization, or verification code, please cite it as below."
 type: software
 title: "Proof of Conjecture 7.7 on the Second-Order Variance Constant of Multinomial Discrete Total Variation"
-version: "2.2.0"
-date-released: "2026-11-25"
+version: "2.3.0"
+date-released: "2026-11-26"
 url: "https://github.com/0thernes/multinomial-tv-conjecture"
 repository-code: "https://github.com/0thernes/multinomial-tv-conjecture"
 license: "Apache-2.0"

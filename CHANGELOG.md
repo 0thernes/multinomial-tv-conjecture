@@ -3,6 +3,17 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and Semantic Versioning (`VERSION` is the single source of truth).
 
+## [2.3.0] - 2026-11-26
+
+### Added
+- **Formal Lean 4.35.0 proof of Corollary 1.2(iii) (`F-51`):** Proved degenerate small-bin closed forms `gamma3_closed_form` ($\gamma(3; N)$ with exact $2\pi N/3$ cosine periodicity via `bRes_cosine_formula`) and `gamma4_closed_form` ($\gamma(4; N)$ with bipartite $(-1)^N/(2\pi)$ term) in `Main.lean`, added `gamma3_closed_form_witness_N0` and `gamma4_closed_form_witness_N0` in `NonVacuity.lean` (**20** total witnesses), promoted both as **Targets 7 & 8** in `Challenge.lean` / `Solution.lean` / `comparator.json` (**8** isolated 6-kernel targets, **49** explicit `#print axioms`, **730** exhaustively audited named + module-private theorems, **5,749** exact Lean lines), and updated `blueprint/src/content.tex`, `docs/statement-fidelity.md` (`SF-7`), `CLAIMS.md`, and `paper/main.tex`.
+- **Mathlib standard style linter set (`F-50`, Playbook #5):** Enabled `weak.linter.mathlibStandardSet = true` (`weak.linter.style.longLine = false`) in `lean/lakefile.toml` and separated REUSE/SPDX `--` lines cleanly below the 4-line Mathlib copyright block across all 10 `.lean` files — achieving **0 warnings** across the entire codebase.
+- **Strict CSP, SRI, Markdown-link & dependency scanning (`F-47`, `F-52`):** Added strict Content Security Policy headers to both the portal (`scripts/build_site.py`) and interactive Lean Blueprint (`scripts/build_blueprint.py`), pinned SHA-256-verified `osv-scanner v2.7.1` (report-only, zero SBOM step per Playbook v1.3 standing rule) in `.github/workflows/ci.yml`, added `stamp_timestamps.py --verify` to `scripts/dev.sh reproduce`, and added permanent pytest guards for CSP, CDN `sha384` SRI, dynamic portal theorem counts, `weak.linter.mathlibStandardSet`, and zero broken relative Markdown links.
+
+### Fixed
+- **R4 automated-PR compliance (`conflict`, `F-45`):** Disabled GitHub `automated-security-fixes` (`enabled: false`) while preserving passive vulnerability alerts and secret scanning push protection.
+- **Stale logs, portal counts, and version labels (`error`, `F-46`, `F-47`, `F-48`, `F-49`, `E-2026-012`..`E-2026-014`):** Updated `results/comparator-paranoid.log` to verbatim Ubuntu 24.04 6-kernel CI run `#45747471704` (Rekor `4117130014`, attestation `72475662`), replaced hardcoded `576` in `scripts/build_site.py` with dynamic parsing of `results/lean-axioms-all.log` and `NonVacuity.lean`, synced `README.md`, `llms.txt`, `docs/media/social-preview.svg`, `.github/ISSUE_TEMPLATE/bug.yml`, and `LIMITATIONS.md`, and corrected `docs/literature-search.md` to exact `4` unique arXiv IDs + `12` Crossref DOIs (`16/16`) and `59` `STAT-*` Mega-Atlas V2 (`v2.7.0`) problems.
+
 ## [2.2.0] - 2026-11-25
 
 ### Added
