@@ -19,6 +19,7 @@ justfile text eol=lf
 *.mp4 binary
 *.woff binary
 *.woff2 binary
+*.tsr binary
 
 # Generated or reference files
 llms-full.txt linguist-generated=true

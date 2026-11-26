@@ -20,6 +20,8 @@ paper/*.toc
 build/
 release-dist/
 results/lean-axioms-ci.log
+results/comparator-paranoid-ci.log
+*.tsq
 
 # Python caches, test caches, and local virtual environments
 __pycache__/

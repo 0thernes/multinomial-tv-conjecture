@@ -307,7 +307,7 @@ def main() -> None:
         "residue_convergence": res_rows,
         "richardson_errors": errs,
     }
-    out_path.write_text(json.dumps(out_data, indent=2), encoding="utf-8")
+    out_path.write_text(json.dumps(out_data, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(f"\nWrote verification summary to {out_path}")
 
 
