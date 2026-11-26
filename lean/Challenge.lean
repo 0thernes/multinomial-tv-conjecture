@@ -1,5 +1,22 @@
 /-
-Multinomial TV Conjecture (Conjecture 7.7) — Isolated Mathlib-Only Challenge Specification.
+Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander S. Donahue
+SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+SPDX-License-Identifier: Apache-2.0
+-/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Topology.Instances.Real.Lemmas
+
+/-!
+# Isolated Mathlib-Only Challenge Specification (Conjecture 7.7)
 
 This file imports ONLY Mathlib (ZERO imports from our proof library). It defines the exact
 multinomial expectation `h_adj(L) = E[|X_2 - X_1| |X_3 - X_2|]` under `Mult(L; 1/3, 1/3, 1/3)`,
@@ -11,13 +28,8 @@ NOTE: Every `sorry` in this file is intentional — `Challenge.lean` is the isol
 specification checked against sorry-free `Solution.lean` by
 `lake comparator --config comparator.json --paranoid`.
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.Instances.Real.Lemmas
+
+@[expose] public section
 
 open scoped BigOperators
 open Real Filter Topology Finset
@@ -106,3 +118,5 @@ theorem target_gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
   sorry
 
 end MultinomialTV.ComparatorTarget
+
+end

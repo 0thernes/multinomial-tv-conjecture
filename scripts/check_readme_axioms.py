@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+# SPDX-License-Identifier: Apache-2.0
 """Verify that a Lean axiom audit log (default: results/lean-axioms-all.log) contains
 strictly standard axioms, passes the exhaustive Lean.collectAxioms sentinel, and matches
-README.md's verbatim #print axioms block.
+README.md's verbatim #print axioms block and theorem count.
 """
 from __future__ import annotations
 
@@ -82,7 +84,8 @@ def main() -> int:
         print(f"ERROR: non-standard axioms detected: {bad_axioms}", file=sys.stderr)
         return 1
 
-    readme_decls = parse_log(readme_path.read_text(encoding="utf-8"))
+    readme_text = readme_path.read_text(encoding="utf-8")
+    readme_decls = parse_log(readme_text)
     if not readme_decls:
         print("ERROR: README.md has no verbatim #print axioms lines", file=sys.stderr)
         return 1
@@ -94,6 +97,15 @@ def main() -> int:
         elif log_decls[name] != ax:
             mismatches.append(
                 f"Axiom mismatch for '{name}': README={sorted(ax)} vs log={sorted(log_decls[name])}"
+            )
+
+    if ex_match:
+        readme_ex = EXHAUSTIVE_RE.search(readme_text)
+        if not readme_ex:
+            mismatches.append("README.md is missing the verbatim ALL_THEOREMS_AXIOM_AUDIT_PASS sentinel")
+        elif readme_ex.group(1) != ex_match.group(1):
+            mismatches.append(
+                f"Exhaustive theorem count mismatch: README={readme_ex.group(1)} vs log={ex_match.group(1)}"
             )
 
     if mismatches:

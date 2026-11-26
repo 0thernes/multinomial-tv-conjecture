@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+# SPDX-License-Identifier: Apache-2.0
 """Deterministically regenerate llms-full.txt from canonical repository documentation."""
 from __future__ import annotations
 

@@ -2,7 +2,7 @@
 # Honest AI/human provenance record (NOT a claim of Palomar registration or peer review)
 title: "Proof of Conjecture 7.7 on the Second-Order Variance Constant of Multinomial Discrete Total Variation"
 repository: "https://github.com/0thernes/multinomial-tv-conjecture"
-version: "2.1.0"
+version: "2.2.0"
 date: "2026-11-25"
 license:
   code: "Apache-2.0"
@@ -24,7 +24,7 @@ batteries_rev: "66e469188fe0"
 lake_package_dir: "lean"
 libraries:
   - name: "MultinomialTVConjecture"
-    summary: "Complete Lean 4.35.0 proof of Conjecture 7.7 of Banić & Elezović (arXiv:2610.17046v1, 2026): exact combinatorial 2D->1D reduction, refined Stirling asymptotics, Gaussian Euler-Maclaurin summation, residue-class 1/L limits b_0, b_1, b_2, exact constants a_triangle = 1/32 - 4*sqrt(3)/243, gamma_2, d_0, linear & cyclic gamma(n), and 18 non-vacuity / adversarial refutation witnesses."
+    summary: "Complete Lean 4.35.0 (module-header Palomar spec across all 10 files) proof of Conjecture 7.7 of Banić & Elezović (arXiv:2610.17046v1, 2026): exact combinatorial 2D->1D reduction, refined Stirling asymptotics, Gaussian Euler-Maclaurin summation, residue-class 1/L limits b_0, b_1, b_2, exact constants a_triangle = 1/32 - 4*sqrt(3)/243, gamma_2, d_0, linear & cyclic gamma(n), 723 exhaustively audited theorems, and 18 non-vacuity / adversarial refutation witnesses."
 challenge_module: "Challenge"
 solution_module: "Solution"
 comparator_config: "lean/comparator.json"

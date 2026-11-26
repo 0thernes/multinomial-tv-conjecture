@@ -15,7 +15,7 @@ Every `v*` Git tag triggers `.github/workflows/release.yml`, publishing:
 - Compiled PDF (`Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf`)
 - Byte-reproducible arXiv source bundle (`arxiv_submission.tar.gz`)
 - Live axiom audit log (`lean-axioms-all.log`)
-- Data manifest (`data-MANIFEST.sha256`)
+- Data manifest (`data-MANIFEST.sha256`), DigiCert RFC 3161 timestamp (`data-MANIFEST.sha256.tsr`), and Bitcoin OpenTimestamps proof (`data-MANIFEST.sha256.ots`)
 - `SHA256SUMS` + Sigstore SLSA build-provenance attestations (`actions/attest-build-provenance@v2`).
 
 ## 2. Creating an Offline Git Bundle Backup

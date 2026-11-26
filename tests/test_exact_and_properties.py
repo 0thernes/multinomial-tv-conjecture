@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+# SPDX-License-Identifier: Apache-2.0
 """Comprehensive mathematical and numerical verification test ladder for Conjecture 7.7.
 
 Covers Build Standard v1.2.0 items:
@@ -121,15 +123,38 @@ def test_metamorphic_residue_cosine_structure() -> None:
 # --- B06: Negative & adversarial tests ---
 
 def test_negative_invalid_inputs_rejected() -> None:
-    """Negative test (B06): invalid inputs raise explicit errors."""
+    """Negative test (B06, E-2026-009): invalid domain inputs raise explicit ValueError."""
+    with pytest.raises(ValueError):
+        vc.h_adj_direct_exact(-1)
+    with pytest.raises(ValueError):
+        vc.p3q_exact(-1, 0)
+    with pytest.raises(ValueError):
+        vc.sums_abc_exact(0)
     for bad_L in (-5, 0, 1, 2):
         with pytest.raises(ValueError):
             vc.h_adj_1d_exact(bad_L)
     with mp.workdps(50):
         with pytest.raises(ValueError):
+            vc.sums_abc_mp(0)
+        with pytest.raises(ValueError):
+            vc.h_adj_1d_mp(0, 0)
+        with pytest.raises(ValueError):
+            vc.h_adj_1d_mp(1, 2)
+        with pytest.raises(ValueError):
             vc.h_adj_1d_mp(10, 3)
         with pytest.raises(ValueError):
             vc.h_adj_1d_mp(10, -1)
+
+
+def test_regression_e2026_009_high_precision_120dps_no_85digit_truncation() -> None:
+    """Regression test (E-2026-009): 120-dps sums_abc_mp matches exact rational Fraction to >115 digits."""
+    q = 12
+    p0_ex, A_ex, B_ex, C_ex = vc.sums_abc_exact(q)
+    with mp.workdps(120):
+        p0_mp, A_mp, B_mp, C_mp = vc.sums_abc_mp(q)
+        for ex, approx in ((p0_ex, p0_mp), (A_ex, A_mp), (B_ex, B_mp), (C_ex, C_mp)):
+            ex_mp = mp.mpf(ex.numerator) / mp.mpf(ex.denominator)
+            assert abs(approx - ex_mp) < mp.mpf("1e-115")
 
 
 def test_negative_p3q_out_of_support_is_zero() -> None:

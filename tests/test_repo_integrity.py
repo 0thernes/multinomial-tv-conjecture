@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+# SPDX-License-Identifier: Apache-2.0
 """Repository integrity, regression, schema, axiom-sync, citation, and reproducibility tests.
 
 Covers Build Standard v1.2.0 items:
@@ -5,7 +7,7 @@ Covers Build Standard v1.2.0 items:
 - A32: Agent entry points (AGENTS.md, CLAUDE.md, GEMINI.md, llms.txt)
 - B03: Deterministic byte-reproducible arXiv tarball
 - B06: Negative tamper-detection tests on axiom parser & forbidden-token lexer
-- B07: Regression tests for every erratum E-2026-001..005
+- B07: Regression tests for every erratum E-2026-001..011
 - B08: Golden snapshot checks on results/lean-axioms-all.log
 - R4:  Zero banned files (PULL_REQUEST_TEMPLATE.md, dependabot.yml, etc.)
 """
@@ -182,7 +184,10 @@ def test_forbidden_lean_tokens_absent_from_proof_modules() -> None:
         return "".join(out)
 
     forbidden = re.compile(
-        r"\b(sorry|admit|native_decide|unsafe)\b|^\s*(?:private\s+|protected\s+)?axiom\b|implemented_by|@\[extern"
+        r"\b(sorry|admit|native_decide|unsafe)\b"
+        r"|^\s*(?:@\[[^\]]+\]\s+|public\s+|private\s+|protected\s+|noncomputable\s+)*axiom\b"
+        r"|^\s*(?:public\s+|private\s+|protected\s+)*partial\s+(?:def|theorem)\b"
+        r"|implemented_by|@\[extern"
     )
     proof_files = (
         sorted((ROOT / "lean" / "MultinomialTVConjecture").rglob("*.lean"))
@@ -191,8 +196,54 @@ def test_forbidden_lean_tokens_absent_from_proof_modules() -> None:
     assert len(proof_files) >= 8
     for f in proof_files:
         cleaned = strip_lean_comments(f.read_text(encoding="utf-8"))
+        assert re.search(r"^\s*module\s*$", cleaned, re.M), f"Missing Lean 4.35 module header in {f}"
         for lineno, line in enumerate(cleaned.splitlines(), 1):
             assert not forbidden.search(line), f"Forbidden token in {f}:{lineno}: {line.strip()}"
+
+    # Negative check (B06, F-37): ensure public axiom and partial def are caught by the hardened regex
+    assert forbidden.search("public axiom sneak : False")
+    assert forbidden.search("noncomputable axiom sneak2 : False")
+    assert forbidden.search("public partial def loop : Nat := loop")
+
+
+def test_palomar_module_headers_and_reuse_spdx_headers() -> None:
+    """Verify Palomar module-header rule across all 10 Lean files and SPDX headers across all code/TeX files."""
+    lean_files = [f for f in sorted((ROOT / "lean").rglob("*.lean")) if ".lake" not in f.parts]
+    assert len(lean_files) == 10
+    for lf in lean_files:
+        txt = lf.read_text(encoding="utf-8")
+        assert re.search(r"^\s*module\s*$", txt, re.M), f"Missing module header in {lf}"
+        assert "SPDX-License-Identifier: Apache-2.0" in txt, f"Missing SPDX Apache-2.0 in {lf}"
+        assert len(txt.splitlines()) <= 10_000, f"Palomar 10k-line limit exceeded in {lf}"
+    ch = ROOT / "lean" / "Challenge.lean"
+    assert len(ch.read_text(encoding="utf-8").splitlines()) <= 1_000
+    assert ch.stat().st_size <= 100 * 1024
+
+    for folder in ("scripts", "tests"):
+        for f in sorted((ROOT / folder).glob("*")):
+            if f.is_file() and f.suffix.lower() in {".py", ".sh", ".ps1"}:
+                txt = f.read_text(encoding="utf-8")
+                assert "SPDX-License-Identifier: Apache-2.0" in txt, f"Missing SPDX Apache-2.0 in {f}"
+
+    for tex in (ROOT / "paper" / "main.tex", ROOT / "blueprint" / "src" / "content.tex"):
+        txt = tex.read_text(encoding="utf-8")
+        assert "SPDX-License-Identifier: CC-BY-4.0" in txt, f"Missing SPDX CC-BY-4.0 in {tex}"
+
+
+def test_citation_cff_and_formalization_lockfile_parity() -> None:
+    """Validate CITATION.cff required CFF 1.2.0 fields and formalization.yaml revs against lake-manifest.json."""
+    cff = yaml.safe_load((ROOT / "CITATION.cff").read_text(encoding="utf-8"))
+    assert cff["cff-version"] == "1.2.0"
+    assert cff["license"] == "Apache-2.0"
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(cff["date-released"]))
+    assert cff["authors"][0]["orcid"] == "https://orcid.org/0009-0006-8168-9648"
+    assert len(cff["references"]) >= 3
+
+    formal = yaml.safe_load((ROOT / "formalization.yaml").read_text(encoding="utf-8"))
+    lake_manifest = json.loads((ROOT / "lean" / "lake-manifest.json").read_text(encoding="utf-8"))
+    pkg_revs = {p["name"]: p["rev"] for p in lake_manifest["packages"]}
+    assert pkg_revs["mathlib"].startswith(str(formal["mathlib_rev"]))
+    assert pkg_revs["batteries"].startswith(str(formal["batteries_rev"]))
 
 
 def test_blueprint_and_site_build_cleanly() -> None:
@@ -214,13 +265,15 @@ def test_blueprint_and_site_build_cleanly() -> None:
     assert len(nonvac["lean"]) == 18, f"Expected all 18 NonVacuity theorems in Blueprint, got {len(nonvac['lean'])}"
 
 
-def test_regression_e2026_006_statement_fidelity_and_paper_table1_parity() -> None:
-    """Regression test (B07) for E-2026-006: exact L range and exact Table 1 Lean line counts."""
+def test_regression_e2026_006_and_010_statement_fidelity_and_paper_parity() -> None:
+    """Regression test (B07) for E-2026-006 & E-2026-010: exact L range, Sec. 2 Thm 2.3 anchor, Table 1, C6, --paranoid."""
     vr = json.loads((ROOT / "scripts" / "verification_results.json").read_text(encoding="utf-8"))
     lo, hi = vr["exact_rational_checked_L"]
     sf = (ROOT / "docs" / "statement-fidelity.md").read_text(encoding="utf-8")
     assert f"L = {lo}..{hi}" in sf, f"statement-fidelity.md does not match exact range L = {lo}..{hi}"
     assert "3..150" not in sf
+    assert "Theorem 2.3" in sf
+    assert "Theorems 3.1" not in sf
 
     lean_root = ROOT / "lean"
     lean_files = [f for f in sorted(lean_root.rglob("*.lean")) if ".lake" not in f.parts]
@@ -228,15 +281,21 @@ def test_regression_e2026_006_statement_fidelity_and_paper_table1_parity() -> No
     tex = (ROOT / "paper" / "main.tex").read_text(encoding="utf-8")
     assert f"\\textbf{{{actual_total:,}}}" in tex, f"Table 1 total in paper/main.tex does not match actual {actual_total}"
     assert "MultinomialTVConjecture.lean" in tex
+    assert "\\textbf{C6}" in tex, "Table 2 in paper/main.tex must include Claim C6"
+    assert "--paranoid" not in tex, "Use {-}{-}paranoid in paper/main.tex so TeX does not ligature into en-dash"
 
 
 def test_regression_e2026_007_live_citation_audit_preserved() -> None:
-    """Regression test (B07) for E-2026-007: committed citation-audit.json has 18/18 online checks & 0 retractions."""
+    """Regression test (B07) for E-2026-007: committed citation-audit.json has 100% live checks & 0 retractions."""
     ca = json.loads((ROOT / "results" / "citation-audit.json").read_text(encoding="utf-8"))
     assert ca["status"] == "pass"
     assert ca["retracted_count"] == 0
-    assert len(ca["online_checks"]) == 18
+    assert len(ca["online_checks"]) >= 16
+    assert len(ca["online_checks"]) == ca["arxiv_count"] + ca["doi_count"]
     assert all(item["ok"] for item in ca["online_checks"])
+    scan = cc.scan_citations()
+    assert scan["missing_bib_keys"] == []
+    assert scan["uncited_bib_keys"] == []
 
 
 def test_regression_e2026_008_no_workstation_path_leaks_and_6kernel_log() -> None:
@@ -256,21 +315,24 @@ def test_regression_e2026_008_no_workstation_path_leaks_and_6kernel_log() -> Non
     tracked = subprocess.check_output(
         ["git", "-C", str(ROOT), "ls-files"], text=True, encoding="utf-8"
     ).splitlines()
-    leak_re = re.compile(r"Vibe Coded|Z:\\\\|C:/Users/Alexa|C:\\\\Users\\\\Alexa", re.I)
+    leak_re = re.compile(r"Vibe Coded|Z:\\|C:/Users/Alexa|C:\\Users\\Alexa", re.I)
     for rel in tracked:
         if rel == "tests/test_repo_integrity.py":
             continue
         p = ROOT / rel
-        if not p.is_file() or p.suffix.lower() in {".pdf", ".gz", ".png", ".zip", ".tsr", ".tsq"}:
+        if not p.is_file() or p.suffix.lower() in {".pdf", ".gz", ".png", ".zip", ".tsr", ".tsq", ".ots"}:
             continue
         txt = p.read_text(encoding="utf-8", errors="replace")
         assert not leak_re.search(txt), f"Private workstation path leaked in {rel}"
 
 
-def test_rfc3161_timestamp_present_and_nonempty() -> None:
-    """Verify DigiCert RFC 3161 TSA response for data/MANIFEST.sha256 is committed and DER-encoded."""
-    tsr = ROOT / "data" / "MANIFEST.sha256.tsr"
-    assert tsr.is_file(), "Missing RFC 3161 timestamp response data/MANIFEST.sha256.tsr"
-    raw = tsr.read_bytes()
-    assert len(raw) > 500, "RFC 3161 timestamp response unexpectedly small"
-    assert raw[0] == 0x30, "RFC 3161 response must start with ASN.1 SEQUENCE tag 0x30"
+def test_dual_cryptographic_timestamps_bind_manifest() -> None:
+    """Verify BOTH DigiCert RFC 3161 (.tsr) and Bitcoin OpenTimestamps (.ots) bind data/MANIFEST.sha256's exact SHA-256."""
+    proc = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "stamp_timestamps.py"), "--verify"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr

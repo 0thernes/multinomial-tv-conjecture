@@ -1,8 +1,27 @@
-import Mathlib.Analysis.SpecialFunctions.Stirling
-import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-import Mathlib.Analysis.Complex.ExponentialBounds
-import Mathlib.Analysis.Calculus.MeanValue
+/-
+Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander S. Donahue
+SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+SPDX-License-Identifier: Apache-2.0
+-/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Stirling
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Analysis.Complex.ExponentialBounds
+public import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Tactic
+
+/-!
+# Sharp Non-Asymptotic Stirling Expansion
+
+Proves the explicit two-sided logarithmic Stirling remainder bound
+`1 / (12 n) - 1 / (15 n^3) ≤ R(n) ≤ 1 / (12 n)` for all `n ≥ 1` and derives the quantitative
+`O(q^{-3})` central trinomial expansion `p3q_center_expansion` for all `q ≥ 2`.
+-/
+
+@[expose] public section
 
 open Real Filter Topology Finset
 
@@ -397,3 +416,5 @@ lemma p3q_center_expansion (q : ℕ) (hq : 2 ≤ q) :
   linarith
 
 end MultinomialTV
+
+end

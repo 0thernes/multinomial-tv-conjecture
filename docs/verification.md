@@ -4,14 +4,15 @@ This repository enforces defense-in-depth verification across **three independen
 
 ## Layer 1: Lean 4.35.0 & 6 Independent Proof Kernels
 
-1. **Strict Compiler Hygiene (`lean/lakefile.toml`):**
+1. **Strict Compiler Hygiene (`lean/lakefile.toml` & Palomar `module` headers):**
    - `autoImplicit = false` and `relaxedAutoImplicit = false` eliminate accidental free variables in theorem statements.
+   - All 10 `.lean` files carry Lean 4.35.0 `module` headers (`public import` + `@[expose] public section`) and REUSE/SPDX Apache-2.0 headers, compiling with zero compiler warnings.
    - Pinned toolchain `leanprover/lean4:v4.35.0` and pinned Mathlib4/Batteries lockfile (`lean/lake-manifest.json`).
 2. **Forbidden-Token Lexer (`.github/workflows/lean-verify.yml`):**
-   - Comment- and string-aware nested Lean lexer scans every `.lean` proof file in `lean/MultinomialTVConjecture/` and `lean/Solution.lean` for `sorry`, `admit`, `axiom`, `native_decide`, `unsafe`, `implemented_by`, and `@[extern]`. Zero hits required.
+   - Comment- and string-aware nested Lean lexer scans every `.lean` proof file in `lean/MultinomialTVConjecture/` and `lean/Solution.lean` for `sorry`, `admit`, `axiom` (including `public`/`private`/`protected`/`noncomputable`), `partial def`/`theorem`, `native_decide`, `unsafe`, `implemented_by`, and `@[extern]`, and asserts every file carries a `module` header. Zero hits required.
 3. **Exhaustive Axiom Audit (`lean/VerifyAxioms.lean`):**
-   - Runs `#print axioms` on all 43 exported declarations (19 primary + 18 `NonVacuity` + 6 `ComparatorTarget`) AND a Lean metaprogram iterating `Lean.collectAxioms` over **every** theorem under namespace `MultinomialTV`, emitting `ALL_THEOREMS_AXIOM_AUDIT_PASS` only if every theorem lies strictly within `[propext, Classical.choice, Quot.sound]`.
-   - `scripts/check_readme_axioms.py --require-exhaustive` verifies that `README.md`'s verbatim `#print axioms` block matches `results/lean-axioms-all.log` line-for-line.
+   - Runs `#print axioms` on all 43 exported declarations (19 primary + 18 `NonVacuity` + 6 `ComparatorTarget`) AND a Lean metaprogram (`import all` across all proof modules) iterating `Lean.collectAxioms` over **every** named and module-private theorem (**723 theorems total**), emitting `ALL_THEOREMS_AXIOM_AUDIT_PASS` only if every theorem lies strictly within `[propext, Classical.choice, Quot.sound]`.
+   - `scripts/check_readme_axioms.py --require-exhaustive` verifies that `README.md`'s verbatim `#print axioms` block and exact theorem count match `results/lean-axioms-all.log` line-for-line.
 4. **Six-Kernel Comparator (`lake comparator --config comparator.json --paranoid`):**
    - Compares isolated Mathlib-only `lean/Challenge.lean` (6 target stubs, zero proof imports) against sorry-free `lean/Solution.lean` across all 6 independent type-checkers shipped in Lean 4.35.0:
      1. Official Lean 4.35.0 C++ kernel
@@ -32,7 +33,7 @@ This repository enforces defense-in-depth verification across **three independen
 | **Exact rational oracle (`B12`)** | Exact `fractions.Fraction` 2D multinomial sum vs. 1D `hAdj_mod0..2` formulas (`L = 3..45` in `verify_conjecture.py` and Hypothesis pytest; golden snapshots `L = 0..6`). |
 | **Property-based testing (`B10`)** | `hypothesis` strategies verifying exact algebraic invariants, symmetry, non-negativity, and residue-class formulas over generated $L \in [3,45]$ and $n \in [5,500]$. |
 | **Negative & adversarial tests (`B06`)** | Verifies false constants (`a_△ = 1/32`, `d_0 = 0`, constant `b_r`), invalid inputs (`n = 0`), tampered axiom logs, and a live negative Lean kernel test (`aTriangle = 1/32`) in CI are explicitly rejected. |
-| **Regression tests (`B07`)** | Permanently guards fixed defects `E-2026-001`..`E-2026-008` (citation truncation, `0thernes LLC`, deterministic arXiv bundle + figures + `.bbl`, axiom sync, exact `L = 3..45` fidelity parity, Table 1 exact line counts, zero local path leaks, RFC 3161 TSA presence). |
+| **Regression tests (`B07`)** | Permanently guards fixed defects `E-2026-001`..`E-2026-011` (citation truncation, `0thernes LLC`, deterministic arXiv bundle + figures + `.bbl`, axiom sync, exact `L = 3..45` & `Theorem 2.3` fidelity parity, Table 1 exact line counts & Claim `C6`, zero local path leaks, 120-dps tail precision, `module` & SPDX headers, dual RFC 3161 `.tsr` + OpenTimestamps `.ots` cryptographic imprint binding). |
 | **Golden snapshot tests (`B08`)** | Exact rational table `hAdj(0..6)` and `results/lean-axioms-all.log` theorem count / sentinel checks. |
 | **Differential & metamorphic tests (`B11`, `B14`)** | 2D vs. 1D differential agreement; permutation invariance of $(X_1, X_3)$, mod-3 shift relations, linear/cyclic asymptotic coefficient ratios. |
 | **Numeric stability (`B20`)** | Cross-precision stability checks across `mp.dps = 50, 80, 120` quantifying catastrophic cancellation in $L(h_{\mathrm{adj}}(L) - c_L L - a_*)$. |

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+# SPDX-License-Identifier: Apache-2.0
 """Assemble and link-check the static GitHub Pages portal at build/site/."""
 from __future__ import annotations
 
@@ -20,9 +22,15 @@ def render_portal() -> str:
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Multinomial TV Conjecture · v{version}</title>
   <meta name="description" content="Complete Lean 4.35.0 6-kernel verified proof of Conjecture 7.7 of Banić &amp; Elezović (arXiv:2610.17046v1) on the second-order variance constant of multinomial discrete total variation."/>
+  <meta property="og:title" content="Multinomial TV Conjecture · v{version}"/>
+  <meta property="og:description" content="Lean 4.35.0 (module-header Palomar spec) 6-kernel verified proof of Conjecture 7.7 of Banić &amp; Elezović (arXiv:2610.17046v1)."/>
+  <meta property="og:image" content="media/social-preview.svg"/>
   <style>
     :root {{ color-scheme: dark; }}
     body {{ font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #0b1020; color: #e2e8f0; margin: 0; line-height: 1.55; }}
+    .skip-link {{ position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }}
+    .skip-link:focus {{ position: static; width: auto; height: auto; display: inline-block; margin: .75rem 1.5rem; padding: .4rem .8rem; background: #0284c7; color: #fff; border-radius: 6px; text-decoration: none; }}
+    a:focus-visible {{ outline: 2px solid #38bdf8; outline-offset: 2px; }}
     header {{ background: linear-gradient(135deg, #0f172a, #172554); border-bottom: 1px solid #1e3a8a; padding: 3rem 1.5rem 2.5rem; }}
     .wrap {{ max-width: 1020px; margin: 0 auto; }}
     .eyebrow {{ color: #38bdf8; font-size: .82rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }}
@@ -40,32 +48,36 @@ def render_portal() -> str:
     .note {{ margin-top: 2rem; padding: 1rem 1.25rem; border-left: 3px solid #f59e0b; background: #172033; border-radius: 0 10px 10px 0; font-size: .9rem; color: #cbd5e1; }}
     footer {{ border-top: 1px solid #1e293b; padding: 1.5rem; text-align: center; color: #94a3b8; font-size: .85rem; }}
     footer a {{ color: #7dd3fc; text-decoration: none; }}
+    @media (prefers-reduced-motion: reduce) {{ * {{ scroll-behavior: auto !important; transition: none !important; }} }}
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header>
     <div class="wrap">
-      <div class="eyebrow">Lean 4.35.0 · Mathlib v4.35.0 · 6-Kernel Verified · v{version}</div>
+      <div class="eyebrow">Lean 4.35.0 (Palomar module spec) · Mathlib v4.35.0 · 6-Kernel Verified · v{version}</div>
       <h1>Proof of Conjecture 7.7 on Multinomial Discrete Total Variation</h1>
       <p class="lead">Machine-checked Lean 4.35.0 resolution of Conjecture 7.7 (<code>conj:atriangle</code>) of Banić &amp; Elezović (arXiv:2610.17046v1, 2026) and its cyclic corollary (arXiv:2611.14735v1), independently checked across 6 proof kernels and 80-digit arithmetic.</p>
-      <div class="formula">a_△ = 1/32 &minus; 4&radic;3/243 &nbsp;&middot;&nbsp; &gamma;<sub>2</sub> = &minus;1/(32&pi;) &minus; 8&radic;3/(243&pi;) &nbsp;&middot;&nbsp; d<sub>0</sub> = &minus;4&radic;3/(81&pi;)</div>
-      <div class="pills">
+      <div class="formula" role="region" aria-label="Main proved constants">a_△ = 1/32 &minus; 4&radic;3/243 &nbsp;&middot;&nbsp; &gamma;<sub>2</sub> = &minus;1/(32&pi;) &minus; 8&radic;3/(243&pi;) &nbsp;&middot;&nbsp; d<sub>0</sub> = &minus;4&radic;3/(81&pi;)</div>
+      <nav class="pills" aria-label="Primary verification artifacts">
         <a class="pill primary" href="blueprint/">Interactive Lean 4 Blueprint</a>
         <a class="pill" href="paper/Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf">Preprint PDF</a>
         <a class="pill" href="results/lean-axioms-all.log">Verbatim Axiom Log</a>
         <a class="pill" href="results/comparator-paranoid.log">6-Kernel Comparator Log</a>
         <a class="pill" href="data/MANIFEST.sha256">SHA-256 Manifest</a>
+        <a class="pill" href="data/MANIFEST.sha256.tsr">RFC 3161 TSA (.tsr)</a>
+        <a class="pill" href="data/MANIFEST.sha256.ots">OpenTimestamps (.ots)</a>
         <a class="pill" href="https://github.com/0thernes/multinomial-tv-conjecture/blob/main/docs/statement-fidelity.md">Statement-Fidelity Audit</a>
         <a class="pill" href="https://github.com/0thernes/multinomial-tv-conjecture/blob/main/CLAIMS.md">Claims Ledger</a>
         <a class="pill" href="https://github.com/0thernes/multinomial-tv-conjecture">GitHub Repository</a>
-      </div>
+      </nav>
     </div>
   </header>
-  <main class="wrap">
+  <main id="main-content" class="wrap">
     <div class="grid">
       <article class="card">
-        <h2>6-Kernel Isolation</h2>
-        <p>Isolated Mathlib-only <code>Challenge.lean</code> (108 lines) matched against sorry-free <code>Solution.lean</code> via sandboxed <code>lake comparator --paranoid</code> (Lean 4.35.0, leanchecker-paranoid, lean4lean, nanoda, con-leche, con-ron) plus live negative kernel rejection in CI.</p>
+        <h2>6-Kernel Palomar Isolation</h2>
+        <p>Every Lean file carries a Lean 4.35.0 <code>module</code> header. Isolated Mathlib-only <code>Challenge.lean</code> is matched against sorry-free <code>Solution.lean</code> via sandboxed <code>lake comparator --paranoid</code> (Lean 4.35.0, leanchecker-paranoid, lean4lean, nanoda, con-leche, con-ron) plus live negative kernel rejection in CI.</p>
       </article>
       <article class="card">
         <h2>576 Exhaustively Audited Theorems</h2>
@@ -73,7 +85,7 @@ def render_portal() -> str:
       </article>
       <article class="card">
         <h2>Non-Vacuity, Oracles &amp; Provenance</h2>
-        <p>18 concrete small-L, sign, and adversarial false-constant refutation witnesses in <code>NonVacuity.lean</code>, independent exact rational (L=3..45) &amp; 80-digit <code>mpmath</code> checks (&lt;3e-55), Sigstore SLSA Rekor attestations, and DigiCert RFC 3161 timestamping.</p>
+        <p>18 concrete small-L, sign, and adversarial false-constant refutation witnesses in <code>NonVacuity.lean</code>, independent exact rational (L=3..45) &amp; 80-digit <code>mpmath</code> checks (&lt;3e-55), Sigstore SLSA Rekor attestations, DigiCert RFC 3161 TSA, and Bitcoin OpenTimestamps.</p>
       </article>
     </div>
     <div class="note">
@@ -121,6 +133,8 @@ def main() -> int:
         (ROOT / "results" / "comparator-paranoid.log", SITE / "results"),
         (ROOT / "data" / "MANIFEST.sha256", SITE / "data"),
         (ROOT / "data" / "MANIFEST.sha256.tsr", SITE / "data"),
+        (ROOT / "data" / "MANIFEST.sha256.ots", SITE / "data"),
+        (ROOT / "docs" / "media" / "social-preview.svg", SITE / "media"),
     ):
         if rel_src.is_file():
             dst_dir.mkdir(parents=True, exist_ok=True)

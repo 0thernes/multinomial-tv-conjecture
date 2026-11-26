@@ -1,4 +1,6 @@
 ﻿<#
+SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+SPDX-License-Identifier: Apache-2.0
 .SYNOPSIS
   Score any repository against the Build Standard for LLMs (90 items). Report-only: always exits 0 unless misused.
 .DESCRIPTION

@@ -49,4 +49,4 @@
 'MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
-ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 576 theorems across MultinomialTV — 0 disallowed axioms.
+ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 723 theorems across MultinomialTV — 0 disallowed axioms.

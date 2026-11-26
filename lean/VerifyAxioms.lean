@@ -1,5 +1,24 @@
 /-
-Exhaustive Axiom Audit for Multinomial TV Conjecture (Conjecture 7.7).
+Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander S. Donahue
+SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+SPDX-License-Identifier: Apache-2.0
+-/
+module
+
+public meta import Lean
+import all MultinomialTVConjecture.Combinatorial
+import all MultinomialTVConjecture.StirlingRefined
+import all MultinomialTVConjecture.GaussianEulerMaclaurin
+import all MultinomialTVConjecture.LocalAsymptotics
+import all MultinomialTVConjecture.Main
+import all MultinomialTVConjecture.NonVacuity
+import all MultinomialTVConjecture
+import all Solution
+
+/-!
+# Exhaustive Axiom Audit for Multinomial TV Conjecture (Conjecture 7.7)
 
 Prints `#print axioms` for:
   - All 19 primary theorems in `MultinomialTV`
@@ -11,9 +30,6 @@ declaration across the entire `MultinomialTV` namespace tree.
 Run: `cd lean && lake env lean VerifyAxioms.lean`
 Every theorem must depend strictly on `[propext, Classical.choice, Quot.sound]` (or fewer).
 -/
-import Lean
-import MultinomialTVConjecture
-import Solution
 
 -- Primary exported theorems (19 declarations)
 #print axioms MultinomialTV.hAdj_eq_nested_sum
@@ -64,11 +80,12 @@ import Solution
 #print axioms MultinomialTV.ComparatorTarget.target_gamma_closed_form
 #print axioms MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form
 
--- Exhaustive Metaprogram Audit: EVERY theorem in namespace `MultinomialTV`
+-- Exhaustive Metaprogram Audit: EVERY named & module-private theorem across all project modules
 open Lean Elab Command in
 run_cmd do
   let env ← getEnv
-  let prefixes : Array Name := #[`MultinomialTV]
+  let prefixes : Array Name :=
+    #[`MultinomialTV, `_private.MultinomialTVConjecture, `_private.Solution]
   let allowed : Array Name := #[`propext, `Classical.choice, `Quot.sound]
   let all := env.constants.toList.filter fun (name, info) =>
     info.isTheorem && prefixes.any (fun p => p.isPrefixOf name)

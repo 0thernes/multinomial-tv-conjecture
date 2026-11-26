@@ -1,8 +1,11 @@
 {
   "status": "pass",
-  "checked_utc": "2026-11-26T02:03:08Z",
+  "checked_utc": "2026-11-26T03:07:52Z",
   "files_scanned": 3,
-  "arxiv_count": 6,
+  "bib_entry_count": 16,
+  "missing_bib_keys": [],
+  "uncited_bib_keys": [],
+  "arxiv_count": 4,
   "doi_count": 12,
   "retracted_count": 0,
   "placeholder_hits": [],
@@ -10,9 +13,7 @@
   "arxiv_ids": [
     "2606.01465",
     "2610.13366",
-    "2610.17046",
     "2610.17046v1",
-    "2611.14735",
     "2611.14735v1"
   ],
   "dois": [
@@ -46,22 +47,8 @@
     },
     {
       "kind": "arxiv",
-      "id": "2610.17046",
-      "url": "https://arxiv.org/abs/2610.17046",
-      "status": 200,
-      "ok": true
-    },
-    {
-      "kind": "arxiv",
       "id": "2610.17046v1",
       "url": "https://arxiv.org/abs/2610.17046v1",
-      "status": 200,
-      "ok": true
-    },
-    {
-      "kind": "arxiv",
-      "id": "2611.14735",
-      "url": "https://arxiv.org/abs/2611.14735",
       "status": 200,
       "ok": true
     },

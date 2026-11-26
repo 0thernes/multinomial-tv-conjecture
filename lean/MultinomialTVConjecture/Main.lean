@@ -1,8 +1,28 @@
-import MultinomialTVConjecture.Combinatorial
-import MultinomialTVConjecture.StirlingRefined
-import MultinomialTVConjecture.LocalAsymptotics
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+/-
+Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander S. Donahue
+SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+SPDX-License-Identifier: Apache-2.0
+-/
+module
+
+public import MultinomialTVConjecture.Combinatorial
+public import MultinomialTVConjecture.StirlingRefined
+public import MultinomialTVConjecture.LocalAsymptotics
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Tactic
+
+/-!
+# Main Assembly and Resolution of Conjecture 7.7
+
+Proves the verbatim nested-sum fidelity identity `hAdj_eq_nested_sum`, the residue-class `1/L`
+limits `tendsto_hAdj_mod0`, `tendsto_hAdj_mod1`, `tendsto_hAdj_mod2`, the complete resolution
+`conjecture_7_7` (`d_0`, `a_△`, `γ_2`, cosine decomposition), and the linear and cyclic
+algebraic variance closed forms `gamma_closed_form` and `gamma_cyclic_closed_form`.
+-/
+
+@[expose] public section
 
 open scoped BigOperators
 open Real Filter Topology Finset
@@ -339,3 +359,5 @@ theorem gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
   field_simp; ring
 
 end MultinomialTV
+
+end

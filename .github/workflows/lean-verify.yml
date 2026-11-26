@@ -69,7 +69,7 @@ jobs:
               return "".join(out)
 
           forbidden = re.compile(
-              r"\b(sorry|admit|native_decide|unsafe)\b|^\s*(?:private\s+|protected\s+)?axiom\b|implemented_by|@\[extern"
+              r"\b(sorry|admit|native_decide|unsafe)\b|^\s*(?:@\[[^\]]+\]\s+|public\s+|private\s+|protected\s+|noncomputable\s+)*axiom\b|^\s*(?:public\s+|private\s+|protected\s+)*partial\s+(?:def|theorem)\b|implemented_by|@\[extern"
           )
           roots = [
               Path("lean/MultinomialTVConjecture"),
@@ -81,6 +81,8 @@ jobs:
               files = [item] if item.is_file() else sorted(item.rglob("*.lean"))
               for f in files:
                   cleaned = strip_lean_comments(f.read_text(encoding="utf-8"))
+                  if not re.search(r"^\s*module\s*$", cleaned, re.M):
+                      hits.append(f"{f}:1: missing required Lean 4.35 module header")
                   for lineno, line in enumerate(cleaned.splitlines(), 1):
                       if forbidden.search(line):
                           hits.append(f"{f}:{lineno}: {line.strip()}")

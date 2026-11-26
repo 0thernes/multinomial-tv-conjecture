@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+# SPDX-License-Identifier: Apache-2.0
 """Validate every \\lean{...} declaration in blueprint/src/content.tex against lean/
 and build an interactive SVG DAG + searchable HTML/JSON Lean 4 Blueprint with direct
 GitHub line links at build/site/blueprint/.
@@ -26,7 +28,7 @@ LABEL_RE = re.compile(r"\\label\{([^}]+)\}")
 LEAN_RE = re.compile(r"\\lean\{([^}]+)\}")
 USES_RE = re.compile(r"\\uses\{([^}]+)\}")
 DECL_LINE_RE = re.compile(
-    r"^\s*(?:private\s+|noncomputable\s+|protected\s+)*(?:theorem|lemma|def|structure|abbrev|inductive|instance)\s+([A-Za-z0-9_.']+)"
+    r"^\s*(?:@\[[^\]]+\]\s+|public\s+|private\s+|noncomputable\s+|protected\s+)*(?:theorem|lemma|def|structure|abbrev|inductive|instance)\s+([A-Za-z0-9_.']+)"
 )
 NS_LINE_RE = re.compile(r"^\s*namespace\s+([A-Za-z0-9_.]+)\s*$")
 END_LINE_RE = re.compile(r"^\s*end(?:\s+([A-Za-z0-9_.]+))?\s*$")
@@ -321,20 +323,28 @@ h1{{margin:0 0 .35rem;font-size:2rem;color:#f8fafc}}
 .decl-list{{display:inline-flex;flex-wrap:wrap;gap:.25rem;vertical-align:middle}}
 .decl-link code{{background:#0f172a;border:1px solid #1e293b;padding:.08rem .32rem;border-radius:4px;color:#7dd3fc}}
 a{{color:#38bdf8;text-decoration:none}}
-</style></head><body><main>
+a:focus-visible,.btn:focus-visible,.search:focus-visible{{outline:2px solid #38bdf8;outline-offset:2px}}
+.skip-link{{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}}
+.skip-link:focus{{position:static;width:auto;height:auto;display:inline-block;padding:.35rem .7rem;margin-bottom:.75rem;background:#0284c7;color:#fff;border-radius:6px}}
+.status{{font-size:.82rem;color:#94a3b8;margin-bottom:.65rem}}
+@media (prefers-reduced-motion: reduce){{.dag-node,.dag-edge,.card{{transition:none}}}}
+</style></head><body>
+<a class="skip-link" href="#cards">Skip to theorem cards</a>
+<main id="main">
 <p><a href="../">&larr; Back to Multinomial TV Conjecture Portal</a></p>
 <h1>Lean 4.35.0 Dependency Blueprint (Conjecture 7.7)</h1>
 <p class="sub">{len(nodes)} formal nodes &middot; {total_decls} statically validated Lean 4 declarations linked to exact GitHub source lines across <code>MultinomialTVConjecture</code>, <code>NonVacuity</code> (18/18), and the 6-kernel Comparator Bridge. Click any DAG node to highlight its transitive dependency cone.</p>
-<div class="toolbar">
+<div class="toolbar" role="region" aria-label="Blueprint filters">
   <input id="q" class="search" type="search" placeholder="Filter nodes or Lean declarations (e.g., hAdj_mod0, NonVacuity, conjecture_7_7)..." aria-label="Filter blueprint nodes"/>
-  <button class="btn active" data-stage="all">All ({len(nodes)})</button>
-  <button class="btn" data-stage="stage1">Stage 1</button>
-  <button class="btn" data-stage="stage2">Stage 2</button>
-  <button class="btn" data-stage="stage3">Stage 3</button>
-  <button class="btn" data-stage="stage4">Stage 4</button>
-  <button class="btn" data-stage="stage5">Stage 5</button>
+  <button class="btn active" data-stage="all" aria-pressed="true">All ({len(nodes)})</button>
+  <button class="btn" data-stage="stage1" aria-pressed="false">Stage 1</button>
+  <button class="btn" data-stage="stage2" aria-pressed="false">Stage 2</button>
+  <button class="btn" data-stage="stage3" aria-pressed="false">Stage 3</button>
+  <button class="btn" data-stage="stage4" aria-pressed="false">Stage 4</button>
+  <button class="btn" data-stage="stage5" aria-pressed="false">Stage 5</button>
   <button class="btn" id="reset">Reset Cone</button>
 </div>
+<div id="status" class="status" role="status" aria-live="polite">Showing {len(nodes)} of {len(nodes)} formal nodes.</div>
 <div class="legend">
   <span><i class="swatch" style="background:#38bdf8"></i>Stage 1: 2D&rarr;1D Combinatorial</span>
   <span><i class="swatch" style="background:#818cf8"></i>Stage 2: Stirling &amp; Euler&ndash;Maclaurin</span>
@@ -386,32 +396,46 @@ a{{color:#38bdf8;text-decoration:none}}
       e.classList.toggle('hi', on);
       e.classList.toggle('dim', keep ? !on : false);
     }});
+    let visible = 0;
     cards.forEach(c => {{
       const stageOk = activeStage === 'all' || c.dataset.stage === activeStage;
       const textOk = !term || c.textContent.toLowerCase().includes(term);
       const coneOk = !keep || keep.has(c.id);
-      c.classList.toggle('hidden', !(stageOk && textOk && coneOk));
+      const show = stageOk && textOk && coneOk;
+      c.classList.toggle('hidden', !show);
       c.classList.toggle('selected', c.id === activeId);
+      if (show) visible += 1;
     }});
+    const st = document.getElementById('status');
+    if (st) st.textContent = `Showing ${{visible}} of ${{cards.length}} formal nodes${{activeId ? ' (dependency cone: ' + activeId + ')' : ''}}.`;
   }}
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   dagNodes.forEach(n => n.addEventListener('click', (ev) => {{
     const id = n.dataset.id;
     activeId = (activeId === id) ? null : id;
     apply();
     if (activeId) {{
       ev.preventDefault();
-      document.getElementById(activeId)?.scrollIntoView({{behavior:'smooth', block:'nearest'}});
+      document.getElementById(activeId)?.scrollIntoView({{behavior: reducedMotion ? 'auto' : 'smooth', block:'nearest'}});
     }}
   }}));
   document.querySelectorAll('.btn[data-stage]').forEach(b => b.addEventListener('click', () => {{
     activeStage = b.dataset.stage;
-    document.querySelectorAll('.btn[data-stage]').forEach(x => x.classList.toggle('active', x === b));
+    document.querySelectorAll('.btn[data-stage]').forEach(x => {{
+      const on = x === b;
+      x.classList.toggle('active', on);
+      x.setAttribute('aria-pressed', String(on));
+    }});
     apply();
   }}));
   document.getElementById('q').addEventListener('input', apply);
   document.getElementById('reset').addEventListener('click', () => {{
     activeId = null; activeStage = 'all'; document.getElementById('q').value = '';
-    document.querySelectorAll('.btn[data-stage]').forEach(x => x.classList.toggle('active', x.dataset.stage === 'all'));
+    document.querySelectorAll('.btn[data-stage]').forEach(x => {{
+      const on = x.dataset.stage === 'all';
+      x.classList.toggle('active', on);
+      x.setAttribute('aria-pressed', String(on));
+    }});
     apply();
   }});
 }})();

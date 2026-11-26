@@ -1,10 +1,14 @@
-import MultinomialTVConjecture.Main
+/-
+Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander S. Donahue
+SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+SPDX-License-Identifier: Apache-2.0
+-/
+module
+
+public import MultinomialTVConjecture.Main
 import Mathlib.Tactic
-
-open scoped BigOperators
-open Real Finset
-
-namespace MultinomialTV.NonVacuity
 
 /-!
 # Non-Vacuity Witnesses and Adversarial Definition Checks
@@ -19,6 +23,13 @@ Establishes that:
 4. The hypothesis `n ≠ 0` of `gamma_closed_form` and `gamma_cyclic_closed_form` is concretely
    inhabited at `n = 5`, matching the exact linear and cyclic coefficients.
 -/
+
+@[expose] public section
+
+open scoped BigOperators
+open Real Finset
+
+namespace MultinomialTV.NonVacuity
 
 theorem hAdj_zero : hAdj 0 = 0 := by
   rw [hAdj_eq_nested_sum]
@@ -123,3 +134,5 @@ theorem gamma_cyclic_closed_form_witness_n5 :
   field_simp; ring
 
 end MultinomialTV.NonVacuity
+
+end

@@ -20,6 +20,7 @@ justfile text eol=lf
 *.woff binary
 *.woff2 binary
 *.tsr binary
+*.ots binary
 
 # Generated or reference files
 llms-full.txt linguist-generated=true

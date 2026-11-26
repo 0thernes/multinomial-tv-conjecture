@@ -1,9 +1,28 @@
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Basic.Real.Basic
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Nat.Choose.Sum
+/-
+Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander S. Donahue
+SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+SPDX-License-Identifier: Apache-2.0
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic
+
+/-!
+# Exact 2D-to-1D Combinatorial Reduction of `h_adj(L)`
+
+Establishes exact finite-`L` identities reducing `h_adj(3q)`, `h_adj(3q+1)`, and `h_adj(3q-1)`
+from the two-dimensional simplex `Δ_L` to the central trinomial probability `p_{3q}(q)` and the
+three normalized 1D sums `sumA(q)`, `sumB(q)`, `sumC(q)`.
+-/
+
+@[expose] public section
 
 open scoped BigOperators
 open Finset
@@ -1616,3 +1635,5 @@ theorem hAdj_mod2 (q : ℕ) (hq : 2 ≤ q) :
   rw [hterm2, hterm3]
 
 end MultinomialTV
+
+end

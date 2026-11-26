@@ -1,11 +1,12 @@
 # Documentation Index
 
-Welcome to the documentation for **Multinomial TV Conjecture (`v2.0.0`)** — the Lean 4.35.0 6-kernel verified proof of Conjecture 7.7 of Banić & Elezović (`arXiv:2610.17046v1`, 2026).
+Welcome to the documentation for **Multinomial TV Conjecture (`v2.2.0`)** — the Lean 4.35.0 (`module`-header Palomar spec) 6-kernel verified proof of Conjecture 7.7 of Banić & Elezović (`arXiv:2610.17046v1`, 2026).
 
 ## Verification & Epistemology
 - [Statement-Fidelity Audit Table](statement-fidelity.md) — Maps every Lean 4 theorem to Banić & Elezović's literal definitions and highlights what lies inside vs. outside the Lean kernel.
 - [Verification Architecture](verification.md) — Details the 6-kernel `lake comparator --paranoid` stack, exhaustive `Lean.collectAxioms` metaprogram, non-vacuity checks, and Python test ladder.
-- [Red-Team & Hardening Review (2026-11-25)](reviews/red-team-2026-11-25.md) — Complete 3-cycle, 10-class defect log covering every finding discovered and resolved.
+- [Literature & Novelty Search Log](literature-search.md) — Dated novelty search across arXiv, Crossref, OEIS, classical probability literature, and the 1,900-problem Unsolved Problems Mega-Atlas.
+- [Red-Team & Hardening Review (2026-11-25)](reviews/red-team-2026-11-25.md) — Complete multi-cycle, 10-class defect log (`F-01`–`F-44`) and Playbook v1.3 10-pass review scorecard.
 - [Run & Audit Log](run-log.md) — Timestamped execution record of local and CI verification runs.
 
 ## Engineering & Architecture

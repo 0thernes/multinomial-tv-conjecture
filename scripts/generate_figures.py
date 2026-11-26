@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+# SPDX-License-Identifier: Apache-2.0
 """
 Generate publication-grade vector PDF figures for:
   "Proof and Lean 4 Verification of Conjecture 7.7 on the Second-Order

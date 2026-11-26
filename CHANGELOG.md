@@ -3,6 +3,20 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and Semantic Versioning (`VERSION` is the single source of truth).
 
+## [2.2.0] - 2026-11-25
+
+### Added
+- **Full Palomar `module`-header migration across all 10 Lean 4.35.0 files (`F-30`):** Every `.lean` file now declares `module`, `public import`, `@[expose] public section`, and a top-level module docstring, compiling with **zero compiler warnings** and **zero Batteries linter warnings**; `VerifyAxioms.lean` uses `import all` across all proof modules to audit **723 named and module-private theorems** (`0` disallowed axioms).
+- **REUSE / SPDX license headers (`F-31`, Playbook #24 & #35):** Added `SPDX-FileCopyrightText` and `SPDX-License-Identifier` (`Apache-2.0` for all `.lean`, `.py`, `.sh`, `.ps1` files; `CC-BY-4.0` for `paper/main.tex` and `blueprint/src/content.tex`), enforced by automated tests.
+- **Dual cryptographic timestamping (`F-38`, Playbook #26):** Added `scripts/stamp_timestamps.py` generating and cryptographically verifying BOTH DigiCert RFC 3161 (`data/MANIFEST.sha256.tsr`) AND multi-calendar Bitcoin OpenTimestamps (`data/MANIFEST.sha256.ots`), exposed in the static portal, `release.yml`, and CI.
+- **Build Standard `A05` & `A38` promoted to `done` (`66/66`, `100.0%`; Core `29/29`):** Embedded visual preview in `README.md`, added Open Graph metadata, WCAG AA skip-to-content links, `:focus-visible` focus rings, `aria-pressed`, `aria-live="polite"`, and `@media (prefers-reduced-motion: reduce)` across both the portal and interactive Lean Blueprint.
+- **Scholarly PDF & bibliographic upgrades (`F-35`, `F-40`, `F-41`):** Added `\hypersetup` PDF metadata (`Title`, `Author`, `Subject`, `Keywords`), `\usepackage{flafter}`, `noabbrev` `cleveref`, `plainurl` clickable DOIs & arXiv URLs in References, live Blueprint link on page 1, Claim `C6` row in Table 2, Data/Code Availability & EAR 15 CFR 734.8 export-control self-screen, and bidirectional `\cite`↔`refs.bib` parity checking in `scripts/check_citations.py`.
+
+### Fixed
+- **120-dps silent tail truncation & missing domain guards (`bug`, `F-32`, `E-2026-009`):** Replaced hardcoded `1e-85` cutoff in `scripts/verify_conjecture.py` `sums_abc_mp` with dynamic `10^{-(mp.mp.dps + 10)}` and added `ValueError` domain validation for invalid `L`, `q`, and `r`.
+- **Statement-fidelity & manuscript defects (`error`, `F-33`, `F-34`, `F-35`, `E-2026-010`):** Corrected `docs/statement-fidelity.md` `SF-2` anchor (`Sec. 3 Theorems 3.1–3.3` → `Sec. 2 Theorem 2.3`), escaped `{-}{-}paranoid` in `paper/main.tex` so copy-paste preserves ASCII `--paranoid`, synced `README.md` Rekor log & version references, and added exact Table 1 / Claim `C6` / `CITATION.cff` / `formalization.yaml` parity tests.
+- **Soundness & parser holes (`bug`/`hole`, `F-36`, `F-37`, `E-2026-011`):** Extended `scripts/build_blueprint.py` `DECL_LINE_RE` for `@[...]` / `public` visibility, hardened forbidden-token lexer in CI & tests to catch `public axiom` / `noncomputable axiom` / `partial def` + require `module` headers, fixed Windows drive-letter path-leak regex, enforced exact theorem-count parity in `scripts/check_readme_axioms.py`, and upgraded timestamp test to verify the exact 32-byte SHA-256 imprint inside both `.tsr` and `.ots`.
+
 ## [2.1.0] - 2026-11-25
 
 ### Fixed

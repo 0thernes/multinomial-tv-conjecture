@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Validate DOI, arXiv, and BibTeX citation identifiers across paper/ and CITATION.cff.
+# SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+# SPDX-License-Identifier: Apache-2.0
+"""Validate DOI, arXiv, BibTeX cite-key parity, and retraction metadata across paper/ and CITATION.cff.
 
 Static structural and regression checks run offline in CI without mutating tracked files.
 Pass --online to perform live HTTPS checks against arXiv and Crossref (including
@@ -18,13 +20,34 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 PAPER_DIR = ROOT / "paper"
+VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip() if (ROOT / "VERSION").is_file() else "0.0.0"
 
 ARXIV_RE = re.compile(r"arXiv:([0-9]{4}\.[0-9]{4,5}(?:v[0-9]+)?|[a-z-]+/[0-9]{7})", re.I)
 EPRINT_RE = re.compile(r"eprint\s*=\s*\{([^}]+)\}", re.I)
 DOI_RE = re.compile(r"\b(10\.[0-9]{4,9}/[-._;()/:A-Za-z0-9]+)")
 PLACEHOLDER_RE = re.compile(r"(TODO\(cite\)|FIXME_DOI|10\.0000/|arXiv:0000\.00000)", re.I)
+CITE_RE = re.compile(r"\\cite[a-zA-Z*]*(?:\[[^\]]*\])*\{([^}]+)\}")
+BIB_KEY_RE = re.compile(r"@\w+\s*\{\s*([^,\s]+)\s*,")
 KNOWN_BAD_ARXIV = {"2610.1336", "2610.01336"}  # E-2026-001 truncated ID guard
-USER_AGENT = "multinomial-tv-conjecture-audit/2.1 (mailto:0_0@0thernes.art)"
+USER_AGENT = f"multinomial-tv-conjecture-audit/{VERSION} (mailto:0_0@0thernes.art)"
+
+
+def check_bib_cite_parity() -> tuple[list[str], list[str], int]:
+    """Return (missing_keys_in_bib, uncited_keys_in_bib, bib_entry_count)."""
+    main_tex = PAPER_DIR / "main.tex"
+    refs_bib = PAPER_DIR / "refs.bib"
+    if not (main_tex.is_file() and refs_bib.is_file()):
+        return [], [], 0
+    tex_txt = main_tex.read_text(encoding="utf-8", errors="replace")
+    bib_txt = refs_bib.read_text(encoding="utf-8", errors="replace")
+    cited: set[str] = set()
+    for m in CITE_RE.finditer(tex_txt):
+        for key in m.group(1).split(","):
+            k = key.strip()
+            if k:
+                cited.add(k)
+    bib_keys = set(BIB_KEY_RE.findall(bib_txt))
+    return sorted(cited - bib_keys), sorted(bib_keys - cited), len(bib_keys)
 
 
 def scan_citations() -> dict[str, Any]:
@@ -63,8 +86,12 @@ def scan_citations() -> dict[str, Any]:
         for m in PLACEHOLDER_RE.finditer(text):
             placeholders.append({"file": rel, "match": m.group(0)})
 
+    missing_bib, uncited_bib, bib_count = check_bib_cite_parity()
     return {
         "files_scanned": files_scanned,
+        "bib_entry_count": bib_count,
+        "missing_bib_keys": missing_bib,
+        "uncited_bib_keys": uncited_bib,
         "arxiv_ids": sorted(arxiv_ids),
         "dois": sorted(dois),
         "placeholders": placeholders,
@@ -132,6 +159,8 @@ def main() -> int:
     ok = (
         len(scan["placeholders"]) == 0
         and len(scan["malformed"]) == 0
+        and len(scan["missing_bib_keys"]) == 0
+        and len(scan["uncited_bib_keys"]) == 0
         and scan["files_scanned"] > 0
         and online_ok
         and retracted_count == 0
@@ -140,6 +169,9 @@ def main() -> int:
         "status": "pass" if ok else "fail",
         "checked_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "files_scanned": scan["files_scanned"],
+        "bib_entry_count": scan["bib_entry_count"],
+        "missing_bib_keys": scan["missing_bib_keys"],
+        "uncited_bib_keys": scan["uncited_bib_keys"],
         "arxiv_count": len(scan["arxiv_ids"]),
         "doi_count": len(scan["dois"]),
         "retracted_count": retracted_count,
@@ -155,6 +187,8 @@ def main() -> int:
         out.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(
         f"Citation audit ({report['status']}): {scan['files_scanned']} files, "
+        f"{scan['bib_entry_count']} BibTeX entries (missing={len(scan['missing_bib_keys'])}, "
+        f"uncited={len(scan['uncited_bib_keys'])}), "
         f"{len(scan['arxiv_ids'])} arXiv IDs, {len(scan['dois'])} DOIs, "
         f"{len(online_checks)} online checks, {retracted_count} retractions, "
         f"{len(scan['placeholders'])} placeholders, {len(scan['malformed'])} malformed."

@@ -6,7 +6,7 @@ This project uses **no runtime environment variables, secrets, API keys, or exte
 
 | File | Purpose | Notes |
 |---|---|---|
-| `VERSION` | Single source of truth for semantic version (`2.1.0`) | Must match `CHANGELOG.md`, `CITATION.cff`, `formalization.yaml`, `lean/lakefile.toml`. |
+| `VERSION` | Single source of truth for semantic version (`2.2.0`) | Must match `CHANGELOG.md`, `CITATION.cff`, `formalization.yaml`, `lean/lakefile.toml`. |
 | `lean/lean-toolchain` | Pinned Lean 4 release (`leanprover/lean4:v4.35.0`) | Automatically respected by `elan` and `lake`. |
 | `lean/lakefile.toml` | Lean package targets, `autoImplicit = false`, Batteries `lintDriver` | Defines `MultinomialTVConjecture`, `Challenge`, `Solution`, `VerifyAxioms`. |
 | `lean/lake-manifest.json` | Exact Git commit lockfile for `mathlib`, `batteries`, `Qq`, `aesop`, etc. | Never edit by hand; update only intentionally with full 6-kernel re-verification. |

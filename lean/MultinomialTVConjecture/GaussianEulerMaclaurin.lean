@@ -1,9 +1,28 @@
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Complex.ExponentialBounds
-import Mathlib.Basic.Real.Basic
+/-
+Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander S. Donahue
+SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+SPDX-License-Identifier: Apache-2.0
+-/
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Complex.ExponentialBounds
+public import Mathlib.Basic.Real.Basic
 import Mathlib.Tactic
+
+/-!
+# Cubic Euler-Maclaurin Summation for Odd-Gaussian Moments
+
+Establishes the exact elementary antiderivative and self-contained third-order Euler-Maclaurin
+approximation `oddGauss_sum_approx` for odd-Gaussian lattice sums `g_j(t) = t^{2j+1} exp(-3 t^2)`,
+capturing the exact `-h^2 / 12` Bernoulli shift at `j = 0`.
+-/
+
+@[expose] public section
 
 open scoped BigOperators
 open Real Filter Topology Finset intervalIntegral
@@ -608,3 +627,5 @@ theorem oddGauss_sum_approx (j : ℕ) :
   linarith
 
 end MultinomialTV
+
+end

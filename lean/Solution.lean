@@ -1,11 +1,23 @@
 /-
-Multinomial TV Conjecture (Conjecture 7.7) — Sorry-Free Solution Matched Against `Challenge.lean`.
+Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander S. Donahue
+SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+SPDX-License-Identifier: Apache-2.0
+-/
+module
+
+public import MultinomialTVConjecture.Main
+
+/-!
+# Sorry-Free Solution Bridge Matched Against `Challenge.lean`
 
 Every definition and theorem signature matches `Challenge.lean` verbatim, uses ZERO `sorry`,
 `admit`, `native_decide`, or custom axioms, and is checked across all six Lean 4.35.0 kernels
 by `lake comparator --config comparator.json --paranoid`.
 -/
-import MultinomialTVConjecture.Main
+
+@[expose] public section
 
 open scoped BigOperators
 open Real Filter Topology Finset
@@ -151,3 +163,5 @@ theorem target_gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
   exact MultinomialTV.gamma_cyclic_closed_form n hn
 
 end MultinomialTV.ComparatorTarget
+
+end

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+# SPDX-License-Identifier: Apache-2.0
 """Build a clean, byte-reproducible arXiv LaTeX submission tarball.
 
 Packages `paper/main.tex`, `paper/refs.bib`, `paper/build/main.bbl` (required unless

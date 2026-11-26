@@ -1,9 +1,28 @@
-import MultinomialTVConjecture.Combinatorial
-import MultinomialTVConjecture.StirlingRefined
-import MultinomialTVConjecture.GaussianEulerMaclaurin
-import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-import Mathlib.Analysis.Calculus.MeanValue
+/-
+Copyright (c) 2026 Alexander S. Donahue. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander S. Donahue
+SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+SPDX-License-Identifier: Apache-2.0
+-/
+module
+
+public import MultinomialTVConjecture.Combinatorial
+public import MultinomialTVConjecture.StirlingRefined
+public import MultinomialTVConjecture.GaussianEulerMaclaurin
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Tactic
+
+/-!
+# Local Gaussian Asymptotics for the 1D Sums `A(q)`, `B(q)`, and `C(q)`
+
+Combines consecutive-ratio Gaussian tail bounds beyond cutoff `K_q = ⌊q^{5/8}⌋`, fifth-order
+local log-ratio Taylor expansions, and cubic Euler-Maclaurin summation to establish the exact
+`O(q^{-1})` limits `tendsto_sumA`, `tendsto_sumB`, and `tendsto_sumC`.
+-/
+
+@[expose] public section
 
 open scoped BigOperators
 open Real Filter Topology Finset
@@ -2002,3 +2021,5 @@ theorem tendsto_sumC :
   refine hcomb.congr fun q => by ring
 
 end MultinomialTV
+
+end

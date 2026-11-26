@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+# SPDX-License-Identifier: Apache-2.0
 """Generate or verify cryptographic SHA-256 manifest data/MANIFEST.sha256."""
 from __future__ import annotations
 

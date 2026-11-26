@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Alexander S. Donahue
+# SPDX-License-Identifier: Apache-2.0
 """
 Independent exact-rational and arbitrary-precision numerical verification of
 Conjecture 7.7 (Banić & Elezović, arXiv:2610.17046v1 / arXiv:2611.14735v1)
@@ -20,6 +22,8 @@ import mpmath as mp
 
 def h_adj_direct_exact(L: int) -> Fraction:
     """Direct exact rational evaluation of h_adj(L) from the 2D trinomial sum."""
+    if L < 0:
+        raise ValueError(f"L must be non-negative, got {L}")
     fact = [math.factorial(k) for k in range(L + 1)]
     L_fact = fact[L]
     total = 0
@@ -34,6 +38,8 @@ def h_adj_direct_exact(L: int) -> Fraction:
 
 def p3q_exact(q: int, x: int) -> Fraction:
     """Exact rational trinomial probability p_{3q}(x) = (3q)! / (3^{3q} x!^2 (3q-2x)!)."""
+    if q < 0:
+        raise ValueError(f"q must be non-negative, got {q}")
     if x < 0 or 2 * x > 3 * q:
         return Fraction(0)
     num = math.factorial(3 * q)
@@ -43,6 +49,8 @@ def p3q_exact(q: int, x: int) -> Fraction:
 
 def sums_abc_exact(q: int) -> tuple[Fraction, Fraction, Fraction, Fraction]:
     """Exact rational values of p_{3q}(q), A(q), B(q), C(q)."""
+    if q < 1:
+        raise ValueError(f"sums_abc_exact requires q >= 1, got {q}")
     p0 = p3q_exact(q, q)
     numA = Fraction(0)
     numB = Fraction(0)
@@ -98,6 +106,8 @@ def sums_abc_mp(q: int) -> tuple[mp.mpf, mp.mpf, mp.mpf, mp.mpf]:
     Fast O(q) high-precision evaluation of p_{3q}(q), A(q), B(q), C(q)
     using exact consecutive recurrence ratios from the center x = q.
     """
+    if q < 1:
+        raise ValueError(f"sums_abc_mp requires q >= 1, got {q}")
     # p_{3q}(q) = (3q)! / (3^{3q} (q!)^3)
     log_p0 = mp.loggamma(3 * q + 1) - (3 * q) * mp.log(3) - 3 * mp.loggamma(q + 1)
     p0 = mp.exp(log_p0)
@@ -113,6 +123,7 @@ def sums_abc_mp(q: int) -> tuple[mp.mpf, mp.mpf, mp.mpf, mp.mpf]:
     C = mp.mpf(0)
     inv_q = mp.mpf(1) / q
     max_right = q // 2
+    tail_tol = mp.power(10, -(mp.mp.dps + 10))
 
     for k in range(1, q + 1):
         if k <= max_right:
@@ -126,8 +137,8 @@ def sums_abc_mp(q: int) -> tuple[mp.mpf, mp.mpf, mp.mpf, mp.mpf]:
         A += diff
         B += u * summ
         C += (u * u) * diff
-        # Early exit only if both tails are far below working precision
-        if k > 20 and abs(rp) < mp.mpf("1e-85") and abs(rm) < mp.mpf("1e-85"):
+        # Early exit only once both tails lie >= 10 orders of magnitude below active working precision
+        if k > 20 and abs(rp) < tail_tol and abs(rm) < tail_tol:
             break
 
     return p0, A, B, C
@@ -136,10 +147,14 @@ def sums_abc_mp(q: int) -> tuple[mp.mpf, mp.mpf, mp.mpf, mp.mpf]:
 def h_adj_1d_mp(q: int, r: int) -> mp.mpf:
     """
     High-precision h_adj(L) for:
-      r = 0 -> L = 3q
-      r = 1 -> L = 3q + 1
-      r = 2 -> L = 3q - 1
+      r = 0 -> L = 3q       (q >= 1)
+      r = 1 -> L = 3q + 1   (q >= 1)
+      r = 2 -> L = 3q - 1   (q >= 2)
     """
+    if r not in (0, 1, 2):
+        raise ValueError("r must be 0, 1, or 2")
+    if q < 1 or (r == 2 and q < 2):
+        raise ValueError(f"Invalid q={q} for residue class r={r}")
     p0, A, B, C = sums_abc_mp(q)
     qf = mp.mpf(q)
     if r == 0:
