@@ -168,7 +168,10 @@ def clean_html_math(text: str) -> str:
     for idx, part in enumerate(parts):
         if idx % 2 == 0:
             cleaned = part.replace(r"\&", "&").replace(r"\_", "_").replace("--", "–")
-            out.append(html.escape(cleaned))
+            escaped = html.escape(cleaned)
+            escaped = re.sub(r"\\texttt\{([^}]+)\}", r"<code>\1</code>", escaped)
+            escaped = re.sub(r"`([^`]+)`", r"<code>\1</code>", escaped)
+            out.append(escaped)
         else:
             out.append("$" + html.escape(part) + "$")
     return "".join(out)
@@ -291,17 +294,29 @@ def render_html(nodes: list[dict[str, Any]]) -> str:
 body{{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0b1020;color:#e2e8f0;margin:0;padding:1.75rem;line-height:1.5}}
 main{{max-width:1240px;margin:0 auto}}
 h1{{margin:0 0 .35rem;font-size:2rem;color:#f8fafc}}
-.sub{{color:#94a3b8;margin-bottom:1.1rem}}
+.sub{{color:#94a3b8;margin-bottom:1rem}}
+.toolbar{{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;margin-bottom:1rem}}
+.search{{flex:1;min-width:220px;padding:.48rem .8rem;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#f8fafc;font-size:.9rem}}
+.btn{{padding:.4rem .75rem;border-radius:999px;border:1px solid #334155;background:#1e293b;color:#e2e8f0;font-size:.8rem;font-weight:600;cursor:pointer}}
+.btn.active{{background:#0284c7;border-color:#38bdf8;color:#fff}}
+.legend{{display:flex;flex-wrap:wrap;gap:.9rem;font-size:.78rem;color:#94a3b8;margin-bottom:.75rem}}
+.swatch{{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:.3rem;vertical-align:middle}}
 .dag-wrap{{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:.75rem;overflow-x:auto;margin-bottom:1.5rem}}
+.dag-node{{cursor:pointer;transition:opacity .15s}}
+.dag-edge{{transition:opacity .15s,stroke .15s,stroke-width .15s}}
+.dim{{opacity:.16}}
+.dag-edge.hi{{stroke:#38bdf8;stroke-width:2.5;opacity:1}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1rem}}
-.card{{background:#131c33;border:1px solid #23304f;border-radius:12px;padding:1rem}}
-.card:target{{border-color:#38bdf8;box-shadow:0 0 0 2px rgba(56,189,248,.35)}}
+.card{{background:#131c33;border:1px solid #23304f;border-radius:12px;padding:1rem;transition:border-color .15s,opacity .15s}}
+.card.selected,.card:target{{border-color:#38bdf8;box-shadow:0 0 0 2px rgba(56,189,248,.35)}}
+.card.hidden{{display:none}}
 .hdr{{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-bottom:.45rem}}
 .hdr h3{{margin:0;font-size:1.02rem;flex:1;color:#f8fafc}}
 .kind{{font-size:.68rem;font-weight:700;padding:.15rem .45rem;border-radius:6px;background:#1e293b;color:#38bdf8}}
 .ok{{font-size:.7rem;font-weight:700;padding:.15rem .5rem;border-radius:999px;background:#064e3b;color:#6ee7b7}}
 .wip{{font-size:.7rem;font-weight:700;padding:.15rem .5rem;border-radius:999px;background:#451a03;color:#fcd34d}}
 .sum{{font-size:.87rem;color:#cbd5e1;margin:.35rem 0 .65rem}}
+.sum code{{background:#0f172a;border:1px solid #1e293b;padding:.06rem .28rem;border-radius:4px;color:#7dd3fc}}
 .meta{{font-size:.78rem;color:#94a3b8;overflow-wrap:anywhere}}
 .decl-list{{display:inline-flex;flex-wrap:wrap;gap:.25rem;vertical-align:middle}}
 .decl-link code{{background:#0f172a;border:1px solid #1e293b;padding:.08rem .32rem;border-radius:4px;color:#7dd3fc}}
@@ -309,10 +324,99 @@ a{{color:#38bdf8;text-decoration:none}}
 </style></head><body><main>
 <p><a href="../">&larr; Back to Multinomial TV Conjecture Portal</a></p>
 <h1>Lean 4.35.0 Dependency Blueprint (Conjecture 7.7)</h1>
-<p class="sub">{len(nodes)} formal nodes &middot; {total_decls} statically validated Lean 4 declarations linked to exact GitHub source lines across <code>MultinomialTVConjecture</code>, <code>NonVacuity</code>, and the 6-kernel Comparator Bridge.</p>
+<p class="sub">{len(nodes)} formal nodes &middot; {total_decls} statically validated Lean 4 declarations linked to exact GitHub source lines across <code>MultinomialTVConjecture</code>, <code>NonVacuity</code> (18/18), and the 6-kernel Comparator Bridge. Click any DAG node to highlight its transitive dependency cone.</p>
+<div class="toolbar">
+  <input id="q" class="search" type="search" placeholder="Filter nodes or Lean declarations (e.g., hAdj_mod0, NonVacuity, conjecture_7_7)..." aria-label="Filter blueprint nodes"/>
+  <button class="btn active" data-stage="all">All ({len(nodes)})</button>
+  <button class="btn" data-stage="stage1">Stage 1</button>
+  <button class="btn" data-stage="stage2">Stage 2</button>
+  <button class="btn" data-stage="stage3">Stage 3</button>
+  <button class="btn" data-stage="stage4">Stage 4</button>
+  <button class="btn" data-stage="stage5">Stage 5</button>
+  <button class="btn" id="reset">Reset Cone</button>
+</div>
+<div class="legend">
+  <span><i class="swatch" style="background:#38bdf8"></i>Stage 1: 2D&rarr;1D Combinatorial</span>
+  <span><i class="swatch" style="background:#818cf8"></i>Stage 2: Stirling &amp; Euler&ndash;Maclaurin</span>
+  <span><i class="swatch" style="background:#c084fc"></i>Stage 3: Local Asymptotics</span>
+  <span><i class="swatch" style="background:#4ade80"></i>Stage 4: Conjecture 7.7 &amp; &gamma;(n)</span>
+  <span><i class="swatch" style="background:#fbbf24"></i>Stage 5: Non-Vacuity &amp; 6-Kernel Bridge</span>
+</div>
 <section class="dag-wrap">{svg}</section>
-<section class="grid">{"".join(rows)}</section>
-</main></body></html>
+<section class="grid" id="cards">{"".join(rows)}</section>
+</main>
+<script>
+(() => {{
+  const dagNodes = [...document.querySelectorAll('.dag-node')];
+  const dagEdges = [...document.querySelectorAll('.dag-edge')];
+  const cards = [...document.querySelectorAll('.card')];
+  const parents = {{}}, children = {{}};
+  dagEdges.forEach(e => {{
+    const u = e.dataset.from, v = e.dataset.to;
+    (parents[v] ||= []).push(u);
+    (children[u] ||= []).push(v);
+  }});
+  function cone(start) {{
+    const keep = new Set([start]);
+    const walk = (adj) => {{
+      const stack = [start];
+      while (stack.length) {{
+        const cur = stack.pop();
+        for (const nxt of (adj[cur] || [])) {{
+          if (!keep.has(nxt)) {{ keep.add(nxt); stack.push(nxt); }}
+        }}
+      }}
+    }};
+    walk(parents); walk(children);
+    return keep;
+  }}
+  let activeId = null, activeStage = 'all';
+  function apply() {{
+    const term = document.getElementById('q').value.trim().toLowerCase();
+    const keep = activeId ? cone(activeId) : null;
+    dagNodes.forEach(n => {{
+      const id = n.dataset.id;
+      const stageOk = activeStage === 'all' || n.dataset.stage === activeStage;
+      const inCone = !keep || keep.has(id);
+      n.classList.toggle('dim', !(stageOk && inCone));
+    }});
+    dagEdges.forEach(e => {{
+      const u = e.dataset.from, v = e.dataset.to;
+      const on = keep ? (keep.has(u) && keep.has(v)) : false;
+      e.classList.toggle('hi', on);
+      e.classList.toggle('dim', keep ? !on : false);
+    }});
+    cards.forEach(c => {{
+      const stageOk = activeStage === 'all' || c.dataset.stage === activeStage;
+      const textOk = !term || c.textContent.toLowerCase().includes(term);
+      const coneOk = !keep || keep.has(c.id);
+      c.classList.toggle('hidden', !(stageOk && textOk && coneOk));
+      c.classList.toggle('selected', c.id === activeId);
+    }});
+  }}
+  dagNodes.forEach(n => n.addEventListener('click', (ev) => {{
+    const id = n.dataset.id;
+    activeId = (activeId === id) ? null : id;
+    apply();
+    if (activeId) {{
+      ev.preventDefault();
+      document.getElementById(activeId)?.scrollIntoView({{behavior:'smooth', block:'nearest'}});
+    }}
+  }}));
+  document.querySelectorAll('.btn[data-stage]').forEach(b => b.addEventListener('click', () => {{
+    activeStage = b.dataset.stage;
+    document.querySelectorAll('.btn[data-stage]').forEach(x => x.classList.toggle('active', x === b));
+    apply();
+  }}));
+  document.getElementById('q').addEventListener('input', apply);
+  document.getElementById('reset').addEventListener('click', () => {{
+    activeId = null; activeStage = 'all'; document.getElementById('q').value = '';
+    document.querySelectorAll('.btn[data-stage]').forEach(x => x.classList.toggle('active', x.dataset.stage === 'all'));
+    apply();
+  }});
+}})();
+</script>
+</body></html>
 """
 
 

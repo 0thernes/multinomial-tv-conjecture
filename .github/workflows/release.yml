@@ -24,7 +24,9 @@ jobs:
           cp dist/arxiv_submission.tar.gz release-dist/
           cp results/lean-axioms-all.log release-dist/
           cp results/comparator-paranoid.log release-dist/
+          cp results/citation-audit.json release-dist/
           cp data/MANIFEST.sha256 release-dist/data-MANIFEST.sha256
+          if [ -f data/MANIFEST.sha256.tsr ]; then cp data/MANIFEST.sha256.tsr release-dist/data-MANIFEST.sha256.tsr; fi
           (cd release-dist && sha256sum * > SHA256SUMS)
           cat release-dist/SHA256SUMS
       - name: Generate Sigstore SLSA build provenance attestations

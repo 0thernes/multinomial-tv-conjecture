@@ -1,8 +1,10 @@
 {
   "status": "pass",
+  "checked_utc": "2026-11-26T02:03:08Z",
   "files_scanned": 3,
   "arxiv_count": 6,
   "doi_count": 12,
+  "retracted_count": 0,
   "placeholder_hits": [],
   "malformed_hits": [],
   "arxiv_ids": [
@@ -27,5 +29,156 @@
     "10.1214/aoms/1177731677",
     "10.1214/ss/1177011699"
   ],
-  "online_checks": []
+  "online_checks": [
+    {
+      "kind": "arxiv",
+      "id": "2606.01465",
+      "url": "https://arxiv.org/abs/2606.01465",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "kind": "arxiv",
+      "id": "2610.13366",
+      "url": "https://arxiv.org/abs/2610.13366",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "kind": "arxiv",
+      "id": "2610.17046",
+      "url": "https://arxiv.org/abs/2610.17046",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "kind": "arxiv",
+      "id": "2610.17046v1",
+      "url": "https://arxiv.org/abs/2610.17046v1",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "kind": "arxiv",
+      "id": "2611.14735",
+      "url": "https://arxiv.org/abs/2611.14735",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "kind": "arxiv",
+      "id": "2611.14735v1",
+      "url": "https://arxiv.org/abs/2611.14735v1",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1007/978-0-8176-8130-2",
+      "url": "https://api.crossref.org/works/10.1007/978-0-8176-8130-2",
+      "status": 200,
+      "title": "A Distributional Approach to Asymptotics",
+      "retracted": false,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1007/978-3-030-79876-5_37",
+      "url": "https://api.crossref.org/works/10.1007/978-3-030-79876-5_37",
+      "status": 200,
+      "title": "The Lean 4 Theorem Prover and Programming Language",
+      "retracted": false,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1080/00029890.1955.11988576",
+      "url": "https://api.crossref.org/works/10.1080/00029890.1955.11988576",
+      "status": 200,
+      "title": "Mathematical Notes",
+      "retracted": false,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1093/biomet/37.3-4.409",
+      "url": "https://api.crossref.org/works/10.1093/biomet/37.3-4.409",
+      "status": 200,
+      "title": "TESTING FOR SERIAL CORRELATION IN LEAST SQUARES REGRESSION. I",
+      "retracted": false,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1093/biomet/40.1-2.116",
+      "url": "https://api.crossref.org/works/10.1093/biomet/40.1-2.116",
+      "status": 200,
+      "title": "ON THE MEAN SUCCESSIVE DIFFERENCE AND ITS RATIO TO THE ROOT MEAN SQUARE",
+      "retracted": false,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1093/biomet/73.1.165",
+      "url": "https://api.crossref.org/works/10.1093/biomet/73.1.165",
+      "status": 200,
+      "title": "Cumulative chi-squared statistic as a tool for testing goodness of fit",
+      "retracted": false,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1109/ACCESS.2020.3047342",
+      "url": "https://api.crossref.org/works/10.1109/ACCESS.2020.3047342",
+      "status": 200,
+      "title": "TVOR: Finding Discrete Total Variation Outliers Among Histograms",
+      "retracted": false,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1109/LSP.2026.3728406",
+      "url": "https://api.crossref.org/works/10.1109/LSP.2026.3728406",
+      "status": 200,
+      "title": "Comb Test: Histogram Uniformity Testing Based on Discrete Total Variation",
+      "retracted": false,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1145/3372885.3373824",
+      "url": "https://api.crossref.org/works/10.1145/3372885.3373824",
+      "status": 200,
+      "title": "The lean mathematical library",
+      "retracted": false,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1214/aoms/1177730886",
+      "url": "https://api.crossref.org/works/10.1214/aoms/1177730886",
+      "status": 200,
+      "title": "The Efficiency of the Mean Moving Range",
+      "retracted": false,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1214/aoms/1177731677",
+      "url": "https://api.crossref.org/works/10.1214/aoms/1177731677",
+      "status": 200,
+      "title": "Distribution of the Ratio of the Mean Square Successive Difference to the Variance",
+      "retracted": false,
+      "ok": true
+    },
+    {
+      "kind": "doi",
+      "id": "10.1214/ss/1177011699",
+      "url": "https://api.crossref.org/works/10.1214/ss/1177011699",
+      "status": 200,
+      "title": "Closed Form Summation for Classical Distributions: Variations on a Theme of De Moivre",
+      "retracted": false,
+      "ok": true
+    }
+  ]
 }

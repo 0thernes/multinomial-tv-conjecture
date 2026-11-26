@@ -16,6 +16,6 @@ By design of Lean's `lake comparator` (Palomar-style specification isolation): `
 Following independent scientific publishing best practices (Playbook v1.3 and Mathlib4 upstream compatibility), software and Lean formalizations use **Apache-2.0** (patent grant + clean upstreaming to Mathlib4), while the research manuscript, figures, blueprint, and documentation use **CC-BY-4.0** (attribution-preserving scholarly reuse).
 
 ### 6. How can I verify the proof in under a minute without trusting the author?
-1. Read `lean/Challenge.lean` (~105 lines, Mathlib-only) to confirm the theorem statements match Banić & Elezović (`arXiv:2610.17046v1`).
+1. Read `lean/Challenge.lean` (108 lines, Mathlib-only) to confirm the theorem statements match Banić & Elezović (`arXiv:2610.17046v1`).
 2. Run `cd lean && lake exe cache get && lake build MultinomialTVConjecture Challenge Solution VerifyAxioms && lake env lean VerifyAxioms.lean`.
-3. Run `lake comparator --config comparator.json --paranoid` (add `--inadvisably-no-sandbox` on Windows/macOS).
+3. On Linux with `bubblewrap` (or WSL2/Docker), run `lake comparator --config comparator.json --paranoid`.

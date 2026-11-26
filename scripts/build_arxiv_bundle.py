@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """Build a clean, byte-reproducible arXiv LaTeX submission tarball.
 
-Packages `paper/main.tex`, `paper/refs.bib`, `paper/build/main.bbl` (if present),
-and a generated `00README.XXX` directive (`main.tex toplevel`) into
-`dist/arxiv_submission.tar.gz` with deterministic tar headers (`mtime=0`,
+Packages `paper/main.tex`, `paper/refs.bib`, `paper/build/main.bbl` (required unless
+`--allow-no-bbl` is explicitly specified so arXiv renders all citations cleanly),
+`paper/figures/*.pdf`, and a generated `00README.XXX` directive (`main.tex toplevel`)
+into `dist/arxiv_submission.tar.gz` with deterministic tar headers (`mtime=0`,
 `uid=0`, `gid=0`, sorted members, gzip `mtime=0`).
 """
 from __future__ import annotations
 
+import argparse
 import gzip
 import hashlib
 import io
@@ -31,25 +33,30 @@ def add_bytes_deterministic(tf: tarfile.TarFile, arcname: str, data: bytes) -> N
     tf.addfile(info, io.BytesIO(data))
 
 
-def build_bundle(out_tar: Path | None = None) -> tuple[Path, str]:
+def build_bundle(out_tar: Path | None = None, *, require_bbl: bool = False) -> tuple[Path, str]:
     DIST.mkdir(parents=True, exist_ok=True)
     target = out_tar if out_tar is not None else DIST / "arxiv_submission.tar.gz"
 
     main_tex = PAPER / "main.tex"
     refs_bib = PAPER / "refs.bib"
-    bbl = PAPER / "build" / "main.bbl"
+    bbl_candidates = [PAPER / "build" / "main.bbl", PAPER / "main.bbl"]
+    bbl = next((p for p in bbl_candidates if p.is_file()), None)
 
     if not main_tex.is_file():
         raise FileNotFoundError(f"Missing {main_tex}")
     if not refs_bib.is_file():
         raise FileNotFoundError(f"Missing {refs_bib}")
+    if require_bbl and bbl is None:
+        raise FileNotFoundError(
+            "Missing main.bbl (compile paper/main.tex with `tectonic -X compile main.tex --outdir build --keep-intermediates` first)"
+        )
 
     entries: list[tuple[str, bytes]] = [
         ("00README.XXX", b"main.tex toplevel\n"),
         ("main.tex", main_tex.read_bytes().replace(b"\r\n", b"\n")),
         ("refs.bib", refs_bib.read_bytes().replace(b"\r\n", b"\n")),
     ]
-    if bbl.is_file():
+    if bbl is not None:
         entries.append(("main.bbl", bbl.read_bytes().replace(b"\r\n", b"\n")))
     fig_dir = PAPER / "figures"
     if fig_dir.is_dir():
@@ -71,7 +78,14 @@ def build_bundle(out_tar: Path | None = None) -> tuple[Path, str]:
 
 
 def main() -> int:
-    target, digest = build_bundle()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--allow-no-bbl",
+        action="store_true",
+        help="Allow building tarball even if main.bbl has not been generated yet",
+    )
+    args = parser.parse_args()
+    target, digest = build_bundle(require_bbl=not args.allow_no_bbl)
     print(f"Wrote {target} ({target.stat().st_size} bytes)")
     print(f"SHA-256: {digest}")
     with tarfile.open(target, "r:gz") as tf:

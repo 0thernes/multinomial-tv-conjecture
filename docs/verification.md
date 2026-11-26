@@ -29,10 +29,10 @@ This repository enforces defense-in-depth verification across **three independen
 
 | Test Category (Build Standard) | Implementation |
 |---|---|
-| **Exact rational oracle (`B12`)** | Exact `fractions.Fraction` 2D multinomial sum vs. 1D `hAdj_mod0..2` formulas (`L = 3..45` in `verify_conjecture.py`, `L = 0..45` in pytest). |
-| **Property-based testing (`B10`)** | `hypothesis` strategies verifying exact algebraic invariants, symmetry, non-negativity, and residue-class formulas over generated $L, n$. |
-| **Negative & adversarial tests (`B06`)** | Verifies false constants (`a_△ = 1/32`, `d_0 = 0`, constant `b_r`), invalid inputs (`n = 0`), and tampered axiom logs are explicitly rejected. |
-| **Regression tests (`B07`)** | Permanently guards fixed defects `E-2026-001` (`2610.1336` truncation), `E-2026-002` (`0thernes LLC`), `E-2026-003` (`00README.XXX` + reproducible tar), `E-2026-004` (axiom-sync). |
+| **Exact rational oracle (`B12`)** | Exact `fractions.Fraction` 2D multinomial sum vs. 1D `hAdj_mod0..2` formulas (`L = 3..45` in `verify_conjecture.py` and Hypothesis pytest; golden snapshots `L = 0..6`). |
+| **Property-based testing (`B10`)** | `hypothesis` strategies verifying exact algebraic invariants, symmetry, non-negativity, and residue-class formulas over generated $L \in [3,45]$ and $n \in [5,500]$. |
+| **Negative & adversarial tests (`B06`)** | Verifies false constants (`a_△ = 1/32`, `d_0 = 0`, constant `b_r`), invalid inputs (`n = 0`), tampered axiom logs, and a live negative Lean kernel test (`aTriangle = 1/32`) in CI are explicitly rejected. |
+| **Regression tests (`B07`)** | Permanently guards fixed defects `E-2026-001`..`E-2026-008` (citation truncation, `0thernes LLC`, deterministic arXiv bundle + figures + `.bbl`, axiom sync, exact `L = 3..45` fidelity parity, Table 1 exact line counts, zero local path leaks, RFC 3161 TSA presence). |
 | **Golden snapshot tests (`B08`)** | Exact rational table `hAdj(0..6)` and `results/lean-axioms-all.log` theorem count / sentinel checks. |
 | **Differential & metamorphic tests (`B11`, `B14`)** | 2D vs. 1D differential agreement; permutation invariance of $(X_1, X_3)$, mod-3 shift relations, linear/cyclic asymptotic coefficient ratios. |
 | **Numeric stability (`B20`)** | Cross-precision stability checks across `mp.dps = 50, 80, 120` quantifying catastrophic cancellation in $L(h_{\mathrm{adj}}(L) - c_L L - a_*)$. |

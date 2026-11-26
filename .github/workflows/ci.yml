@@ -17,6 +17,8 @@ jobs:
     name: Tests & Verification (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    env:
+      PYTHONUTF8: "1"
     strategy:
       fail-fast: false
       matrix:

@@ -3,6 +3,22 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and Semantic Versioning (`VERSION` is the single source of truth).
 
+## [2.1.0] - 2026-11-25
+
+### Fixed
+- **Audit-Repo.ps1 path bug (`bug`):** Fixed `Test-TextFile` to resolve relative paths via `[System.IO.Path]::Combine($Root, $f)` so cross-directory PowerShell audits pass cleanly.
+- **Citation audit preservation & retraction checks (`bug`, `E-2026-007`):** Guarded `results/citation-audit.json` mutation behind `--write` so offline CI runs never erase live online verification records, and added live Crossref JSON retraction/withdrawal checking (`18/18` HTTP 200, `0` retractions).
+- **Statement-fidelity, replication, and line-count parity (`error`, `E-2026-006`):** Aligned `docs/statement-fidelity.md` to exact `L = 3..45` (matching `verify_conjecture.py`), fixed `REPLICATION.md` / `LIMITATIONS.md` / `docs/configuration.md` to accurately distinguish native Windows 5-kernel checks from sandboxed Linux 6-kernel `lake comparator`, aligned `Challenge.lean` line count (`108` lines) everywhere, added `MultinomialTVConjecture.lean` (`2` lines) to `paper/main.tex` Table 1 so rows sum identically to `5,445`, split `b_1` and `b_2` Richardson error rows explicitly (`2.56e-55` / `2.53e-55`), and eliminated the residual `0.12pt` TeX overfull hbox (`0.00pt` max overfull).
+- **Private local path leaks & verbatim CI logs (`issue`, `E-2026-008`):** Replaced `results/comparator-paranoid.log` and `results/lean-linter.log` with clean verbatim Ubuntu 24.04 6-kernel CI outputs (run `#45723630668`, Rekor `4114226539`) and removed local workstation path strings from `docs/configuration.md` and `docs/threat-model.md`.
+- **Blueprint parity & rendering (`bug`):** Listed all `18/18` `NonVacuity` theorems in `blueprint/src/content.tex` (previously `11/18`) and fixed inline `\texttt{...}` / backtick code rendering in `scripts/build_blueprint.py`.
+- **Windows subprocess UTF-8 safety (`blindspot`):** Enforced `encoding="utf-8"` on subprocess calls in `tests/test_repo_integrity.py` and `PYTHONUTF8: "1"` in `.github/workflows/ci.yml`.
+
+### Added
+- **Live negative Lean kernel rejection check in CI (`.github/workflows/lean-verify.yml`):** Compiles a deliberately false statement (`aTriangle = 1/32`) on every CI run and asserts the Lean 4.35.0 kernel rejects it, plus SLSA/Sigstore attestation of BOTH `lean-axioms-ci.log` and `comparator-paranoid-ci.log`.
+- **Interactive Lean Blueprint controls (`scripts/build_blueprint.py`):** Live search bar, Stage 1–5 filter buttons, stage color legend, and click-to-highlight transitive dependency cone (upstream ancestors + downstream descendants + connecting Bezier edges) with verified MathJax SRI.
+- **Expanded cryptographic manifest & DigiCert RFC 3161 TSA timestamp:** Expanded `data/MANIFEST.sha256` from 13 to 30 core proof, paper, blueprint, verifier, and log artifacts, sealed with a verifiable DigiCert RFC 3161 timestamp (`data/MANIFEST.sha256.tsr`) and included in GitHub Releases.
+- **Playbook v1.3 completeness:** Added `docs/literature-search.md` (Pass 4), `scripts/generate_llms_full.py`, full 10-Pass Review Scorecard in `docs/reviews/red-team-2026-11-25.md`, `main.bbl` guard in `scripts/build_arxiv_bundle.py`, and 7 new automated regression tests in `tests/test_repo_integrity.py`.
+
 ## [2.0.0] - 2026-11-25
 
 ### Fixed

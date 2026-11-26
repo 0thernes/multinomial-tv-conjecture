@@ -10,7 +10,7 @@
 A complete, machine-checked **Lean 4.35.0** formal proof (verified across **6 independent proof kernels**), independent exact-rational and 80-digit Python verification suite, interactive Lean 4 Blueprint, and AMS-LaTeX preprint resolving **Conjecture 7.7 (`conj:atriangle`)** of Nikola Banić and Neven Elezović, *Discrete total variation under the multinomial, Part 2: variance under the uniform null* (`arXiv:2610.17046v1`, 2026), together with its cyclic corollary in Part 5 (`arXiv:2611.14735v1`, Theorem 5.2).
 
 **Author:** Alexander Stephen Donahue · Independent Researcher, Spokane, WA, USA · ORCID [0009-0006-8168-9648](https://orcid.org/0009-0006-8168-9648) · `0_0@0thernes.art`
-**Status:** Active research preprint (`v2.0.0`, 2026-11-25) — **NOT externally peer reviewed**; independent human line-by-line statement-fidelity audit remains open (see [docs/statement-fidelity.md](docs/statement-fidelity.md) and [LIMITATIONS.md](LIMITATIONS.md)).
+**Status:** Active research preprint (`v2.1.0`, 2026-11-25) — **NOT externally peer reviewed**; independent human line-by-line statement-fidelity audit remains open (see [docs/statement-fidelity.md](docs/statement-fidelity.md) and [LIMITATIONS.md](LIMITATIONS.md)).
 
 ---
 
@@ -64,7 +64,7 @@ ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 576 theorems across MultinomialTV — 0 d
 
 ## Six-Kernel Verification & Non-Vacuity Stack
 
-To separate statement auditing from proof internals, [lean/Challenge.lean](lean/Challenge.lean) (~105 lines) imports **only Mathlib** (zero files from our proof library) and states the 6 target theorems verbatim. [lean/Solution.lean](lean/Solution.lean) proves those exact declarations without `sorry`, and `lake comparator --config comparator.json --paranoid` checks exported proof terms across **six independent kernels**:
+To separate statement auditing from proof internals, [lean/Challenge.lean](lean/Challenge.lean) (108 lines) imports **only Mathlib** (zero files from our proof library) and states the 6 target theorems verbatim. [lean/Solution.lean](lean/Solution.lean) proves those exact declarations without `sorry`, and `lake comparator --config comparator.json --paranoid` checks exported proof terms across **six independent kernels** (plus a live negative Lean kernel rejection check in CI confirming false statements like `aTriangle = 1/32` fail to type-check):
 
 | Verification Check | Tool / File | Scope |
 |---|---|---|
@@ -146,7 +146,7 @@ just audit           # Score repository against Build Standard v1.2.0 (90 items)
 
 ## Maintenance Status
 
-**Status: Active** (repostatus: `active`). The formal proof of Conjecture 7.7 is complete and frozen at `v2.0.0`. Maintenance covers toolchain updates if requested, recording external human statement-fidelity audits in [docs/statement-fidelity.md](docs/statement-fidelity.md) and clean-room replications in [REPLICATION.md](REPLICATION.md), and logging any errata in [ERRATA.md](ERRATA.md).
+**Status: Active** (repostatus: `active`). The formal proof of Conjecture 7.7 is complete and verified at `v2.1.0` (Sigstore Rekor [`4114226539`](https://search.sigstore.dev?logIndex=4114226539) + DigiCert RFC 3161 timestamp [`data/MANIFEST.sha256.tsr`](data/MANIFEST.sha256.tsr)). Maintenance covers toolchain updates if requested, recording external human statement-fidelity audits in [docs/statement-fidelity.md](docs/statement-fidelity.md) and clean-room replications in [REPLICATION.md](REPLICATION.md), and logging any errata in [ERRATA.md](ERRATA.md).
 
 ## Citation & Licensing
 

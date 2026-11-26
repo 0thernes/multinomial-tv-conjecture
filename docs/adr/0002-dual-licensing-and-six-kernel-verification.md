@@ -12,10 +12,10 @@
 ## Decision
 
 1. Split licensing cleanly into **`LICENSE` (Apache-2.0)** for code/Lean/scripts/tests and **`LICENSE-DOCS` (CC-BY-4.0)** for manuscript/docs/blueprint, accompanied by `NOTICE` and `THIRD_PARTY_NOTICES.md`.
-2. Add Palomar-compatible isolation: a ~105-line Mathlib-only `lean/Challenge.lean`, a sorry-free `lean/Solution.lean`, `lean/comparator.json`, `formalization.yaml`, `lean/MultinomialTVConjecture/NonVacuity.lean` (18 concrete/adversarial witnesses), and exhaustive `Lean.collectAxioms` verification checked across all 6 kernels (`lake comparator --config comparator.json --paranoid`).
+2. Add Palomar-compatible isolation: a 108-line Mathlib-only `lean/Challenge.lean`, a sorry-free `lean/Solution.lean`, `lean/comparator.json`, `formalization.yaml`, `lean/MultinomialTVConjecture/NonVacuity.lean` (18 concrete/adversarial witnesses), and exhaustive `Lean.collectAxioms` verification checked across all 6 kernels (`lake comparator --config comparator.json --paranoid`).
 
 ## Consequences
 
-- **Positive:** Auditors can verify statement fidelity by reading ~105 lines of `Challenge.lean` and run 6 independent kernels (C++, Lean-in-Lean, Rust `nanoda`, `con-leche`, `con-ron`).
+- **Positive:** Auditors can verify statement fidelity by reading 108 lines of `Challenge.lean` and run 6 independent kernels (C++, Lean-in-Lean, Rust `nanoda`, `con-leche`, `con-ron`).
 - **Positive:** Code is 100% license-compatible with Mathlib4 and JOSS; papers remain freely reusable under CC-BY-4.0.
 - **Trade-off:** `Challenge.lean` contains 6 intentional `sorry` stubs, so the CI forbidden-token lexer explicitly excludes `Challenge.lean` while strictly policing every proof module and `Solution.lean`.

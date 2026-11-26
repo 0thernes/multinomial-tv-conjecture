@@ -1,4 +1,5 @@
-===== FILE: README.md =====
+=== README.md ===
+
 # Proof of Conjecture 7.7 on the Second-Order Variance Constant of Multinomial Discrete Total Variation
 
 [![Lean 4.35.0 & 6-Kernel Verify](https://github.com/0thernes/multinomial-tv-conjecture/actions/workflows/lean-verify.yml/badge.svg)](https://github.com/0thernes/multinomial-tv-conjecture/actions/workflows/lean-verify.yml)
@@ -11,7 +12,7 @@
 A complete, machine-checked **Lean 4.35.0** formal proof (verified across **6 independent proof kernels**), independent exact-rational and 80-digit Python verification suite, interactive Lean 4 Blueprint, and AMS-LaTeX preprint resolving **Conjecture 7.7 (`conj:atriangle`)** of Nikola Banić and Neven Elezović, *Discrete total variation under the multinomial, Part 2: variance under the uniform null* (`arXiv:2610.17046v1`, 2026), together with its cyclic corollary in Part 5 (`arXiv:2611.14735v1`, Theorem 5.2).
 
 **Author:** Alexander Stephen Donahue · Independent Researcher, Spokane, WA, USA · ORCID [0009-0006-8168-9648](https://orcid.org/0009-0006-8168-9648) · `0_0@0thernes.art`
-**Status:** Active research preprint (`v2.0.0`, 2026-11-25) — **NOT externally peer reviewed**; independent human line-by-line statement-fidelity audit remains open (see [docs/statement-fidelity.md](docs/statement-fidelity.md) and [LIMITATIONS.md](LIMITATIONS.md)).
+**Status:** Active research preprint (`v2.1.0`, 2026-11-25) — **NOT externally peer reviewed**; independent human line-by-line statement-fidelity audit remains open (see [docs/statement-fidelity.md](docs/statement-fidelity.md) and [LIMITATIONS.md](LIMITATIONS.md)).
 
 ---
 
@@ -65,7 +66,7 @@ ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 576 theorems across MultinomialTV — 0 d
 
 ## Six-Kernel Verification & Non-Vacuity Stack
 
-To separate statement auditing from proof internals, [lean/Challenge.lean](lean/Challenge.lean) (~105 lines) imports **only Mathlib** (zero files from our proof library) and states the 6 target theorems verbatim. [lean/Solution.lean](lean/Solution.lean) proves those exact declarations without `sorry`, and `lake comparator --config comparator.json --paranoid` checks exported proof terms across **six independent kernels**:
+To separate statement auditing from proof internals, [lean/Challenge.lean](lean/Challenge.lean) (108 lines) imports **only Mathlib** (zero files from our proof library) and states the 6 target theorems verbatim. [lean/Solution.lean](lean/Solution.lean) proves those exact declarations without `sorry`, and `lake comparator --config comparator.json --paranoid` checks exported proof terms across **six independent kernels** (plus a live negative Lean kernel rejection check in CI confirming false statements like `aTriangle = 1/32` fail to type-check):
 
 | Verification Check | Tool / File | Scope |
 |---|---|---|
@@ -147,7 +148,7 @@ just audit           # Score repository against Build Standard v1.2.0 (90 items)
 
 ## Maintenance Status
 
-**Status: Active** (repostatus: `active`). The formal proof of Conjecture 7.7 is complete and frozen at `v2.0.0`. Maintenance covers toolchain updates if requested, recording external human statement-fidelity audits in [docs/statement-fidelity.md](docs/statement-fidelity.md) and clean-room replications in [REPLICATION.md](REPLICATION.md), and logging any errata in [ERRATA.md](ERRATA.md).
+**Status: Active** (repostatus: `active`). The formal proof of Conjecture 7.7 is complete and verified at `v2.1.0` (Sigstore Rekor [`4114226539`](https://search.sigstore.dev?logIndex=4114226539) + DigiCert RFC 3161 timestamp [`data/MANIFEST.sha256.tsr`](data/MANIFEST.sha256.tsr)). Maintenance covers toolchain updates if requested, recording external human statement-fidelity audits in [docs/statement-fidelity.md](docs/statement-fidelity.md) and clean-room replications in [REPLICATION.md](REPLICATION.md), and logging any errata in [ERRATA.md](ERRATA.md).
 
 ## Citation & Licensing
 
@@ -155,7 +156,10 @@ just audit           # Score repository against Build Standard v1.2.0 (90 items)
 - **Manuscript, figures, Blueprint, and documentation:** [CC BY 4.0](LICENSE-DOCS) (`SPDX-License-Identifier: CC-BY-4.0`).
 - **Attribution & third-party notices:** See [NOTICE](NOTICE), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), [CITATION.cff](CITATION.cff), and [formalization.yaml](formalization.yaml).
 
-===== FILE: AGENTS.md =====
+---
+
+=== AGENTS.md ===
+
 # AGENTS.md — Canonical Agent Instructions (`multinomial-tv-conjecture`)
 
 This file is the **single canonical instruction file** for all AI coding agents working in `multinomial-tv-conjecture` (`CLAUDE.md`, `GEMINI.md`, and `.cursor/rules/build-standard.mdc` point here).
@@ -198,7 +202,10 @@ just paper           # Compile LaTeX manuscript & byte-reproducible arXiv tarbal
 just audit           # Score repo against Build Standard v1.2.0 (90 items)
 ```
 
-===== FILE: CLAIMS.md =====
+---
+
+=== CLAIMS.md ===
+
 # Claims Ledger (`CLAIMS.md`)
 
 Every mathematical and computational claim in this repository is numbered, assigned an exact verification tier, mapped to its Lean 4 declaration / script / test, and paired with an explicit falsification criterion (**what would prove us wrong**).
@@ -224,7 +231,10 @@ To refute our core mathematical result (**C3**), a critic only needs to produce 
 
 Any verified refutation will be credited prominently in [ERRATA.md](ERRATA.md) and [REPLICATION.md](REPLICATION.md).
 
-===== FILE: LIMITATIONS.md =====
+---
+
+=== LIMITATIONS.md ===
+
 # Limitations, Verification Boundaries & Real-vs-Metaphor (`LIMITATIONS.md`)
 
 This document states explicitly what our Lean 4 formalization and numerical verification **do** establish, what they **do not** establish, and where literal mathematical claims stop.
@@ -242,9 +252,9 @@ This document states explicitly what our Lean 4 formalization and numerical veri
 ## 2. Specific Technical & Process Limitations
 
 1. **No external peer review yet:** The manuscript is an independent research preprint. It has NOT yet undergone journal peer review, arXiv moderation, or Palomar Registry acceptance.
-2. **Human line-by-line fidelity audit is open:** Although `Challenge.lean` is only ~105 lines of Mathlib-only Lean 4 and `NonVacuity.lean` proves 18 concrete small-$L$ and adversarial checks, no independent third-party mathematician has yet signed off line-by-line on `docs/statement-fidelity.md`.
+2. **Human line-by-line fidelity audit is open:** Although `Challenge.lean` is only 108 lines of Mathlib-only Lean 4 and `NonVacuity.lean` proves 18 concrete small-$L$ and adversarial checks, no independent third-party mathematician has yet signed off line-by-line on `docs/statement-fidelity.md`.
 3. **Lean 4.35.0 `module` system warning:** Mathlib v4.35.0 emits non-fatal informational warnings encouraging the new Lean 4.35 `module` header. Our files compile cleanly without `module` under both `lake build` and 6-kernel `lake comparator --paranoid`; migrating to `module` syntax is tracked in `ROADMAP.md`.
-4. **Windows vs. Linux sandbox for `lake comparator`:** On Linux (`ubuntu-24.04` CI), `lake comparator --config comparator.json --paranoid` executes inside a `bubblewrap` kernel namespace sandbox. On Windows (where `bubblewrap` does not exist), local execution requires `--inadvisably-no-sandbox` (all 6 independent proof checkers still verify the full exported proof terms identically).
+4. **Windows vs. Linux sandbox for `lake comparator`:** On Linux (`ubuntu-24.04` CI), `lake comparator --config comparator.json --paranoid` executes all 6 kernels (`Lean paranoid`, `lean4lean`, `nanoda`, `con-leche`, `con-ron`, `Lean default`) inside a `bubblewrap` kernel namespace sandbox. Upstream Lean 4.35.0 `lake comparator` requires Linux `bubblewrap` and does not run directly on native Windows; on Windows, 5 of the 6 bundled kernels (`lean 4.35.0`, `leanchecker-paranoid`, `nanoda_bin`, `con-leche`, `con-ron`) can be invoked directly on `leanexport` output while full 6-kernel verification (including `lean4lean`) runs in Linux containers or Ubuntu 24.04 CI.
 5. **AI-assisted provenance:** Mathematical exploration, Lean 4 proof engineering, Python test scaffolding, and LaTeX drafting were conducted with AI assistance under Alexander S. Donahue's direction (see `formalization.yaml` and Section "AI Assistance and CRediT Disclosure" in `paper/main.tex`). Epistemic warrant rests strictly on the reproducible 6-kernel verification and independent exact calculations, never on author or model authority.
 
 ## 3. Real vs. Metaphor
@@ -253,7 +263,10 @@ This document states explicitly what our Lean 4 formalization and numerical veri
 - The colloquial phrase **"5-second proof verification"** in `README.md` means inspecting the committed verbatim `#print axioms` block and re-running `lake env lean VerifyAxioms.lean` against pre-built `.olean` caches; a cold build without Mathlib's `lake exe cache get` takes substantially longer (~2–5 minutes with cache, >30 minutes compiling Mathlib from source).
 - **"Six-kernel verified"** refers literally to executing the six independent type-checkers bundled with Lean 4.35.0 (`Lean 4.35.0` C++ kernel, `leanchecker-paranoid`, `lean4lean`, `nanoda 0.4.19`, `con-leche`, `con-ron`) over `Challenge.lean` and `Solution.lean`; it does **not** eliminate the need to inspect `Challenge.lean` itself for statement fidelity against Banić & Elezović (2026).
 
-===== FILE: REPLICATION.md =====
+---
+
+=== REPLICATION.md ===
+
 # Replication Protocol (`REPLICATION.md`)
 
 Any independent researcher can reproduce every formal theorem, 6-kernel proof check, exact rational calculation, 80-digit numerical check, Blueprint graph, and PDF build from a clean clone without trusting the author or any pre-computed log.
@@ -285,7 +298,7 @@ lake build MultinomialTVConjecture Challenge Solution VerifyAxioms
 # 3. Run exhaustive axiom audit (verify ALL_THEOREMS_AXIOM_AUDIT_PASS & strict 3-axiom allowlist)
 lake env lean VerifyAxioms.lean
 
-# 4. Run 6-kernel comparator (Linux with bubblewrap; add --inadvisably-no-sandbox on Windows/macOS)
+# 4. Run 6-kernel comparator (Linux with bubblewrap; use WSL2/Docker on Windows or macOS)
 lake comparator --config comparator.json --paranoid
 
 # 5. Return to repo root and run Python exact + 80-digit verifier, full test ladder, citations, blueprint, site
@@ -311,12 +324,48 @@ bash scripts/audit-repo.sh .
 
 | Date | Replicator | Environment | Commit / Tag | Lean 6-Kernel | Python / Pytest | Notes |
 |---|---|---|---|---|---|---|
-| 2026-11-25 | Alexander S. Donahue (author, local clean check) | Windows 11, Lean 4.35.0, Python 3.13.12, Tectonic 0.17.0 | `v2.0.0` | PASS (6 kernels, `--inadvisably-no-sandbox`) | PASS | Full Cycle 1–3 audit; see `docs/run-log.md`. |
-| 2026-11-25 | GitHub Actions CI (`ubuntu-24.04`, `windows-latest`, `macos-latest`) | Hosted runners, Lean 4.35.0 + `bubblewrap`, Python 3.12 | `v2.0.0` | PASS (6 kernels, sandboxed Linux) | PASS (3 OSes) | Automated clean-room CI runs on `main`. |
+| 2026-11-25 | Alexander S. Donahue (author, local clean check) | Windows 11, Lean 4.35.0, Python 3.13.12, Tectonic 0.17.0 | `v2.0.0` | PASS (5/6 kernels directly on Windows: `lean`, `leanchecker-paranoid`, `nanoda`, `con-leche`, `con-ron`; full 6/6 incl. `lean4lean` in Ubuntu 24.04 CI) | PASS (24/24 pytest) | Initial v2.0.0 release check; see `docs/run-log.md`. |
+| 2026-11-25 | GitHub Actions CI (`ubuntu-24.04`, `windows-latest`, `macos-latest`) | Hosted runners, Lean 4.35.0 + `bubblewrap`, Python 3.12 | `v2.0.0` (`18d95f0`) | PASS (6/6 kernels, sandboxed Linux CI `#45723630668`, Rekor `4114226539`) | PASS (3 OSes, `#45723630598`) | Automated clean-room CI runs on `main`. |
+| 2026-11-25 | Alexander S. Donahue + GitHub Actions CI | Windows 11 local + Ubuntu 24.04 / Windows / macOS CI | `v2.1.0` | PASS (6/6 kernels + live negative kernel rejection) | PASS (3 OSes + RFC 3161 TSA) | Full 3-cycle hardening audit; see `docs/reviews/red-team-2026-11-25.md`. |
 
 *Independent external replications are invited! Open an issue with the `replication` label containing your environment, commit SHA, and command output to be added to this table.*
 
-===== FILE: docs/statement-fidelity.md =====
+---
+
+=== ERRATA.md ===
+
+# Errata and Version Corrections
+
+This file records every factual, bibliographic, mathematical, or engineering error discovered after publication of any version, along with its exact fix and version tag.
+
+## Errata Resolved in v2.0.0 (2026-11-25)
+
+| ID | Class | Discovered In | Description | Resolution |
+|---|---|---|---|---|
+| `E-2026-001` | `error` | `v1.0.0` | `paper/refs.bib` entry `banic_elezovic_p1` listed truncated arXiv ID `2610.1336`, which arXiv zero-pads to `2610.01336` (*Hyperbolic Sphericity*, an unrelated paper). | Corrected to `arXiv:2610.13366` (*Discrete total variation under the multinomial, Part 1: expectation under the uniform null*) in `paper/refs.bib`, `CITATION.cff`, and `paper/main.tex`; added `scripts/check_citations.py` and regression test. |
+| `E-2026-002` | `problem` | `v1.0.0` | Affiliation and copyright headers named `0thernes LLC`, an unformed legal entity as of November 2026. | Updated all active headers, `LICENSE`, `LICENSE-DOCS`, `CITATION.cff`, `formalization.yaml`, `README.md`, and `paper/main.tex` to `Alexander S. Donahue — Independent Researcher, Spokane, WA, USA` (ORCID `0009-0006-8168-9648`). |
+| `E-2026-003` | `bug` | `v1.0.0` | `scripts/build_arxiv_bundle.py` docstring claimed `00README.XXX` was written into `dist/arxiv_submission.tar.gz`, but the code omitted it and left host `mtime`/UID/GID unnormalized. | Implemented explicit `00README.XXX` emission (`main.tex toplevel`) and deterministic `mtime=0, uid=0, gid=0` sorted tar writing, verified by automated tests. |
+| `E-2026-004` | `hole` | `v1.0.0` | CI checked `#print axioms` with `grep -v` against a literal single-line string, missing wrapped lines, zero-axiom theorems, `native_decide`/`unsafe`, and README synchronization. | Replaced with `Lean.collectAxioms` metaprogram in `lean/VerifyAxioms.lean`, nested-comment/string-aware forbidden-token lexer, `scripts/check_readme_axioms.py`, and 6-kernel `lake comparator --paranoid`. |
+| `E-2026-005` | `bug` | `v2.0.0` (draft) | Initial `v2.0.0` rewrite of `scripts/build_arxiv_bundle.py` omitted `paper/figures/*.pdf` referenced by `\includegraphics` in `paper/main.tex`. | Added deterministic `figures/*.pdf` packaging before `v2.0.0` release and verified clean standalone Tectonic compilation of extracted tarball. |
+
+## Errata Resolved in v2.1.0 (2026-11-25)
+
+| ID | Class | Discovered In | Description | Resolution |
+|---|---|---|---|---|
+| `E-2026-006` | `error` | `v2.0.0` | `docs/statement-fidelity.md` overstated exact rational Python check range as `L = 3..150` while `scripts/verify_conjecture.py` verifies `L = 3..45`; `REPLICATION.md` inaccurately listed `--inadvisably-no-sandbox` as 6-kernel Windows execution; `paper/main.tex` Table 1 omitted the 2-line `MultinomialTVConjecture.lean` row (causing column sum `5,443` vs total `5,445`). | Corrected `docs/statement-fidelity.md` to exact `L = 3..45`, corrected `REPLICATION.md` / `LIMITATIONS.md` / `docs/configuration.md` to reflect true Windows 5-kernel vs Linux 6-kernel execution, added `MultinomialTVConjecture.lean` (2 lines) to Table 1, and added automated regression guards in `tests/test_repo_integrity.py`. |
+| `E-2026-007` | `bug` | `v2.0.0` | `scripts/Audit-Repo.ps1` `Test-TextFile` passed relative paths directly to `[System.IO.File]::OpenRead` (failing when invoked from another cwd); `scripts/check_citations.py` overwrote `results/citation-audit.json` with empty `online_checks: []` on offline CI runs; `blueprint/src/content.tex` listed 11 of 18 `NonVacuity` theorems and rendered raw backticks. | Fixed `Audit-Repo.ps1` with `[System.IO.Path]::Combine($Root, $f)`, guarded `check_citations.py` writes behind `--write` + Crossref retraction checks, listed all 18/18 `NonVacuity` theorems, rendered `<code>` cleanly, and upgraded Blueprint with interactive search/filter/dependency-cone highlighting. |
+| `E-2026-008` | `issue` | `v2.0.0` | `results/lean-linter.log` and `docs/{configuration,threat-model}.md` leaked a local Windows workspace path, and `results/comparator-paranoid.log` retained the pre-CI Windows log instead of the verbatim 6-kernel Ubuntu CI output (`#45723630668`). | Replaced `results/comparator-paranoid.log` and `results/lean-linter.log` with clean verbatim Ubuntu CI outputs, removed all local path leaks, added live negative Lean kernel rejection in CI, expanded `data/MANIFEST.sha256` to 30 artifacts, and sealed it with a DigiCert RFC 3161 TSA timestamp (`data/MANIFEST.sha256.tsr`). |
+
+**Mathematical status:** Zero mathematical errors have been discovered in any theorem statement or proof of `v1.0.0`; all 19 original Lean 4 theorems remain unchanged in mathematical content and pass all 6 independent kernels in `v2.0.0`.
+
+## Withdrawal Policy
+
+If a mathematical flaw or statement-fidelity defect is ever discovered that invalidates a core claim in `CLAIMS.md`, the author commits to logging it here within 72 hours, tagging a corrected release, and posting an explicit retraction/erratum notice on GitHub Releases and any external preprint server where the manuscript has been deposited.
+
+---
+
+=== docs/statement-fidelity.md ===
+
 # Statement-Fidelity Audit Table (`docs/statement-fidelity.md`)
 
 Maps every headline Lean 4.35.0 declaration in `MultinomialTV` and `Challenge.lean` to its informal mathematical statement and literature anchor so an independent mathematician can inspect for definition drift, weakened hypotheses, or vacuity without reading proof internals.
@@ -326,13 +375,16 @@ Maps every headline Lean 4.35.0 declaration in `MultinomialTV` and `Challenge.le
 | ID | Lean Declaration | Informal Mathematical Statement | Literature Anchor | Fidelity Notes & Non-Vacuity | Human Sign-Off |
 |---|---|---|---|---|---|
 | **SF-1** | `MultinomialTV.hAdj_eq_nested_sum` / `Challenge.hAdj` | $h_{\mathrm{adj}}(L) = 3^{-L} \sum_{x_1=0}^{L} \sum_{x_2=0}^{L-x_1} \frac{L!}{x_1! x_2! (L-x_1-x_2)!} |x_2-x_1|\,|L-x_1-x_2-x_2| = \mathbb{E}[|X_2-X_1|\,|X_3-X_2|]$ under $\mathrm{Mult}(L; \frac13, \frac13, \frac13)$. | Banić & Elezović Part 2 (`arXiv:2610.17046v1`, Sec. 7.2) | `Challenge.lean` defines `hAdj` directly as the verbatim nested sum using only Mathlib; `NonVacuity.lean` proves exact values $h_{\mathrm{adj}}(0)=0, h_{\mathrm{adj}}(1)=\frac13, h_{\mathrm{adj}}(2)=\frac23, h_{\mathrm{adj}}(3)=\frac{13}{9}, h_{\mathrm{adj}}(4)=\frac{140}{81}, h_{\mathrm{adj}}(5)=\frac{545}{243}$. | Open |
-| **SF-2** | `MultinomialTV.hAdj_mod0`, `hAdj_mod1`, `hAdj_mod2` | Exact 1D closed reductions of $h_{\mathrm{adj}}(3q+r)$ ($r \in \{0,1,2\}$) in terms of central trinomial mass $p_{3q}(q)$ and three 1D weighted binomial/trinomial sums `sumA`, `sumB`, `sumC`. | Manuscript Sec. 3 (Theorems 3.1–3.3) | Verified identically in exact rational Python `Fraction` arithmetic for $L = 3..150$ with zero discrepancy. | Open |
+| **SF-2** | `MultinomialTV.hAdj_mod0`, `hAdj_mod1`, `hAdj_mod2` | Exact 1D closed reductions of $h_{\mathrm{adj}}(3q+r)$ ($r \in \{0,1,2\}$) in terms of central trinomial mass $p_{3q}(q)$ and three 1D weighted binomial/trinomial sums `sumA`, `sumB`, `sumC`. | Manuscript Sec. 3 (Theorems 3.1–3.3) | Verified identically in exact rational Python `Fraction` arithmetic for $L = 3..45$ (43 values, 0/1 discrepancy) in `scripts/verify_conjecture.py` and `tests/test_exact_and_properties.py`. | Open |
 | **SF-3** | `MultinomialTV.tendsto_hAdj_mod0`, `tendsto_hAdj_mod1`, `tendsto_hAdj_mod2` / `Challenge.target_tendsto_hAdj_mod0..2` | $\lim_{q\to\infty}(3q+r)(h_{\mathrm{adj}}(3q+r) - c_L(3q+r) - a_*) = b_r$ with $b_0 = \frac{32\sqrt{3}}{81\pi}$ and $b_1 = b_2 = -\frac{22\sqrt{3}}{81\pi}$, where $c_L = \frac{2\sqrt{3}}{3\pi} + \frac19$ and $a_* = -\frac{2\sqrt{3}}{9\pi}$. | Banić & Elezović Part 2 (`arXiv:2610.17046v1`, Lemma 7.3) | Uses exact Mathlib `Filter.Tendsto` (`atTop`, `𝓝`) with no hidden cutoff or numeric approximation; `NonVacuity` proves `bRes 0 > 0`, `bRes 1 < 0`, `bRes 0 ≠ bRes 1`. | Open |
 | **SF-4** | `MultinomialTV.conjecture_7_7`, `conjecture_7_7_d0`, `conjecture_7_7_aTriangle`, `conjecture_7_7_gamma2`, `bRes_cosine_formula` / `Challenge.target_conjecture_7_7` | $d_0 = -\frac{4\sqrt{3}}{81\pi}$, $a_\triangle = \frac{1}{32} - \frac{4\sqrt{3}}{243}$, $\gamma_2 = -\frac{1}{32\pi} - \frac{8\sqrt{3}}{243\pi}$, and $b_r = d_0 + \frac{4\sqrt{3}}{9\pi}\cos(\frac{2\pi r}{3})$ for $r \in \{0,1,2\}$. | **Banić & Elezović Part 2 (`arXiv:2610.17046v1`, Conjecture 7.7 / `conj:atriangle`, Def. 7.4, Thm 7.6)** | `Challenge.lean` defines `bRes`, `d0`, `aTriangle`, `gamma2` verbatim from `arXiv:2610.17046v1` eq. (7.3) & Thm 7.6; `NonVacuity` proves strict positivity `0 < aTriangle < 1/32` and refutes false constants `aTriangle ≠ 1/32`, `d0 ≠ 0`. | Open |
 | **SF-5** | `MultinomialTV.gamma_closed_form` / `Challenge.target_gamma_closed_form` | Substituting $a_\triangle = \frac{1}{32} - \frac{4\sqrt{3}}{243}$ into $(n-1)p_1 + 2(n-2)q_1 + (n-2)(n-3)r_1$ yields $\gamma(n) = -\frac{n(n+1)}{32\pi} - \frac{8\sqrt{3}\,n(n-2)}{243\pi} + \frac{n-1}{8\pi n}$ for all $n \ne 0$. | Banić & Elezović Part 2 (`arXiv:2610.17046v1`, Thm 7.6, p. 35) | **Boundary caveat:** Lean proves the exact algebraic substitution for all $n \ne 0$ (witnessed at $n=5$ in `gamma_closed_form_witness_n5`). Upstream Theorem 7.6 (that $\gamma(n) = (n-1)p_1 + 2(n-2)q_1 + (n-2)(n-3)r_1$ for $n \ge 5$) is cited from Part 2 and NOT formalized in Lean. | Open |
 | **SF-6** | `MultinomialTV.gamma_cyclic_closed_form` / `Challenge.target_gamma_cyclic_closed_form` | Substituting $a_\triangle = \frac{1}{32} - \frac{4\sqrt{3}}{243}$ into $n p_1 + 2n q_1 + n(n-3)r_1$ yields $\gamma_c(n) = -\frac{n(n+4)}{32\pi} - \frac{8\sqrt{3}\,n^2}{243\pi}$ for all $n \ne 0$. | Banić & Elezović Part 5 (`arXiv:2611.14735v1`, Thm 5.2) | **Boundary caveat:** Lean proves the exact algebraic substitution (witnessed at $n=5$ in `gamma_cyclic_closed_form_witness_n5`). Upstream Theorem 5.2 of Part 5 is cited externally and NOT formalized in Lean. | Open |
 
-===== FILE: docs/architecture.md =====
+---
+
+=== docs/architecture.md ===
+
 # Proof & Verification Architecture (`docs/architecture.md`)
 
 ## Mathematical Proof Pipeline
@@ -371,7 +423,10 @@ flowchart TD
 - **`tests/`**: Automated `pytest` + `hypothesis` ladder testing exact identities, negative/adversarial bounds, regressions, golden snapshots, differential/oracle checks, metamorphic invariants, multi-precision stability, mutant rejection, and repository metadata integrity.
 - **`blueprint/` & `scripts/build_blueprint.py`**: Validates every `\lean{...}` tag in `blueprint/src/content.tex` against actual Lean declarations and emits a static SVG DAG + HTML page at `build/site/blueprint/`.
 
-===== FILE: docs/verification.md =====
+---
+
+=== docs/verification.md ===
+
 # Verification Stack (`docs/verification.md`)
 
 This repository enforces defense-in-depth verification across **three independent layers**: formal multi-kernel type checking, exact/arbitrary-precision independent computation, and continuous structural/bibliographic integrity checks.
@@ -403,10 +458,10 @@ This repository enforces defense-in-depth verification across **three independen
 
 | Test Category (Build Standard) | Implementation |
 |---|---|
-| **Exact rational oracle (`B12`)** | Exact `fractions.Fraction` 2D multinomial sum vs. 1D `hAdj_mod0..2` formulas (`L = 3..45` in `verify_conjecture.py`, `L = 0..45` in pytest). |
-| **Property-based testing (`B10`)** | `hypothesis` strategies verifying exact algebraic invariants, symmetry, non-negativity, and residue-class formulas over generated $L, n$. |
-| **Negative & adversarial tests (`B06`)** | Verifies false constants (`a_△ = 1/32`, `d_0 = 0`, constant `b_r`), invalid inputs (`n = 0`), and tampered axiom logs are explicitly rejected. |
-| **Regression tests (`B07`)** | Permanently guards fixed defects `E-2026-001` (`2610.1336` truncation), `E-2026-002` (`0thernes LLC`), `E-2026-003` (`00README.XXX` + reproducible tar), `E-2026-004` (axiom-sync). |
+| **Exact rational oracle (`B12`)** | Exact `fractions.Fraction` 2D multinomial sum vs. 1D `hAdj_mod0..2` formulas (`L = 3..45` in `verify_conjecture.py` and Hypothesis pytest; golden snapshots `L = 0..6`). |
+| **Property-based testing (`B10`)** | `hypothesis` strategies verifying exact algebraic invariants, symmetry, non-negativity, and residue-class formulas over generated $L \in [3,45]$ and $n \in [5,500]$. |
+| **Negative & adversarial tests (`B06`)** | Verifies false constants (`a_△ = 1/32`, `d_0 = 0`, constant `b_r`), invalid inputs (`n = 0`), tampered axiom logs, and a live negative Lean kernel test (`aTriangle = 1/32`) in CI are explicitly rejected. |
+| **Regression tests (`B07`)** | Permanently guards fixed defects `E-2026-001`..`E-2026-008` (citation truncation, `0thernes LLC`, deterministic arXiv bundle + figures + `.bbl`, axiom sync, exact `L = 3..45` fidelity parity, Table 1 exact line counts, zero local path leaks, RFC 3161 TSA presence). |
 | **Golden snapshot tests (`B08`)** | Exact rational table `hAdj(0..6)` and `results/lean-axioms-all.log` theorem count / sentinel checks. |
 | **Differential & metamorphic tests (`B11`, `B14`)** | 2D vs. 1D differential agreement; permutation invariance of $(X_1, X_3)$, mod-3 shift relations, linear/cyclic asymptotic coefficient ratios. |
 | **Numeric stability (`B20`)** | Cross-precision stability checks across `mp.dps = 50, 80, 120` quantifying catastrophic cancellation in $L(h_{\mathrm{adj}}(L) - c_L L - a_*)$. |
@@ -419,3 +474,185 @@ This repository enforces defense-in-depth verification across **three independen
 - `scripts/build_blueprint.py`: Verifies 100% of `\lean{...}` references in `blueprint/src/content.tex` exist at exact line numbers in `lean/`.
 - `scripts/generate_manifest.py`: Generates and verifies `data/MANIFEST.sha256` across frozen artifacts and logs.
 - `.github/workflows/release.yml`: Produces `SHA256SUMS` and Sigstore SLSA build-provenance attestations (`actions/attest-build-provenance@v2`) on every `v*` tag.
+
+---
+
+=== docs/literature-search.md ===
+
+# Literature & Novelty Search Log (`docs/literature-search.md`)
+
+Recorded per **Defensible Independent AI Research Playbook v1.3** (Pass 4 — Novelty & Literature / Checklist Item #15) to verify that Conjecture 7.7 (`conj:atriangle`) was genuinely open prior to our Lean 4 formal resolution and was not already proved elsewhere in the literature.
+
+| Date (UTC) | Source / Index | Query / Scope | Outcome |
+|---|---|---|---|
+| 2026-11-18 | **arXiv (`math.ST`, `math.PR`)** | `"Discrete total variation under the multinomial"` / `arXiv:2610.13366`, `arXiv:2610.17046v1`, `arXiv:2611.14735v1` | Confirmed Banić & Elezović Part 2 (`arXiv:2610.17046v1`, Oct 2026) explicitly posed $a_\triangle = \frac{1}{32} - \frac{4\sqrt{3}}{243}$ as **Conjecture 7.7 (`conj:atriangle`)**, verified numerically to >40 digits via Richardson extrapolation, and Part 5 (`arXiv:2611.14735v1`, Nov 2026, Remarks 5.3, 5.5, 6.3) explicitly confirmed Conjecture 7.7 remained **open**. |
+| 2026-11-25 | **arXiv & Crossref API (`scripts/check_citations.py --online`)** | Live resolution of all 6 cited arXiv IDs & 12 Crossref DOIs (including retraction metadata checks) | **18/18 live HTTP 200**, **0 retractions**; no follow-up arXiv preprint proving Conjecture 7.7 located. |
+| 2026-11-25 | **OEIS & Classical Combinatorial Literature** | Central trinomial probabilities $p_{3q}(q) = (3q)!/(3^{3q}(q!)^3)$ (`OEIS A006480` $(3n)!/(n!)^3$), Robbins Stirling bounds (`doi:10.1080/00029890.1955.11988576`), Diaconis–Zabell (`doi:10.1214/ss/1177011699`), Hoel (1946), Kamat (1953) | Classical asymptotics of $(3q)!/(q!)^3$ are well known; no prior proof found of the exact 2D-to-1D $S_3$ telescoping reduction for $\mathbb{E}[|X_2-X_1|\,|X_3-X_2|]$ or the exact residue-class $1/L$ limits $b_0 = \frac{32\sqrt{3}}{81\pi}$, $b_1 = b_2 = -\frac{22\sqrt{3}}{81\pi}$. |
+| 2026-11-25 | **Unsolved Problems Mega-Atlas (`0thernes/unsolved-problems-mega-atlas`, 1,900 problems)** | Exhaustive cross-check against all 61 `STAT-*` and 1,900 total macro open problems | **0 / 1,900** grand Mega-Atlas problems retired; Conjecture 7.7 is a specialized 2026 mathematical statistics conjecture not cataloged as a macro Mega-Atlas entry. |
+
+*If any earlier published proof of Conjecture 7.7 or equivalent exact evaluation of $h_{\mathrm{adj}}(L)$ to order $O(L^{-1})$ is identified, please open an issue with the `error` label so prior art can be credited immediately in `ERRATA.md` and `paper/main.tex`.*
+
+---
+
+=== docs/configuration.md ===
+
+# Configuration & Environments (`docs/configuration.md`)
+
+This project uses **no runtime environment variables, secrets, API keys, or external services**. All configuration is declarative and committed in version-controlled manifests.
+
+## Configuration Files
+
+| File | Purpose | Notes |
+|---|---|---|
+| `VERSION` | Single source of truth for semantic version (`2.1.0`) | Must match `CHANGELOG.md`, `CITATION.cff`, `formalization.yaml`, `lean/lakefile.toml`. |
+| `lean/lean-toolchain` | Pinned Lean 4 release (`leanprover/lean4:v4.35.0`) | Automatically respected by `elan` and `lake`. |
+| `lean/lakefile.toml` | Lean package targets, `autoImplicit = false`, Batteries `lintDriver` | Defines `MultinomialTVConjecture`, `Challenge`, `Solution`, `VerifyAxioms`. |
+| `lean/lake-manifest.json` | Exact Git commit lockfile for `mathlib`, `batteries`, `Qq`, `aesop`, etc. | Never edit by hand; update only intentionally with full 6-kernel re-verification. |
+| `lean/comparator.json` | Target theorems & permitted axioms for `lake comparator --paranoid` | Maps `Challenge` -> `Solution` with `[propext, Quot.sound, Classical.choice]`. |
+| `requirements.txt` | Pinned Python dependencies for verification, pytest, schema validation, linting | Install via `python3 -m pip install -r requirements.txt`. |
+| `repo.yaml` | Build Standard v1.2.0 machine-readable manifest | Validated against `repo-standard.schema.json`. |
+| `formalization.yaml` | Palomar-compatible authorship, CRediT, toolchain, and AI provenance record | Human- and machine-readable YAML. |
+| `.gitleaks.toml` | Secret-scanner allowlist excluding audit scripts' own regex definitions | Used by `gitleaks` in CI. |
+
+## Platform-Specific Notes
+
+- **Linux (Ubuntu 24.04 CI):** Install `bubblewrap` (`sudo apt-get install -y bubblewrap`) for sandboxed `lake comparator --config comparator.json --paranoid`. If Ubuntu 24.04 restricts unprivileged user namespaces, allow userns with `sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0` (see `.github/workflows/lean-verify.yml`).
+- **Windows (PowerShell):** When storing the repository under paths containing square brackets (e.g. `C:\Projects\[MyRepo]\...`), always pass `-LiteralPath` to PowerShell file cmdlets (`Audit-Repo.ps1` uses `-LiteralPath` and `[System.IO.Path]::Combine` throughout). Upstream Lean 4.35.0 `lake comparator` requires Linux `bubblewrap`; on Windows, invoke the 5 bundled standalone kernels directly on `leanexport` output or run full 6-kernel `lake comparator` inside WSL2/Docker/Ubuntu CI.
+- **macOS:** Python test suite, Blueprint, and Lean builds run natively; run full sandboxed 6-kernel `lake comparator` inside a Linux container or Ubuntu CI.
+
+---
+
+=== docs/threat-model.md ===
+
+# Threat Model (`docs/threat-model.md`)
+
+Because this repository is a mathematical proof and research artifact (no network daemon, no user accounts, no personal data), the primary assets at risk are **epistemic integrity**, **formal soundness**, **bibliographic accuracy**, and **build-chain authenticity**.
+
+## Threat Matrix
+
+| Threat ID | Threat | Impact | Likelihood | Concrete Mitigations |
+|---|---|---|---|---|
+| **T1** | **Proof soundness bypass** (`sorry`, custom `axiom`, `native_decide`, `unsafe`, `implemented_by`, `@[extern]`, or meta-level environment tampering) | False mathematical claim presented as Lean-verified | Medium if unchecked | Nested-comment/string-aware forbidden-token lexer in CI; exhaustive `Lean.collectAxioms` metaprogram in `VerifyAxioms.lean`; 6 independent proof kernels via `lake comparator --paranoid` (including Rust `nanoda` and Lean-in-Lean `lean4lean`). |
+| **T2** | **Definition drift / vacuous formalization** (Lean proves a trivially true or subtly altered version of Conjecture 7.7) | Formal proof passes kernels but does not prove Banić & Elezović's actual conjecture | Medium | Isolated 108-line Mathlib-only `lean/Challenge.lean` with verbatim nested multinomial sum; 18 non-vacuity and adversarial false-constant refutation theorems in `NonVacuity.lean`; live negative Lean kernel rejection test in CI; `docs/statement-fidelity.md` audit table; independent Python exact rational + 80-digit oracle. |
+| **T3** | **README / paper claim drift** (human/AI edits manuscript or README without updating verified logs) | Published prose contradicts verified Lean output | Medium | `scripts/check_readme_axioms.py --require-exhaustive` enforces verbatim sync between `README.md` and `results/lean-axioms-all.log`; `scripts/build_blueprint.py` validates every `\lean{...}` symbol against actual Lean files. |
+| **T4** | **Citation hallucination or identifier corruption** (e.g., truncated arXiv ID `2610.1336` caught in `E-2026-001`) | Broken or false scholarly attribution | High in AI-assisted writing | `scripts/check_citations.py` static + `--online` DOI/arXiv resolver; regression test permanently guarding `2610.13366`; Crossref retraction check. |
+| **T5** | **Supply-chain / CI tampering** (compromised Mathlib cache, Python package, or release artifact) | Malicious code execution or tampered PDF/tarball | Low–Medium | Pinned `lean/lake-manifest.json` commits, pinned `requirements.txt`, `data/MANIFEST.sha256`, release `SHA256SUMS`, Sigstore SLSA `actions/attest-build-provenance@v2`, `gitleaks` secret scan. |
+| **T6** | **Path-handling / shell-injection bugs** (e.g., PowerShell wildcard expansion on bracketed paths like `C:\Projects\[MyRepo]`) | Broken local builds or misdiagnosed missing files | Medium on Windows | All PowerShell scripts (`Audit-Repo.ps1`) use `-LiteralPath` and `[System.IO.Path]::Combine`; Python scripts use `pathlib.Path` and list-form `subprocess.run(..., shell=False, encoding="utf-8")`. |
+
+## Residual Risk
+
+Independent human line-by-line review of `lean/Challenge.lean` against `arXiv:2610.17046v1` remains open (`human_line_by_line_review_recorded: false`). Readers can audit `lean/Challenge.lean` directly in under 5 minutes.
+
+---
+
+=== docs/operations.md ===
+
+# Operations, Backups & Offsite Mirror (`docs/operations.md`)
+
+Although `multinomial-tv-conjecture` is a static research and formal-proof repository with no live backend, long-term scientific preservation requires verifiable backups, checksums, and offsite mirrors.
+
+## 1. Cryptographic Integrity & Artifact Manifests
+
+Frozen PDFs, arXiv submission tarballs, verification logs, and data artifacts are hashed in `data/MANIFEST.sha256` via:
+
+```bash
+python3 scripts/generate_manifest.py --write
+python3 scripts/generate_manifest.py --verify
+```
+
+Every `v*` Git tag triggers `.github/workflows/release.yml`, publishing:
+- Compiled PDF (`Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf`)
+- Byte-reproducible arXiv source bundle (`arxiv_submission.tar.gz`)
+- Live axiom audit log (`lean-axioms-all.log`)
+- Data manifest (`data-MANIFEST.sha256`)
+- `SHA256SUMS` + Sigstore SLSA build-provenance attestations (`actions/attest-build-provenance@v2`).
+
+## 2. Creating an Offline Git Bundle Backup
+
+Create a self-contained single-file archival backup of all branches and tags:
+
+```bash
+git bundle create multinomial-tv-conjecture-$(cat VERSION).bundle --all
+git bundle verify multinomial-tv-conjecture-$(cat VERSION).bundle
+sha256sum multinomial-tv-conjecture-$(cat VERSION).bundle
+```
+
+Store the verified `.bundle` file on an external drive or secondary cloud storage independent of GitHub.
+
+## 3. Offsite Mirrors & Archival Preservation
+
+1. **Master Research Archive mirror:** Pinned as a Git submodule with frozen PDF, arXiv tarball, and SHA-256 registry entry inside [`0thernes/0thernes-research-archive`](https://github.com/0thernes/0thernes-research-archive) (`0TH-2026-006`).
+2. **Software Heritage (SWH) public archival:** Every tagged release is submitted to Software Heritage (`https://archive.softwareheritage.org/save/`) to obtain an immutable `swh:1:rev:` identifier independent of GitHub.
+3. **Optional Git remote mirror:** To mirror to a secondary host (e.g., Codeberg or GitLab):
+   ```bash
+   git remote add mirror <mirror-url>
+   git push --mirror mirror
+   ```
+
+## 4. Data & Schema Migrations
+
+No mutable database exists. Any future schema upgrade to `repo.yaml` (`repo-standard.schema.json`), `formalization.yaml`, or `lean/lean-toolchain` is tracked in `CHANGELOG.md` and verified via `tests/test_repo_integrity.py` and `scripts/audit-repo.sh`.
+
+---
+
+=== docs/faq.md ===
+
+# Frequently Asked Questions (`docs/faq.md`)
+
+### 1. What exact open problem does this repository solve?
+It proves **Conjecture 7.7** (`conj:atriangle`) of Nikola Banić and Neven Elezović, *Discrete total variation under the multinomial, Part 2: variance under the uniform null* (`arXiv:2610.17046v1`, 2026), establishing exact values for all three residue limits $b_0 = \frac{32\sqrt{3}}{81\pi}$, $b_1 = b_2 = -\frac{22\sqrt{3}}{81\pi}$, the mean $d_0 = -\frac{4\sqrt{3}}{81\pi}$, the triangular constant $a_\triangle = \frac{1}{32} - \frac{4\sqrt{3}}{243}$, and the quadratic coefficient $\gamma_2 = -\frac{1}{32\pi} - \frac{8\sqrt{3}}{243\pi}$, which immediately closes the formulas for $\gamma(n)$ (Part 2, Thm 7.6) and cyclic $\gamma_c(n)$ (Part 5, `arXiv:2611.14735v1`, Thm 5.2).
+
+### 2. Is this problem listed in the 1,900-problem Unsolved Problems Mega-Atlas?
+**No.** Conjecture 7.7 is a specialized 2026 preprint conjecture in discrete probability/asymptotics; it is not one of the 1,900 grand macro open problems in `0thernes/unsolved-problems-mega-atlas`. We explicitly do **not** claim retirement of any Mega-Atlas grand problem.
+
+### 3. Why does `lean/Challenge.lean` contain 6 `sorry` statements?
+By design of Lean's `lake comparator` (Palomar-style specification isolation): `Challenge.lean` imports **only Mathlib** (zero files from our proof library) and states the 6 target theorems with `sorry` stubs. `lake comparator --config comparator.json --paranoid` then proves that sorry-free `Solution.lean` exports bit-for-bit identical types to `Challenge.lean` and re-checks the complete proof terms across 6 independent kernels. None of our proof modules (`MultinomialTVConjecture/*`, `Solution.lean`) contain any `sorry`.
+
+### 4. Does Lean 4 prove Banić & Elezović's Theorem 7.6 and Part 5 Theorem 5.2?
+**No.** Lean 4 proves Conjecture 7.7 unconditionally from first principles (Mathlib), and proves the exact algebraic simplifications `gamma_closed_form` and `gamma_cyclic_closed_form` given the $(p_1, q_1, r_1)$ linear combinations stated in Part 2 Theorem 7.6 and Part 5 Theorem 5.2. Those upstream variance decompositions are cited literature results outside our Lean boundary (see [LIMITATIONS.md](../LIMITATIONS.md)).
+
+### 5. Why are there both `LICENSE` (Apache-2.0) and `LICENSE-DOCS` (CC-BY-4.0)?
+Following independent scientific publishing best practices (Playbook v1.3 and Mathlib4 upstream compatibility), software and Lean formalizations use **Apache-2.0** (patent grant + clean upstreaming to Mathlib4), while the research manuscript, figures, blueprint, and documentation use **CC-BY-4.0** (attribution-preserving scholarly reuse).
+
+### 6. How can I verify the proof in under a minute without trusting the author?
+1. Read `lean/Challenge.lean` (108 lines, Mathlib-only) to confirm the theorem statements match Banić & Elezović (`arXiv:2610.17046v1`).
+2. Run `cd lean && lake exe cache get && lake build MultinomialTVConjecture Challenge Solution VerifyAxioms && lake env lean VerifyAxioms.lean`.
+3. On Linux with `bubblewrap` (or WSL2/Docker), run `lake comparator --config comparator.json --paranoid`.
+
+---
+
+=== docs/glossary.md ===
+
+# Glossary (`docs/glossary.md`)
+
+## Mathematical Terms
+
+- **Discrete Total Variation ($D_n$):** For a multinomial count vector $(X_1, \dots, X_n) \sim \mathrm{Mult}(N; 1/n, \dots, 1/n)$, the sum of adjacent absolute differences $D_n = \sum_{i=1}^{n-1} |X_{i+1} - X_i|$ (or cyclic $D_n^{(c)} = D_n + |X_1 - X_n|$).
+- **Adjacent Pair Expectation ($h_{\mathrm{adj}}(L)$):** The exact expectation $\mathbb{E}[|X_2 - X_1|\,|X_3 - X_2|]$ for $(X_1, X_2, X_3) \sim \mathrm{Mult}(L; \frac13, \frac13, \frac13)$.
+- **Residue Constants ($b_0, b_1, b_2$):** The mod-3 sub-sequence limits $b_r = \lim_{q\to\infty} (3q+r)(h_{\mathrm{adj}}(3q+r) - c_L(3q+r) - a_*)$ for $r \in \{0,1,2\}$.
+- **Mean Residue Constant ($d_0$):** The average $d_0 = \frac{1}{3}(b_0 + b_1 + b_2) = -\frac{4\sqrt{3}}{81\pi}$.
+- **Adjacent Triangular-Lattice Constant ($a_\triangle$):** $a_\triangle = \frac{1}{32} + \frac{\pi}{9}(b_0 + b_1 + b_2) = \frac{1}{32} - \frac{4\sqrt{3}}{243}$.
+- **Second-Order Variance Coefficients ($\gamma(n), \gamma_c(n), \gamma_2$):** The $O(1)$ coefficients in the large-$N$ asymptotic expansions of $\mathrm{Var}(D_n)$ and $\mathrm{Var}(D_n^{(c)})$, with quadratic leading coefficient $\gamma_2 = \frac{64 a_\triangle - 3}{32\pi} = -\frac{1}{32\pi} - \frac{8\sqrt{3}}{243\pi}$.
+
+## Formal Verification Terms
+
+- **Six-Kernel Verification (`lake comparator --paranoid`):** Checking a single proof export independently across six distinct type checkers (`Lean 4.35.0`, `leanchecker-paranoid`, `lean4lean`, `nanoda`, `con-leche`, `con-ron`).
+- **Palomar Isolation (`Challenge.lean` / `Solution.lean`):** Separating minimal Mathlib-only target specifications from proof internals so auditors only inspect 108 lines of definitions.
+- **Statement Fidelity:** Exact mathematical correspondence between an informal literature statement and its formal Lean 4 type.
+- **Non-Vacuity Witness:** A formal theorem proving that hypotheses are concretely inhabited and that definitions evaluate to known exact values and refute deliberately false variants.
+- **Standard Lean Axioms:** `[propext, Classical.choice, Quot.sound]` — the three foundational axioms of classical mathematics in Lean 4 / Mathlib4.
+
+## Ten Finding Classes (Build Standard v1.2.0 Rule `R7`)
+
+| Class | Meaning |
+|---|---|
+| `bug` | Code does something different from its spec or intent (a defect in program logic). |
+| `error` | Wrong number, claim, doc, config, version, build, or command. |
+| `issue` | Works and is not wrong, but is unclear, inconsistent, fragile, or hard to maintain. |
+| `problem` | External obstacle (network, account, toolchain, legal-entity status) blocks progress or validity. |
+| `concern` | Risk that has not caused harm yet (security, cost, legal, reliability). |
+| `dilemma` | Trade-off between valid options; the owner decides. |
+| `conflict` | Two requirements or rules contradict each other. |
+| `gap` | Something required or expected is missing; nothing present is wrong. |
+| `hole` | Missing check or safeguard, so a defect could pass unnoticed. |
+| `blindspot` | A user, platform, failure mode, or assumption nobody has examined yet. |

@@ -53,6 +53,10 @@ def render_portal() -> str:
         <a class="pill primary" href="blueprint/">Interactive Lean 4 Blueprint</a>
         <a class="pill" href="paper/Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf">Preprint PDF</a>
         <a class="pill" href="results/lean-axioms-all.log">Verbatim Axiom Log</a>
+        <a class="pill" href="results/comparator-paranoid.log">6-Kernel Comparator Log</a>
+        <a class="pill" href="data/MANIFEST.sha256">SHA-256 Manifest</a>
+        <a class="pill" href="https://github.com/0thernes/multinomial-tv-conjecture/blob/main/docs/statement-fidelity.md">Statement-Fidelity Audit</a>
+        <a class="pill" href="https://github.com/0thernes/multinomial-tv-conjecture/blob/main/CLAIMS.md">Claims Ledger</a>
         <a class="pill" href="https://github.com/0thernes/multinomial-tv-conjecture">GitHub Repository</a>
       </div>
     </div>
@@ -61,15 +65,15 @@ def render_portal() -> str:
     <div class="grid">
       <article class="card">
         <h2>6-Kernel Isolation</h2>
-        <p>Isolated Mathlib-only <code>Challenge.lean</code> (~105 lines) matched against sorry-free <code>Solution.lean</code> via <code>lake comparator --paranoid</code> (Lean 4.35.0, leanchecker-paranoid, lean4lean, nanoda, con-leche, con-ron).</p>
+        <p>Isolated Mathlib-only <code>Challenge.lean</code> (108 lines) matched against sorry-free <code>Solution.lean</code> via sandboxed <code>lake comparator --paranoid</code> (Lean 4.35.0, leanchecker-paranoid, lean4lean, nanoda, con-leche, con-ron) plus live negative kernel rejection in CI.</p>
       </article>
       <article class="card">
         <h2>576 Exhaustively Audited Theorems</h2>
-        <p>Zero <code>sorry</code>, zero <code>admit</code>, zero custom axioms, zero <code>native_decide</code>. All 576 theorems under <code>MultinomialTV</code> depend strictly on <code>[propext, Classical.choice, Quot.sound]</code>.</p>
+        <p>Zero <code>sorry</code>, zero <code>admit</code>, zero custom axioms, zero <code>native_decide</code>, zero Batteries linter warnings. All 576 theorems under <code>MultinomialTV</code> depend strictly on <code>[propext, Classical.choice, Quot.sound]</code>.</p>
       </article>
       <article class="card">
-        <h2>Non-Vacuity &amp; Exact Oracles</h2>
-        <p>18 concrete small-L, sign, and adversarial false-constant refutation witnesses in <code>NonVacuity.lean</code>, plus independent exact rational &amp; 80-digit <code>mpmath</code> checks.</p>
+        <h2>Non-Vacuity, Oracles &amp; Provenance</h2>
+        <p>18 concrete small-L, sign, and adversarial false-constant refutation witnesses in <code>NonVacuity.lean</code>, independent exact rational (L=3..45) &amp; 80-digit <code>mpmath</code> checks (&lt;3e-55), Sigstore SLSA Rekor attestations, and DigiCert RFC 3161 timestamping.</p>
       </article>
     </div>
     <div class="note">
@@ -112,10 +116,15 @@ def main() -> int:
         (SITE / "paper").mkdir(parents=True, exist_ok=True)
         shutil.copy2(pdf_src, SITE / "paper" / pdf_src.name)
 
-    ax_src = ROOT / "results" / "lean-axioms-all.log"
-    if ax_src.is_file():
-        (SITE / "results").mkdir(parents=True, exist_ok=True)
-        shutil.copy2(ax_src, SITE / "results" / ax_src.name)
+    for rel_src, dst_dir in (
+        (ROOT / "results" / "lean-axioms-all.log", SITE / "results"),
+        (ROOT / "results" / "comparator-paranoid.log", SITE / "results"),
+        (ROOT / "data" / "MANIFEST.sha256", SITE / "data"),
+        (ROOT / "data" / "MANIFEST.sha256.tsr", SITE / "data"),
+    ):
+        if rel_src.is_file():
+            dst_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(rel_src, dst_dir / rel_src.name)
 
     broken = verify_internal_links(SITE)
     if broken:

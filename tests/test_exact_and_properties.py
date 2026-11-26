@@ -53,8 +53,8 @@ def test_golden_exact_hadj_matches_nonvacuity(L: int, expected: Fraction) -> Non
 
 # --- B10 + B11 + B12: Hypothesis property-based & differential exact rational oracle ---
 
-@given(L=st.integers(min_value=3, max_value=36))
-@settings(max_examples=34, derandomize=True)
+@given(L=st.integers(min_value=3, max_value=45))
+@settings(max_examples=43, derandomize=True)
 def test_property_2d_equals_1d_exact_rational(L: int) -> None:
     """Property-based & differential oracle test (B10, B11, B12): 2D sum == 1D formula over Q."""
     direct = vc.h_adj_direct_exact(L)

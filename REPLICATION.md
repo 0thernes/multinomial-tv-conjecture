@@ -29,7 +29,7 @@ lake build MultinomialTVConjecture Challenge Solution VerifyAxioms
 # 3. Run exhaustive axiom audit (verify ALL_THEOREMS_AXIOM_AUDIT_PASS & strict 3-axiom allowlist)
 lake env lean VerifyAxioms.lean
 
-# 4. Run 6-kernel comparator (Linux with bubblewrap; add --inadvisably-no-sandbox on Windows/macOS)
+# 4. Run 6-kernel comparator (Linux with bubblewrap; use WSL2/Docker on Windows or macOS)
 lake comparator --config comparator.json --paranoid
 
 # 5. Return to repo root and run Python exact + 80-digit verifier, full test ladder, citations, blueprint, site
@@ -55,7 +55,8 @@ bash scripts/audit-repo.sh .
 
 | Date | Replicator | Environment | Commit / Tag | Lean 6-Kernel | Python / Pytest | Notes |
 |---|---|---|---|---|---|---|
-| 2026-11-25 | Alexander S. Donahue (author, local clean check) | Windows 11, Lean 4.35.0, Python 3.13.12, Tectonic 0.17.0 | `v2.0.0` | PASS (6 kernels, `--inadvisably-no-sandbox`) | PASS | Full Cycle 1–3 audit; see `docs/run-log.md`. |
-| 2026-11-25 | GitHub Actions CI (`ubuntu-24.04`, `windows-latest`, `macos-latest`) | Hosted runners, Lean 4.35.0 + `bubblewrap`, Python 3.12 | `v2.0.0` | PASS (6 kernels, sandboxed Linux) | PASS (3 OSes) | Automated clean-room CI runs on `main`. |
+| 2026-11-25 | Alexander S. Donahue (author, local clean check) | Windows 11, Lean 4.35.0, Python 3.13.12, Tectonic 0.17.0 | `v2.0.0` | PASS (5/6 kernels directly on Windows: `lean`, `leanchecker-paranoid`, `nanoda`, `con-leche`, `con-ron`; full 6/6 incl. `lean4lean` in Ubuntu 24.04 CI) | PASS (24/24 pytest) | Initial v2.0.0 release check; see `docs/run-log.md`. |
+| 2026-11-25 | GitHub Actions CI (`ubuntu-24.04`, `windows-latest`, `macos-latest`) | Hosted runners, Lean 4.35.0 + `bubblewrap`, Python 3.12 | `v2.0.0` (`18d95f0`) | PASS (6/6 kernels, sandboxed Linux CI `#45723630668`, Rekor `4114226539`) | PASS (3 OSes, `#45723630598`) | Automated clean-room CI runs on `main`. |
+| 2026-11-25 | Alexander S. Donahue + GitHub Actions CI | Windows 11 local + Ubuntu 24.04 / Windows / macOS CI | `v2.1.0` | PASS (6/6 kernels + live negative kernel rejection) | PASS (3 OSes + RFC 3161 TSA) | Full 3-cycle hardening audit; see `docs/reviews/red-team-2026-11-25.md`. |
 
 *Independent external replications are invited! Open an issue with the `replication` label containing your environment, commit SHA, and command output to be added to this table.*

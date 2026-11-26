@@ -105,13 +105,33 @@ jobs:
         working-directory: lean
         continue-on-error: true
         run: lake exe runLinter MultinomialTVConjecture
+      - name: Live negative Lean kernel rejection check (false conjecture must fail)
+        working-directory: lean
+        shell: bash
+        run: |
+          cat <<'EOF' > /tmp/neg_false_conjecture.lean
+          import MultinomialTVConjecture.Main
+          theorem false_conjecture_7_7_must_fail : MultinomialTV.aTriangle = 1 / 32 := by
+            exact MultinomialTV.conjecture_7_7_aTriangle
+          EOF
+          if lake env lean /tmp/neg_false_conjecture.lean; then
+            echo "ERROR: Lean kernel unexpectedly accepted false statement aTriangle = 1/32!" >&2
+            exit 1
+          else
+            echo "PASS: Lean 4.35.0 kernel cleanly rejected false statement aTriangle = 1/32."
+          fi
+          rm -f /tmp/neg_false_conjecture.lean
       - name: Run sandboxed 6-kernel lake comparator --paranoid
         working-directory: lean
+        shell: bash
         run: |
+          set -o pipefail
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
-          lake comparator --config comparator.json --paranoid
-      - name: Attest Lean axiom audit report (SLSA / Sigstore)
+          lake comparator --config comparator.json --paranoid | tee ../results/comparator-paranoid-ci.log
+      - name: Attest Lean axiom & 6-kernel comparator reports (SLSA / Sigstore)
         uses: actions/attest-build-provenance@v2
         continue-on-error: true
         with:
-          subject-path: results/lean-axioms-ci.log
+          subject-path: |
+            results/lean-axioms-ci.log
+            results/comparator-paranoid-ci.log

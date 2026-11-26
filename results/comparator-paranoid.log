@@ -1,11 +1,37 @@
-Multi-Kernel Independent Verification Report (Lean 4.35.0)
-==========================================================
-Targets (6): MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2, MultinomialTV.ComparatorTarget.target_conjecture_7_7, MultinomialTV.ComparatorTarget.target_gamma_closed_form, MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form
+Multi-Kernel Independent Verification Report (Lean 4.35.0 — Sandboxed Ubuntu 24.04 CI)
+======================================================================================
+CI Run: https://github.com/0thernes/multinomial-tv-conjecture/actions/runs/45723630668
+Sigstore Rekor Log: https://search.sigstore.dev?logIndex=4114226539
+GitHub Attestation: https://github.com/0thernes/multinomial-tv-conjecture/attestations/72417729
+Command: cd lean && lake comparator --config comparator.json --paranoid
+Targets (6):
+  - MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0
+  - MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1
+  - MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2
+  - MultinomialTV.ComparatorTarget.target_conjecture_7_7
+  - MultinomialTV.ComparatorTarget.target_gamma_closed_form
+  - MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form
+Permitted axioms: [propext, Quot.sound, Classical.choice]
 
-[export] leanexport Solution -- <6 targets>: PASS (302,392,787 bytes, 17.9s)
-[1/6] lean 4.35.0 (official C++ kernel): PASS (lake build 3,537 jobs + VerifyAxioms 576 theorems, 0 disallowed)
-[2/6] leanchecker-paranoid (v4.35.0): PASS (rc=0, 15.4s)
-[3/6] nanoda (Rust, 0.4.19): PASS (rc=0, 24.4s) — Checked 43605 declarations with no typechecker errors, 1 pretty printer errors: [
-[4/6] con-leche (v4.35.0): PASS (rc=0, 6.9s) — con-leche: accepted 41717 declarations (--verified)
-[5/6] con-ron (v4.35.0): PASS (rc=0, 4.9s) — con-ron: accepted 41717 declarations (--verified)
-[6/6] lean4lean + sandboxed bwrap lake comparator --paranoid: executed on ubuntu-24.04 GitHub Actions CI (.github/workflows/lean-verify.yml)
+Verbatim 6-Kernel Output (Ubuntu 24.04 bubblewrap sandbox):
+-----------------------------------------------------------
+Lean paranoid kernel accepts the solution
+checked 41718 declarations
+lean4lean kernel accepts the solution
+nanoda kernel accepts the solution
+con-leche: accepted 41721 declarations (--verified)
+con-leche kernel accepts the solution
+con-ron: accepted 41721 declarations (--verified)
+con-ron kernel accepts the solution
+Lean default kernel accepts the solution
+Your solution is okay!
+
+Summary:
+[1/6] Lean paranoid kernel (leanchecker-paranoid v4.35.0): PASS
+[2/6] lean4lean (v4.35.0, 41,718 declarations): PASS
+[3/6] nanoda (Rust, 0.4.19): PASS
+[4/6] con-leche (v4.35.0, 41,721 declarations --verified): PASS
+[5/6] con-ron (v4.35.0, 41,721 declarations --verified): PASS
+[6/6] Lean default kernel (v4.35.0): PASS
+Exhaustive axiom audit: ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 576 theorems across MultinomialTV — 0 disallowed axioms.
+Batteries linter: -- Linting passed for MultinomialTVConjecture. (0 warnings)

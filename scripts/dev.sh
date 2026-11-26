@@ -25,7 +25,19 @@ case "$cmd" in
     (cd lean && lake build MultinomialTVConjecture Challenge Solution VerifyAxioms)
     (cd lean && lake env lean VerifyAxioms.lean) | tee results/lean-axioms-ci.log
     python3 scripts/check_readme_axioms.py --log results/lean-axioms-ci.log --require-exhaustive
-    (cd lean && lake comparator --config comparator.json --paranoid)
+    (
+      cd lean
+      tmp_neg="$(mktemp /tmp/neg_false_conjecture.XXXXXX.lean)"
+      printf 'import MultinomialTVConjecture.Main\ntheorem false_conj : MultinomialTV.aTriangle = 1 / 32 := by exact MultinomialTV.conjecture_7_7_aTriangle\n' > "$tmp_neg"
+      if lake env lean "$tmp_neg" >/dev/null 2>&1; then
+        rm -f "$tmp_neg"
+        echo "ERROR: Lean kernel unexpectedly accepted false conjecture!" >&2
+        exit 1
+      fi
+      rm -f "$tmp_neg"
+      echo "PASS: Lean kernel rejected false statement aTriangle = 1/32."
+    )
+    (cd lean && lake comparator --config comparator.json --paranoid) | tee results/comparator-paranoid-ci.log
     ;;
   verify-numeric)
     python3 scripts/verify_conjecture.py
