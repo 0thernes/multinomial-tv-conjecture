@@ -1,17 +1,19 @@
 Multi-Kernel Independent Verification Report (Lean 4.35.0 — Sandboxed Ubuntu 24.04 CI)
 ======================================================================================
-CI Run: https://github.com/0thernes/multinomial-tv-conjecture/actions/runs/45747471704
-Commit / Tag: 5ceae10ee73d2c6e4d23c9ce40724f6cfc1f55d1 (v2.2.0, Palomar module headers on all 10 Lean files)
-Sigstore Rekor Log: https://search.sigstore.dev?logIndex=4117130014
-GitHub Attestation: https://github.com/0thernes/multinomial-tv-conjecture/attestations/72475662
+CI Run: https://github.com/0thernes/multinomial-tv-conjecture/actions/runs/45830919144
+Commit / Tag: a1d84d7ab78138dbfbe03427c8147338330dc6ec (v2.3.0, Palomar module headers + weak.linter.mathlibStandardSet = true)
+Sigstore Rekor Log: https://search.sigstore.dev?logIndex=4127149586
+GitHub Attestation: https://github.com/0thernes/multinomial-tv-conjecture/attestations/72684472
 Command: cd lean && lake comparator --config comparator.json --paranoid
-Targets (6):
+Targets (8):
   - MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0
   - MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1
   - MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2
   - MultinomialTV.ComparatorTarget.target_conjecture_7_7
   - MultinomialTV.ComparatorTarget.target_gamma_closed_form
   - MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form
+  - MultinomialTV.ComparatorTarget.target_gamma3_closed_form
+  - MultinomialTV.ComparatorTarget.target_gamma4_closed_form
 Permitted axioms: [propext, Quot.sound, Classical.choice]
 
 Verbatim CI Output:
@@ -25,23 +27,25 @@ warning: Challenge.lean:83:8: declaration uses `sorry`
 warning: Challenge.lean:90:8: declaration uses `sorry`
 warning: Challenge.lean:102:8: declaration uses `sorry`
 warning: Challenge.lean:112:8: declaration uses `sorry`
+warning: Challenge.lean:121:8: declaration uses `sorry`
+warning: Challenge.lean:131:8: declaration uses `sorry`
 Build completed successfully (2075 jobs).
-Exporting #[Quot, Quot.mk, Quot.lift, Quot.ind, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2, MultinomialTV.ComparatorTarget.target_conjecture_7_7, MultinomialTV.ComparatorTarget.target_gamma_closed_form, MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form, propext, Quot.sound, Classical.choice, Nat.add, Nat.sub, Nat.mul, Nat.pow, Nat.gcd, Nat.div, Nat.mod, Nat.beq, Nat.ble, Nat.land, Nat.lor, Nat.xor, Nat.shiftLeft, Nat.shiftRight, String.ofList, Char.ofNat, List, eagerReduce, Nat, String, String.mk, Char, optParam, autoParam, semiOutParam, outParam] from Challenge
+Exporting #[Quot, Quot.mk, Quot.lift, Quot.ind, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2, MultinomialTV.ComparatorTarget.target_conjecture_7_7, MultinomialTV.ComparatorTarget.target_gamma_closed_form, MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form, MultinomialTV.ComparatorTarget.target_gamma3_closed_form, MultinomialTV.ComparatorTarget.target_gamma4_closed_form, propext, Quot.sound, Classical.choice, Nat.add, Nat.sub, Nat.mul, Nat.pow, Nat.gcd, Nat.div, Nat.mod, Nat.beq, Nat.ble, Nat.land, Nat.lor, Nat.xor, Nat.shiftLeft, Nat.shiftRight, String.ofList, Char.ofNat, List, eagerReduce, Nat, String, String.mk, Char, optParam, autoParam, semiOutParam, outParam] from Challenge
 Building Solution
 Build completed successfully (3530 jobs).
-Exporting #[Quot, Quot.mk, Quot.lift, Quot.ind, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2, MultinomialTV.ComparatorTarget.target_conjecture_7_7, MultinomialTV.ComparatorTarget.target_gamma_closed_form, MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form, propext, Quot.sound, Classical.choice, Nat.add, Nat.sub, Nat.mul, Nat.pow, Nat.gcd, Nat.div, Nat.mod, Nat.beq, Nat.ble, Nat.land, Nat.lor, Nat.xor, Nat.shiftLeft, Nat.shiftRight, String.ofList, Char.ofNat, List, eagerReduce, Nat, String, String.mk, Char, optParam, autoParam, semiOutParam, outParam] from Solution
+Exporting #[Quot, Quot.mk, Quot.lift, Quot.ind, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2, MultinomialTV.ComparatorTarget.target_conjecture_7_7, MultinomialTV.ComparatorTarget.target_gamma_closed_form, MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form, MultinomialTV.ComparatorTarget.target_gamma3_closed_form, MultinomialTV.ComparatorTarget.target_gamma4_closed_form, propext, Quot.sound, Classical.choice, Nat.add, Nat.sub, Nat.mul, Nat.pow, Nat.gcd, Nat.div, Nat.mod, Nat.beq, Nat.ble, Nat.land, Nat.lor, Nat.xor, Nat.shiftLeft, Nat.shiftRight, String.ofList, Char.ofNat, List, eagerReduce, Nat, String, String.mk, Char, optParam, autoParam, semiOutParam, outParam] from Solution
 Running Lean paranoid kernel on solution
 Lean paranoid kernel accepts the solution
 Running lean4lean kernel on solution
-checked 41718 declarations
+checked 41726 declarations
 lean4lean kernel accepts the solution
 Running nanoda kernel on solution
 nanoda kernel accepts the solution
 Running con-leche kernel on solution
-con-leche: accepted 41721 declarations (--verified)
+con-leche: accepted 41729 declarations (--verified)
 con-leche kernel accepts the solution
 Running con-ron kernel on solution
-con-ron: accepted 41721 declarations (--verified)
+con-ron: accepted 41729 declarations (--verified)
 con-ron kernel accepts the solution
 Running Lean default kernel on solution
 Lean default kernel accepts the solution
@@ -49,11 +53,11 @@ Your solution is okay!
 
 Summary:
 [1/6] Lean paranoid kernel (leanchecker-paranoid v4.35.0): PASS
-[2/6] lean4lean (v4.35.0, 41,718 declarations): PASS
+[2/6] lean4lean (v4.35.0, 41,726 declarations): PASS
 [3/6] nanoda (Rust, 0.4.19): PASS
-[4/6] con-leche (v4.35.0, 41,721 declarations --verified): PASS
-[5/6] con-ron (v4.35.0, 41,721 declarations --verified): PASS
+[4/6] con-leche (v4.35.0, 41,729 declarations --verified): PASS
+[5/6] con-ron (v4.35.0, 41,729 declarations --verified): PASS
 [6/6] Lean default kernel (v4.35.0): PASS
 Live negative kernel rejection (aTriangle = 1/32): PASS (rejected cleanly by Lean 4.35.0 kernel)
-Exhaustive axiom audit: ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 723 theorems across MultinomialTV — 0 disallowed axioms.
-Batteries linter: -- Linting passed for MultinomialTVConjecture. (0 warnings)
+Exhaustive axiom audit: ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 730 theorems across MultinomialTV — 0 disallowed axioms.
+Batteries & Mathlib style linters: -- Linting passed for MultinomialTVConjecture. (0 warnings)

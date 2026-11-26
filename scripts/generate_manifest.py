@@ -46,6 +46,9 @@ TRACKED_ARTIFACTS = [
 ]
 
 
+BINARY_SUFFIXES = {".pdf", ".gz", ".png", ".zip", ".tsr", ".ots"}
+
+
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as fh:
@@ -58,14 +61,24 @@ def write_manifest() -> int:
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     lines: list[str] = []
     missing: list[str] = []
+    crlf_files: list[str] = []
     for rel in TRACKED_ARTIFACTS:
         p = ROOT / rel
         if not p.is_file():
             missing.append(rel)
             continue
+        if p.suffix.lower() not in BINARY_SUFFIXES and b"\r\n" in p.read_bytes():
+            crlf_files.append(rel)
+            continue
         lines.append(f"{sha256_file(p)}  {rel}")
     if missing:
         print(f"ERROR: missing artifacts for manifest: {missing}", file=sys.stderr)
+        return 1
+    if crlf_files:
+        print(
+            f"ERROR: CRLF line endings in tracked text artifacts (normalize to LF first): {crlf_files}",
+            file=sys.stderr,
+        )
         return 1
     MANIFEST.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(f"Wrote {MANIFEST} ({len(lines)} SHA-256 entries)")

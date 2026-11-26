@@ -382,3 +382,16 @@ def test_dual_cryptographic_timestamps_bind_manifest() -> None:
         encoding="utf-8",
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
+def test_manifest_text_artifacts_strictly_lf_cross_platform() -> None:
+    """Regression test (F-54): every tracked text artifact in data/MANIFEST.sha256 uses LF (no CRLF)."""
+    binary_ext = {".pdf", ".gz", ".png", ".zip", ".tsr", ".ots"}
+    for line in (ROOT / "data" / "MANIFEST.sha256").read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        _, rel = line.split("  ", 1)
+        p = ROOT / rel
+        if p.suffix.lower() in binary_ext:
+            continue
+        assert b"\r\n" not in p.read_bytes(), f"CRLF detected in manifest-tracked text file {rel}"
