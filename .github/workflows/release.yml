@@ -42,5 +42,5 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           gh release create "$TAG" release-dist/* \
             --title "Multinomial TV Conjecture $TAG" \
-            --notes "Lean 4.35.0 6-kernel verified proof of Conjecture 7.7 ($TAG) with frozen PDF, byte-reproducible arXiv bundle, SHA256SUMS, and Sigstore SLSA provenance attestations. See CHANGELOG.md for details." \
+            --notes "Lean 4.35.0 proof of Conjecture 7.7 and quantitative O(L^-2) Lemma 7.3 ($TAG), replayed in six comparator checker runs, with frozen PDF, byte-reproducible arXiv bundle, SHA256SUMS, and Sigstore SLSA provenance attestations. See CHANGELOG.md for details." \
             || gh release upload "$TAG" release-dist/* --clobber
