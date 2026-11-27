@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and Sema
 
 > **Correction (2026-11-26):** Historical entries (`v2.0.0`–`v2.4.0`) below are kept as dated records. Where earlier entries say `"6-kernel"` or `"6 independent kernels"`, read six checker runs of `lake comparator --paranoid` (two of which are the Lean kernel in paranoid and default mode). Where earlier entries cite a `"live negative Lean kernel rejection check"` in CI, note that the actual mathematical refutation of `aTriangle = 1/32` is the proved theorem `adversarial_aTriangle_ne_one_div_32` in `NonVacuity.lean` (upgraded in `v2.5.0` to a mutated-constant elaboration smoke test requiring `unsolved goals`). See [ERRATA.md](ERRATA.md).
 
+## [2.7.0] - 2026-11-27
+
+### Added
+- **Target 9 & Target 10 non-vacuity/non-degeneracy witnesses (`F-76`, `E-2026-020`):** Added `adversarial_lemma_7_3_zero_const_false` (proving inside Lean that no zero constant $C = 0$ suffices for `lemma_7_3_O_inv_sq`, since the exact $L = 1$ remainder is $2/9 - 14\sqrt{3}/(81\pi) > 0$) and `gamma3_source_form_witness_N1` (concrete non-zero residue $N = 1$ witness for Target 10's literal Part 2 §7.2 formula and $q_1(3) - d_0 = -7/(96\pi)$) to `NonVacuity.lean` (**22** theorems = `6` direct `hAdj 0..5` checks + `16` corollaries/refutations covering all 10 targets; **59** explicit `#print axioms`, **191** author-written theorems and lemmas, **8,193** exact Lean lines).
+- **Definition-inclusive exhaustive axiom audit (`F-78`):** Extended `lean/VerifyAxioms.lean` metaprogram to audit BOTH every `theorem` (`896` theorem constants) AND every `def` (`65` definitions) across `MultinomialTV` and private proof modules (`0` disallowed axioms).
+- **OpenSSL X.509 cryptographic RFC 3161 signature verification (`F-73`):** Upgraded `scripts/stamp_timestamps.py --verify` from raw byte-substring matching to full `openssl ts -reply` imprint parsing AND `openssl ts -verify -CAfile` X.509 certificate-chain/CMS signature verification, paired with a negative CMS signature-byte tamper test in `tests/test_repo_integrity.py` and mutant `M23_tsa_skip_openssl_verify`.
+- **Centralized Lean forbidden-token & zero-`@[nolint]` scanner (`F-81`) and live negative comparator tamper test (`F-74`):** Extracted `scripts/check_lean_tokens.py` (invoked by `.github/workflows/lean-verify.yml`, `scripts/dev.sh verify-lean`, and `tests/test_repo_integrity.py`, tracked in 32-entry `data/MANIFEST.sha256`, mutated by `M24_lean_tokens_allow_sorry` → **24/24** code mutants killed across 7 scripts) and added a live negative `sorry`-tamper `lake comparator --paranoid` rejection check in CI.
+
+### Fixed
+- **Zero `@[nolint]` suppressions (`F-75`):** Renamed internal helpers `K_cut` → `kCut` and `R_approx` → `rApprox` in `LocalAsymptotics.lean`, removing all `@[nolint defsWithUnderscore]` suppressions across all 10 Lean files (`0` `@[nolint]`, `0` Batteries/Mathlib linter warnings).
+- **Dynamic portal counts, dual-license CFF, workflow credentials & Mega-Atlas `v2.9.0` sync (`F-77`, `F-79`, `F-80`, `F-82`, `F-83`):** Removed hardcoded `10 targets`, `14 corollaries`, and `22/22 mutants` from `scripts/build_site.py` (and switched `build_site.py`/`generate_social_preview.py` to comment-stripped Lean counting); updated `CITATION.cff` to dual `license: ["Apache-2.0", "CC-BY-4.0"]`; added `persist-credentials: false` to every `actions/checkout@v4` step across all 4 workflows; fixed `LIMITATIONS.md:23` smoke-test description and hardened `scripts/dev.sh release`; updated Mega-Atlas cross-check docs (`docs/faq.md`, `docs/index.md`, `docs/literature-search.md`) to `v2.9.0` (`0 / 2,000` grand problems, `59` `STAT-*`).
+
 ## [2.6.0] - 2026-11-26
 
 ### Added

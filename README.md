@@ -14,9 +14,9 @@ Lean also checks five algebraic identities: the result of inserting the proved c
 The 10 target theorems of `Challenge.lean` and the declarations they depend on are replayed in CI by `lake comparator --paranoid`, which makes **six checker runs**: the Lean kernel in paranoid and in default mode, `lean4lean`, `nanoda`, `con-leche`, and `con-ron` (two of the six runs are the Lean kernel). Separately, `NonVacuity.lean` is independently replayed in CI via `lake env leanchecker MultinomialTVConjecture.NonVacuity`.
 
 **Author:** Alexander Stephen Donahue · Independent Researcher, Spokane, WA, USA · ORCID [0009-0006-8168-9648](https://orcid.org/0009-0006-8168-9648) · `0_0@0thernes.art`
-**Status:** Active research preprint (`v2.6.0`, 2026-11-26) — **NOT externally peer reviewed**, and the source conjecture is itself from an unrefereed arXiv v1 preprint; independent human line-by-line statement-fidelity audit and external operator replication remain open (see [docs/statement-fidelity.md](docs/statement-fidelity.md), [REPLICATION.md](REPLICATION.md), and [LIMITATIONS.md](LIMITATIONS.md)). All corrections from the 2026-11-26 statement audit and subsequent hardening rounds are logged in [ERRATA.md](ERRATA.md).
+**Status:** Active research preprint (`v2.7.0`, 2026-11-27) — **NOT externally peer reviewed**, and the source conjecture is itself from an unrefereed arXiv v1 preprint; independent human line-by-line statement-fidelity audit and external operator replication remain open (see [docs/statement-fidelity.md](docs/statement-fidelity.md), [REPLICATION.md](REPLICATION.md), and [LIMITATIONS.md](LIMITATIONS.md)). All corrections from the 2026-11-26 statement audit and subsequent hardening rounds are logged in [ERRATA.md](ERRATA.md).
 
-![Multinomial TV Conjecture v2.6.0 Overview and Verification Stack](docs/media/social-preview.svg)
+![Multinomial TV Conjecture v2.7.0 Overview and Verification Stack](docs/media/social-preview.svg)
 
 *(Regenerable from current code & logs via `python3 scripts/generate_social_preview.py`.)*
 
@@ -43,9 +43,9 @@ $$\gamma(n) = -\frac{n(n+1)}{32\pi} - \frac{8\sqrt{3}\,n(n-2)}{243\pi} + \frac{n
 
 ## Axiom Audit (Excerpt of `#print axioms` Output)
 
-The Lean sources contain **189 author-written theorems and lemmas**. `Lean.collectAxioms` in [lean/VerifyAxioms.lean](lean/VerifyAxioms.lean) checks all **894 theorem constants** the compiler emits for them (189 author-written + 705 compiler-generated auxiliaries) across all 10 `module`-header Lean 4.35.0 files (`autoImplicit = false`, `weak.linter.mathlibStandardSet = true`). Every one depends only on Lean's three standard axioms `[propext, Classical.choice, Quot.sound]`. There is **no `sorry`**, **no `admit`**, **no custom `axiom`**, **no `native_decide`**, and **no `unsafe`** in `lean/MultinomialTVConjecture/` or `lean/Solution.lean`.
+The Lean sources contain **191 author-written theorems and lemmas**. `Lean.collectAxioms` in [lean/VerifyAxioms.lean](lean/VerifyAxioms.lean) checks all **896 theorem constants** the compiler emits for them (191 author-written + 705 compiler-generated auxiliaries) **plus all 65 project definitions** across all 10 `module`-header Lean 4.35.0 files (`autoImplicit = false`, `weak.linter.mathlibStandardSet = true`, **0 `@[nolint]` suppressions**). Every one depends only on Lean's three standard axioms `[propext, Classical.choice, Quot.sound]`. There is **no `sorry`**, **no `admit`**, **no custom `axiom`**, **no `native_decide`**, **no `unsafe`**, and **no `@[nolint]`** in `lean/MultinomialTVConjecture/` or `lean/Solution.lean`.
 
-Excerpt of the output of `cd lean && lake env lean VerifyAxioms.lean`: 25 of the 57 `depends on axioms` lines, and the final summary line (each line shown is checked against `results/lean-axioms-all.log` by `scripts/check_readme_axioms.py --require-exhaustive` in CI):
+Excerpt of the output of `cd lean && lake env lean VerifyAxioms.lean`: 25 of the 59 `depends on axioms` lines, and the final summary line (each line shown is checked against `results/lean-axioms-all.log` by `scripts/check_readme_axioms.py --require-exhaustive` in CI):
 
 ```text
 'MultinomialTV.hAdj_eq_nested_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -75,23 +75,23 @@ Excerpt of the output of `cd lean && lake env lean VerifyAxioms.lean`: 25 of the
 'MultinomialTV.ComparatorTarget.target_gamma4_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
 'MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
 'MultinomialTV.ComparatorTarget.target_gamma3_source_form' depends on axioms: [propext, Classical.choice, Quot.sound]
-ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 894 theorems across MultinomialTV — 0 disallowed axioms.
+ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 896 theorems and 65 definitions across MultinomialTV — 0 disallowed axioms.
 ```
 
 ---
 
 ## Comparator Check and Non-Vacuity Witnesses
 
-To separate statement auditing from proof internals, every Lean file carries a Lean 4.35.0 `module` header (Palomar Registry spec), and [lean/Challenge.lean](lean/Challenge.lean) (164 lines) imports **only Mathlib** (zero files from our proof library) and states the 10 targets: the three residue-class limits and Conjecture 7.7 (targets 1–4), the five algebraic identities behind Corollary 1.2(i)–(iii) (targets 5–8 and 10, with target 10 stating the literal Part 2 §7.2 `n = 3` source expression and proving its equivalence `q_1(3) - d_0 = -7/(96π)` with target 7, and target 8 carrying `(-1)^N/(2π)` unchanged on both sides), and the quantitative $O(L^{-2})$ Lemma 7.3 remainder bound (target 9). [lean/Solution.lean](lean/Solution.lean) proves those declarations without `sorry`, and `lake comparator --config comparator.json --paranoid` replays the 10 targets and the declarations they depend on in **six checker runs** (the Lean kernel in paranoid and default mode, `lean4lean`, `nanoda`, `con-leche`, `con-ron`). Separately, `NonVacuity.lean` is independently replayed in CI via `lake env leanchecker MultinomialTVConjecture.NonVacuity`, and the false value $a_\triangle = 1/32$ is refuted by the proved theorem `adversarial_aTriangle_ne_one_div_32`.
+To separate statement auditing from proof internals, every Lean file carries a Lean 4.35.0 `module` header (Palomar Registry spec) with zero `@[nolint]` suppressions, and [lean/Challenge.lean](lean/Challenge.lean) (164 lines) imports **only Mathlib** (zero files from our proof library) and states the 10 targets: the three residue-class limits and Conjecture 7.7 (targets 1–4), the five algebraic identities behind Corollary 1.2(i)–(iii) (targets 5–8 and 10, with target 10 stating the literal Part 2 §7.2 `n = 3` source expression and proving its equivalence `q_1(3) - d_0 = -7/(96π)` with target 7, and target 8 carrying `(-1)^N/(2π)` unchanged on both sides), and the quantitative $O(L^{-2})$ Lemma 7.3 remainder bound (target 9). [lean/Solution.lean](lean/Solution.lean) proves those declarations without `sorry`, and `lake comparator --config comparator.json --paranoid` replays the 10 targets and the declarations they depend on in **six checker runs** (the Lean kernel in paranoid and default mode, `lean4lean`, `nanoda`, `con-leche`, `con-ron`), paired in CI with a live negative `sorry`-tamper comparator rejection test. Separately, `NonVacuity.lean` is independently replayed in CI via `lake env leanchecker MultinomialTVConjecture.NonVacuity`, where the false value $a_\triangle = 1/32$ and a zero-constant $O(L^{-2})$ remainder are refuted by `adversarial_aTriangle_ne_one_div_32` and `adversarial_lemma_7_3_zero_const_false`.
 
 | Verification Check | Tool / File | Scope |
 |---|---|---|
-| **Lean kernel** | `lean 4.35.0` / `lake build` (`module` headers) | 189 author-written theorems and lemmas (894 theorem constants) across `MultinomialTVConjecture`, `Solution`, `VerifyAxioms`; no warnings except the 10 intentional `sorry` warnings of the statement-only `Challenge.lean` |
-| **Comparator checker runs** | `lake comparator --config comparator.json --paranoid` (Lean kernel in paranoid and default mode, `lean4lean`, `nanoda 0.4.19`, `con-leche`, `con-ron`) | All 10 targets (incl. `target_lemma_7_3_O_inv_sq` & literal §7.2 `target_gamma3_source_form`) and their dependencies (`Challenge.lean` vs. `Solution.lean`) |
-| **Standalone `NonVacuity` replay** | `lake env leanchecker MultinomialTVConjecture.NonVacuity` | Independent kernel replay of all 20 theorems in `NonVacuity.lean` (6 direct `hAdj 0..5` definition checks + 14 sign, witness, and false-constant refutation corollaries including `adversarial_aTriangle_ne_one_div_32`) |
-| **Exhaustive axiom audit** | `lean/VerifyAxioms.lean` (`Lean.collectAxioms`) | 894/894 theorem constants (189 author-written, 705 compiler-generated) within `[propext, Classical.choice, Quot.sound]` |
-| **Batteries & Mathlib linters** | `lake exe runLinter MultinomialTVConjecture` & `weak.linter.mathlibStandardSet = true` | 0 warnings across Batteries + Mathlib style linters (`autoImplicit = false`) |
-| **Exact rational, differential & code-mutation audit** | `scripts/verify_conjecture.py`, `scripts/run_mutation_audit.py` & `tests/` | Exact `Fraction` ($L=3..45$, 0/1 error); 3,000+ Hypothesis cases; 1,140-input differential oracle; 22/22 isolated code mutants killed; 28-pt Richardson error $< 3 \times 10^{-55}$ (>54 digits) |
+| **Lean kernel** | `lean 4.35.0` / `lake build` (`module` headers, `0` `@[nolint]`) | 191 author-written theorems and lemmas (896 theorem constants + 65 definitions) across `MultinomialTVConjecture`, `Solution`, `VerifyAxioms`; no warnings except the 10 intentional `sorry` warnings of the statement-only `Challenge.lean` |
+| **Comparator checker runs** | `lake comparator --config comparator.json --paranoid` (Lean kernel in paranoid and default mode, `lean4lean`, `nanoda 0.4.19`, `con-leche`, `con-ron`) | All 10 targets (incl. `target_lemma_7_3_O_inv_sq` & literal §7.2 `target_gamma3_source_form`) and their dependencies (`Challenge.lean` vs. `Solution.lean`) + live negative `sorry`-tamper rejection check |
+| **Standalone `NonVacuity` replay** | `lake env leanchecker MultinomialTVConjecture.NonVacuity` | Independent kernel replay of all 22 theorems in `NonVacuity.lean` (6 direct `hAdj 0..5` definition checks + 16 sign, witness, and false-constant/non-degeneracy refutation corollaries covering all 10 targets) |
+| **Exhaustive axiom audit** | `lean/VerifyAxioms.lean` (`Lean.collectAxioms`) | 896/896 theorem constants (191 author-written, 705 compiler-generated) + 65/65 definitions strictly within `[propext, Classical.choice, Quot.sound]` |
+| **Batteries & Mathlib linters** | `lake exe runLinter MultinomialTVConjecture` & `weak.linter.mathlibStandardSet = true` | 0 warnings and **0 `@[nolint]` suppressions** across Batteries + Mathlib style linters (`autoImplicit = false`) |
+| **Exact rational, differential & code-mutation audit** | `scripts/verify_conjecture.py`, `scripts/run_mutation_audit.py` & `tests/` | Exact `Fraction` ($L=3..45$, 0/1 error); 3,000+ Hypothesis cases; 1,140-input differential oracle; 24/24 isolated code mutants killed across 7 scripts; 28-pt Richardson error $< 3 \times 10^{-55}$ (>54 digits) |
 
 See [docs/statement-fidelity.md](docs/statement-fidelity.md) for the declaration-by-declaration mapping to Banić & Elezović (`arXiv:2610.17046v1`), and [CLAIMS.md](CLAIMS.md) for explicit falsification criteria ("What Would Prove Us Wrong").
 
@@ -151,14 +151,14 @@ just audit           # Score repository against Build Standard v1.2.0 (90 items)
 |---|---|
 | `lean/MultinomialTVConjecture/` | Core Lean 4.35.0 proof (`Combinatorial`, `StirlingRefined`, `GaussianEulerMaclaurin`, `LocalAsymptotics`, `Main`, `NonVacuity`) |
 | `lean/Challenge.lean`, `Solution.lean`, `comparator.json` | Isolated Mathlib-only target statements (10 targets) & comparator bridge |
-| `lean/VerifyAxioms.lean` | Exhaustive `Lean.collectAxioms` metaprogram (894 constants) + 57 explicit `#print axioms` checks |
-| `paper/main.tex`, `paper/refs.bib`, `paper/figures/` | AMS-LaTeX manuscript source (`v2.6.0`), verified BibTeX with clickable DOIs, and publication figures |
+| `lean/VerifyAxioms.lean` | Exhaustive `Lean.collectAxioms` metaprogram (896 theorem constants + 65 definitions) + 59 explicit `#print axioms` checks |
+| `paper/main.tex`, `paper/refs.bib`, `paper/figures/` | AMS-LaTeX manuscript source (`v2.7.0`), verified BibTeX with clickable DOIs, and publication figures |
 | `dist/` | Compiled PDF (`Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf`) and byte-reproducible `arxiv_submission.tar.gz` |
 | `blueprint/src/content.tex` | Lean 4 dependency Blueprint validated against `lean/` by `scripts/build_blueprint.py` |
-| `scripts/` | Independent numerical verifier, isolated code mutation runner (`run_mutation_audit.py`), SVG preview generator (`generate_social_preview.py`), arXiv bundler, dual timestamp stamper, axiom/citation/Blueprint/site/manifest/Build Standard scripts |
+| `scripts/` | Independent numerical verifier, Lean token scanner (`check_lean_tokens.py`), isolated code mutation runner (`run_mutation_audit.py`), SVG preview generator (`generate_social_preview.py`), arXiv bundler, X.509-verified dual timestamp stamper, axiom/citation/Blueprint/site/manifest/Build Standard scripts |
 | `tests/` | Automated `pytest` + `hypothesis` test ladder |
 | `docs/` | Architecture, statement-fidelity table, verification stack, literature search, ADRs, threat model, operations, FAQ, glossary, red-team review |
-| `results/`, `data/MANIFEST.sha256*` | Live axiom/comparator/linter/citation/mutation logs, 31-file SHA-256 manifest, DigiCert RFC 3161 `.tsr`, and Bitcoin OpenTimestamps `.ots` |
+| `results/`, `data/MANIFEST.sha256*` | Live axiom/comparator/linter/citation/mutation logs, 32-file SHA-256 manifest, X.509-verified DigiCert RFC 3161 `.tsr`, and Bitcoin OpenTimestamps `.ots` |
 
 ---
 

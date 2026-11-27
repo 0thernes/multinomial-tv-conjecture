@@ -32,7 +32,7 @@ items:
   A05: {status: done, evidence: "README.md embeds docs/media/social-preview.svg generated dynamically from current code via scripts/generate_social_preview.py; publication figures in paper/figures/*.pdf and interactive Blueprint"}
   A06: {status: done, evidence: "LICENSE (Apache-2.0) and LICENSE-DOCS (CC-BY-4.0) with REUSE/SPDX headers across all code and TeX files"}
   A07: {status: done, evidence: "CHANGELOG.md"}
-  A08: {status: done, evidence: "VERSION (2.6.0) matched with CHANGELOG.md, CITATION.cff, formalization.yaml, lean/lakefile.toml, llms.txt, social-preview.svg"}
+  A08: {status: done, evidence: "VERSION (2.7.0) matched with CHANGELOG.md, CITATION.cff, formalization.yaml, lean/lakefile.toml, llms.txt, social-preview.svg"}
   A09: {status: done, evidence: "tests/test_exact_and_properties.py and tests/test_repo_integrity.py"}
   A10: {status: done, evidence: ".github/workflows/ci.yml and .github/workflows/lean-verify.yml"}
   A11: {status: done, evidence: ".github/workflows/release.yml"}
@@ -75,14 +75,14 @@ items:
   B03: {status: done, evidence: "Deterministic exact rational/80-digit checks and byte-reproducible arXiv tarball verified in tests/"}
   B04: {status: done, evidence: "CLAIMS.md"}
   B05: {status: done, evidence: "Each claim C1-C6 mapped to executable Lean/pytest falsification checks"}
-  B06: {status: done, evidence: "NonVacuity.lean adversarial refutations + negative tests in tests/test_exact_and_properties.py"}
-  B07: {status: done, evidence: "Regression tests in tests/test_repo_integrity.py and tests/test_exact_and_properties.py for E-2026-001..019 and F-64..F-72"}
+  B06: {status: done, evidence: "NonVacuity.lean adversarial refutations (incl. adversarial_aTriangle_ne_one_div_32 & adversarial_lemma_7_3_zero_const_false) + live negative sorry-tamper lake comparator CI check + negative CMS signature/citation/token tests in tests/"}
+  B07: {status: done, evidence: "Regression tests in tests/test_repo_integrity.py and tests/test_exact_and_properties.py for E-2026-001..020 and F-64..F-83"}
   B08: {status: done, evidence: "Golden rational table and axiom-log snapshot tests in tests/"}
   B09: {status: n/a, note: "No network API or external wire protocol exposed"}
   B10: {status: done, evidence: "Hypothesis property-based tests running >=3,000 cases (3 suites x 1,000 examples) in tests/test_exact_and_properties.py"}
   B11: {status: done, evidence: "Differential oracle tests comparing 2D vs 1D exact rational (L=3..45) and exact factorial p3q_exact vs mpmath loggamma across 1,140 (q,x) inputs in tests/test_exact_and_properties.py"}
   B12: {status: done, evidence: "Exact rational Fraction oracle against mpmath 80-digit and asymptotic closed forms"}
-  B13: {status: done, evidence: "Isolated AST-validated source mutation runner scripts/run_mutation_audit.py (22 semantic mutants across 6 core verification scripts with mandatory baseline pass gate) + results/mutation-report.json (22/22 killed, 100.0%)"}
+  B13: {status: done, evidence: "Isolated AST-validated source mutation runner scripts/run_mutation_audit.py (24 semantic mutants across 7 core verification scripts with mandatory baseline pass gate) + results/mutation-report.json (24/24 killed, 100.0%)"}
   B14: {status: done, evidence: "Metamorphic mod-3 residue-shift, permutation-symmetry, and rescaling tests in tests/test_exact_and_properties.py"}
   B15: {status: n/a, note: "No native C/C++/asm code"}
   B16: {status: n/a, note: "No native C/C++/asm code"}
@@ -108,7 +108,7 @@ items:
   B36: {status: done, evidence: "docs/threat-model.md"}
   B37: {status: done, evidence: ".github/workflows/release.yml generates SHA256SUMS"}
   B38: {status: done, evidence: ".github/workflows/release.yml and lean-verify.yml run actions/attest-build-provenance (verified live via gh attestation verify)"}
-  B39: {status: done, evidence: "data/MANIFEST.sha256 (31 LF-deterministic entries) + DigiCert RFC 3161 data/MANIFEST.sha256.tsr + Bitcoin OpenTimestamps data/MANIFEST.sha256.ots verified by scripts/stamp_timestamps.py"}
+  B39: {status: done, evidence: "data/MANIFEST.sha256 (32 LF-deterministic entries) + X.509-verified DigiCert RFC 3161 data/MANIFEST.sha256.tsr (openssl ts -verify) + Bitcoin OpenTimestamps data/MANIFEST.sha256.ots verified by scripts/stamp_timestamps.py"}
   B40: {status: done, evidence: "docs/run-log.md"}
   B41: {status: done, evidence: "LIMITATIONS.md (including Real vs. Metaphor section)"}
   B42: {status: done, evidence: "CLAIMS.md Explicit Falsification Protocol (What Would Prove Us Wrong)"}

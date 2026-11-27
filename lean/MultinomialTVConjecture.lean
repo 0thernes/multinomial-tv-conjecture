@@ -14,6 +14,6 @@ public import MultinomialTVConjecture.NonVacuity
 # Multinomial TV Conjecture (Conjecture 7.7)
 
 Root module re-exporting the complete Lean 4.35.0 proof of Conjecture 7.7 and quantitative Lemma 7.3
-(`MultinomialTVConjecture.Main`) and its 20 non-vacuity and adversarial-refutation witnesses
+(`MultinomialTVConjecture.Main`) and its 22 non-vacuity and adversarial-refutation witnesses
 (`MultinomialTVConjecture.NonVacuity`).
 -/

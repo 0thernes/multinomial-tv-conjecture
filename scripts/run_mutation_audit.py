@@ -177,11 +177,11 @@ MUTANTS: list[CodeMutant] = [
     ),
     # --- scripts/stamp_timestamps.py ---
     CodeMutant(
-        "M18_tsa_skip_digest_check",
+        "M18_tsa_skip_sig_verify",
         "scripts/stamp_timestamps.py",
-        "Disable 32-byte SHA-256 imprint check on RFC 3161 .tsr token",
-        "elif digest not in tsr_raw:",
-        "elif False and digest not in tsr_raw:",
+        "Disable OpenSSL X.509 CMS signature verification gate in verify_rfc3161_openssl",
+        'if ver.returncode != 0 or "Verification: OK" not in ver.stdout:',
+        'if False and (ver.returncode != 0 or "Verification: OK" not in ver.stdout):',
         "tests/test_repo_integrity.py",
     ),
     CodeMutant(
@@ -216,6 +216,24 @@ MUTANTS: list[CodeMutant] = [
         "Weaken DOI title/author metadata mismatch check to always True",
         "metadata_match = False",
         "metadata_match = True",
+        "tests/test_repo_integrity.py",
+    ),
+    # --- scripts/stamp_timestamps.py (F-73 OTS non-empty calendar attestation payload guard) ---
+    CodeMutant(
+        "M23_ots_skip_payload_check",
+        "scripts/stamp_timestamps.py",
+        "Disable non-empty calendar attestation payload length guard on .ots proof",
+        "elif len(ots_raw) < len(prefix) + 32 + 16:",
+        "elif False and len(ots_raw) < len(prefix) + 32 + 16:",
+        "tests/test_repo_integrity.py",
+    ),
+    # --- scripts/check_lean_tokens.py (F-81 centralized Lean forbidden-token lexer guard) ---
+    CodeMutant(
+        "M24_lean_tokens_allow_sorry",
+        "scripts/check_lean_tokens.py",
+        "Drop 'sorry' from FORBIDDEN_RE in check_lean_tokens.py",
+        'r"\\b(sorry|admit|native_decide|unsafe)\\b"',
+        'r"\\b(admit|native_decide|unsafe)\\b"',
         "tests/test_repo_integrity.py",
     ),
 ]

@@ -4,6 +4,7 @@
 """Assemble and link-check the static GitHub Pages portal at build/site/."""
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import sys
@@ -11,6 +12,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "build" / "site"
+
+sys.path.insert(0, str(ROOT / "scripts"))
+import check_lean_tokens as clt  # noqa: E402
 
 
 def parse_audited_theorem_count() -> int:
@@ -25,18 +29,29 @@ def parse_audited_theorem_count() -> int:
 def parse_nonvacuity_count() -> int:
     nv_path = ROOT / "lean" / "MultinomialTVConjecture" / "NonVacuity.lean"
     if nv_path.is_file():
-        return len(re.findall(r"^\s*theorem\s+", nv_path.read_text(encoding="utf-8", errors="ignore"), re.M))
+        cleaned = clt.strip_lean_comments(nv_path.read_text(encoding="utf-8", errors="ignore"))
+        return len(re.findall(r"^\s*theorem\s+", cleaned, re.M))
     return 0
 
 
 def parse_author_theorem_count() -> int:
-    decl_re = re.compile(r"^\s*(?:(?:public|private|protected)\s+)*(?:theorem|lemma)\s+\S+", re.M)
-    count = 0
-    for lf in sorted((ROOT / "lean").rglob("*.lean")):
-        if ".lake" in lf.parts or lf.name in {"Challenge.lean", "VerifyAxioms.lean"}:
-            continue
-        count += len(decl_re.findall(lf.read_text(encoding="utf-8", errors="ignore")))
-    return count
+    return clt.count_author_theorems()
+
+
+def parse_comparator_target_count() -> int:
+    comp_path = ROOT / "lean" / "comparator.json"
+    if comp_path.is_file():
+        data = json.loads(comp_path.read_text(encoding="utf-8"))
+        return len(data.get("theorem_names", []))
+    return 0
+
+
+def parse_mutation_counts() -> tuple[int, int]:
+    mut_path = ROOT / "results" / "mutation-report.json"
+    if mut_path.is_file():
+        data = json.loads(mut_path.read_text(encoding="utf-8"))
+        return int(data.get("killed", 0)), int(data.get("total_mutants", 0))
+    return 0, 0
 
 
 def render_portal() -> str:
@@ -44,6 +59,10 @@ def render_portal() -> str:
     theorem_count = parse_audited_theorem_count()
     author_count = parse_author_theorem_count()
     nonvac_count = parse_nonvacuity_count()
+    direct_checks = 6
+    corollary_checks = max(0, nonvac_count - direct_checks)
+    target_count = parse_comparator_target_count()
+    mut_killed, mut_total = parse_mutation_counts()
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -107,15 +126,15 @@ def render_portal() -> str:
     <div class="grid">
       <article class="card">
         <h2>Palomar Isolation &amp; 6 Comparator Runs</h2>
-        <p>Every Lean file carries a Lean 4.35.0 <code>module</code> header. Isolated Mathlib-only <code>Challenge.lean</code> (10 targets) is matched against sorry-free <code>Solution.lean</code> via sandboxed <code>lake comparator --paranoid</code> (six checker runs: Lean paranoid/default, <code>lean4lean</code>, <code>nanoda</code>, <code>con-leche</code>, <code>con-ron</code>), plus standalone <code>leanchecker</code> replay of <code>NonVacuity.lean</code>.</p>
+        <p>Every Lean file carries a Lean 4.35.0 <code>module</code> header with zero <code>@[nolint]</code> suppressions. Isolated Mathlib-only <code>Challenge.lean</code> ({target_count} targets) is matched against sorry-free <code>Solution.lean</code> via sandboxed <code>lake comparator --paranoid</code> (six checker runs: Lean paranoid/default, <code>lean4lean</code>, <code>nanoda</code>, <code>con-leche</code>, <code>con-ron</code>), plus standalone <code>leanchecker</code> replay of <code>NonVacuity.lean</code>.</p>
       </article>
       <article class="card">
         <h2>{theorem_count} Exhaustively Audited Constants</h2>
-        <p>{author_count} author-written theorems and lemmas ({theorem_count} compiler-emitted theorem constants audited by <code>Lean.collectAxioms</code>). Zero <code>sorry</code>, <code>admit</code>, custom axioms, or <code>native_decide</code> in proof modules; strictly within <code>[propext, Classical.choice, Quot.sound]</code>.</p>
+        <p>{author_count} author-written theorems and lemmas ({theorem_count} compiler-emitted theorem constants plus all project definitions audited by <code>Lean.collectAxioms</code>). Zero <code>sorry</code>, <code>admit</code>, custom axioms, or <code>native_decide</code> in proof modules; strictly within <code>[propext, Classical.choice, Quot.sound]</code>.</p>
       </article>
       <article class="card">
         <h2>Non-Vacuity, Oracles &amp; Provenance</h2>
-        <p>{nonvac_count} theorems in <code>NonVacuity.lean</code> (6 direct <code>hAdj 0..5</code> definition checks + 14 closed-form corollaries and proved refutations such as <code>adversarial_aTriangle_ne_one_div_32</code>), exact rational (L=3..45) &amp; 80-digit checks (&lt;3e-55), 22/22 code mutation kills, Sigstore SLSA, RFC 3161 TSA, and Bitcoin OpenTimestamps.</p>
+        <p>{nonvac_count} theorems in <code>NonVacuity.lean</code> ({direct_checks} direct <code>hAdj 0..5</code> definition checks + {corollary_checks} closed-form corollaries and proved refutations such as <code>adversarial_aTriangle_ne_one_div_32</code> and <code>adversarial_lemma_7_3_zero_const_false</code>), exact rational (L=3..45) &amp; 80-digit checks (&lt;3e-55), {mut_killed}/{mut_total} code mutation kills, Sigstore SLSA, X.509-verified RFC 3161 TSA, and Bitcoin OpenTimestamps.</p>
       </article>
     </div>
     <div class="note">

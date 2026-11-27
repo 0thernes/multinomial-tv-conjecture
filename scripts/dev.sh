@@ -24,6 +24,7 @@ case "$cmd" in
     (cd lean && lake exe runLinter MultinomialTVConjecture) || true
     ;;
   verify-lean)
+    python3 scripts/check_lean_tokens.py
     (cd lean && lake build MultinomialTVConjecture Challenge Solution VerifyAxioms)
     (cd lean && lake env lean VerifyAxioms.lean) | tee results/lean-axioms-ci.log
     python3 scripts/check_readme_axioms.py --log results/lean-axioms-ci.log --require-exhaustive
@@ -73,10 +74,18 @@ case "$cmd" in
     ;;
   release)
     ver="${1:?Usage: dev.sh release X.Y.Z}"
-    echo "$ver" > VERSION
+    cur="$(tr -d '\r\n' < VERSION)"
+    if [ "$cur" != "$ver" ]; then
+      echo "ERROR: VERSION ($cur) != requested release ($ver). Sync VERSION, CITATION.cff, formalization.yaml, lean/lakefile.toml, CHANGELOG.md, paper/main.tex, and MANIFEST.sha256 first." >&2
+      exit 1
+    fi
+    python3 scripts/check_lean_tokens.py
+    python3 -m pytest -q tests/
+    python3 scripts/generate_manifest.py --verify
+    python3 scripts/stamp_timestamps.py --verify
     git add -A
-    git commit -m "chore: release v${ver}"
-    git tag "v${ver}"
+    git -c commit.gpgsign=false commit -m "chore: release v${ver}"
+    git -c tag.gpgsign=false tag "v${ver}"
     git push origin main --tags
     ;;
   *)

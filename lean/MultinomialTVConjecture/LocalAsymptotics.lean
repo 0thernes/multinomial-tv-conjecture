@@ -207,14 +207,13 @@ lemma p3q_left_ratio_le (q k : ℕ) (hq : 1 ≤ q) (hk : k ≤ q) :
       _ = Real.exp (-(((j + 1 : ℕ) : ℝ) ^ 2) / (3 * (q : ℝ))) := by
           rw [← Real.exp_add]; congr 1; push_cast; ring
 
-/-! ### Part 2: Cutoff `K_cut q = ⌊q^(5/8)⌋` and super-polynomial tail bounds -/
+/-! ### Part 2: Cutoff `kCut q = ⌊q^(5/8)⌋` and super-polynomial tail bounds -/
 
-/-- Eighth root `q^(1/8)` used to define the local Gaussian cutoff `K_cut q = ⌊q^(5/8)⌋`. -/
+/-- Eighth root `q^(1/8)` used to define the local Gaussian cutoff `kCut q = ⌊q^(5/8)⌋`. -/
 noncomputable def w8 (q : ℕ) : ℝ := Real.sqrt (Real.sqrt (Real.sqrt (q : ℝ)))
 
 /-- Local cutoff index `⌊q^(5/8)⌋` separating the Gaussian core from super-polynomial tails. -/
-@[nolint defsWithUnderscore]
-noncomputable def K_cut (q : ℕ) : ℕ := Nat.floor (Real.sqrt (q : ℝ) * w8 q)
+noncomputable def kCut (q : ℕ) : ℕ := Nat.floor (Real.sqrt (q : ℝ) * w8 q)
 
 lemma w8_pos {q : ℕ} (hq : 1 ≤ q) : 0 < w8 q := by
   unfold w8; positivity
@@ -245,26 +244,26 @@ lemma w8_ge_ten {q : ℕ} (hq : 10 ^ 8 ≤ q) : (10 : ℝ) ≤ w8 q := by
   linarith
 
 lemma K_cut_bounds {q : ℕ} (hq : 10 ^ 8 ≤ q) :
-    (w8 q) ^ 5 - 1 < (K_cut q : ℝ) ∧ (K_cut q : ℝ) ≤ (w8 q) ^ 5 ∧ 1 ≤ K_cut q ∧ 2 * K_cut q < q := by
+    (w8 q) ^ 5 - 1 < (kCut q : ℝ) ∧ (kCut q : ℝ) ≤ (w8 q) ^ 5 ∧ 1 ≤ kCut q ∧ 2 * kCut q < q := by
   have hw10 := w8_ge_ten hq
   have hw_eq : Real.sqrt (q : ℝ) * w8 q = (w8 q) ^ 5 := by
     rw [← w8_pow4 q]; ring
-  have hlb : (w8 q) ^ 5 - 1 < (K_cut q : ℝ) := by
-    unfold K_cut; rw [hw_eq]; exact Nat.sub_one_lt_floor _
-  have hub : (K_cut q : ℝ) ≤ (w8 q) ^ 5 := by
-    unfold K_cut; rw [hw_eq]; exact Nat.floor_le (by positivity)
+  have hlb : (w8 q) ^ 5 - 1 < (kCut q : ℝ) := by
+    unfold kCut; rw [hw_eq]; exact Nat.sub_one_lt_floor _
+  have hub : (kCut q : ℝ) ≤ (w8 q) ^ 5 := by
+    unfold kCut; rw [hw_eq]; exact Nat.floor_le (by positivity)
   have hw5 : (100000 : ℝ) ≤ (w8 q) ^ 5 := by
     have : (10 : ℝ) ^ 5 ≤ (w8 q) ^ 5 := pow_le_pow_left₀ (by norm_num) hw10 5
     norm_num at this; exact this
-  have h1 : 1 ≤ K_cut q := by
-    have : (1 : ℝ) ≤ (K_cut q : ℝ) := by linarith
+  have h1 : 1 ≤ kCut q := by
+    have : (1 : ℝ) ≤ (kCut q : ℝ) := by linarith
     exact_mod_cast this
-  have h2K : 2 * K_cut q < q := by
+  have h2K : 2 * kCut q < q := by
     have hq8 := w8_pow8 q
     have hw3 : (1000 : ℝ) ≤ (w8 q) ^ 3 := by
       have : (10 : ℝ) ^ 3 ≤ (w8 q) ^ 3 := pow_le_pow_left₀ (by norm_num) hw10 3
       norm_num at this; exact this
-    have hR : 2 * (K_cut q : ℝ) < (q : ℝ) := by
+    have hR : 2 * (kCut q : ℝ) < (q : ℝ) := by
       have hmul : 2 * (w8 q) ^ 5 < (w8 q) ^ 8 := by
         have hpos5 : 0 < (w8 q) ^ 5 := by positivity
         nlinarith [show (w8 q) ^ 8 = (w8 q) ^ 5 * (w8 q) ^ 3 by ring]
@@ -272,15 +271,15 @@ lemma K_cut_bounds {q : ℕ} (hq : 10 ^ 8 ≤ q) :
     exact_mod_cast hR
   exact ⟨hlb, hub, h1, h2K⟩
 
-/-- Tail exponential decay for `k > K_cut q`. -/
-lemma exp_tail_bound {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : K_cut q < k) :
+/-- Tail exponential decay for `k > kCut q`. -/
+lemma exp_tail_bound {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : kCut q < k) :
     Real.exp (-((k : ℝ) ^ 2) / (3 * (q : ℝ))) ≤
       ((Nat.factorial 10 : ℝ) * 3 ^ 10) / ((q : ℝ) ^ 2 * Real.sqrt (q : ℝ)) := by
   have hw10 := w8_ge_ten hq
   have hw_pos : 0 < w8 q := by linarith
   have hw_eq : Real.sqrt (q : ℝ) * w8 q = (w8 q) ^ 5 := by rw [← w8_pow4 q]; ring
   have hk_gt : (w8 q) ^ 5 < (k : ℝ) := by
-    unfold K_cut at hk
+    unfold kCut at hk
     rw [hw_eq] at hk
     exact (Nat.floor_lt (by positivity)).mp hk
   have hk2_ge : (w8 q) ^ 2 / 3 ≤ (k : ℝ) ^ 2 / (3 * (q : ℝ)) := by
@@ -309,14 +308,14 @@ lemma exp_tail_bound {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : K_cut q < k) :
     field_simp
   exact le_trans hexp_le (by rw [← hden_eq]; exact hinv)
 
-/-- Euler-Maclaurin endpoint decay `exp(-K_cut q / sqrt q) ≤ C / q^2`. -/
+/-- Euler-Maclaurin endpoint decay `exp(-kCut q / sqrt q) ≤ C / q^2`. -/
 lemma exp_cutoff_bound {q : ℕ} (hq : 10 ^ 8 ≤ q) :
-    Real.exp (-((K_cut q : ℝ) * (1 / Real.sqrt (q : ℝ)))) ≤
+    Real.exp (-((kCut q : ℝ) * (1 / Real.sqrt (q : ℝ)))) ≤
       ((Nat.factorial 16 : ℝ) * 2 ^ 16) / (q : ℝ) ^ 2 := by
   have hw10 := w8_ge_ten hq
   have hw_pos : 0 < w8 q := by linarith
   have hK := (K_cut_bounds hq).1
-  have hM_ge : w8 q / 2 ≤ (K_cut q : ℝ) * (1 / Real.sqrt (q : ℝ)) := by
+  have hM_ge : w8 q / 2 ≤ (kCut q : ℝ) * (1 / Real.sqrt (q : ℝ)) := by
     rw [← w8_pow4 q, mul_one_div, le_div_iff₀ (by positivity)]
     have hw4 : (10000 : ℝ) ≤ (w8 q) ^ 4 := by
       have : (10 : ℝ) ^ 4 ≤ (w8 q) ^ 4 := pow_le_pow_left₀ (by norm_num) hw10 4
@@ -325,7 +324,7 @@ lemma exp_cutoff_bound {q : ℕ} (hq : 10 ^ 8 ≤ q) :
       have : (2 : ℝ) ≤ (w8 q) ^ 5 := by nlinarith
       linarith
     nlinarith [show w8 q / 2 * (w8 q) ^ 4 = (w8 q) ^ 5 / 2 by ring]
-  have hexp_le : Real.exp (-((K_cut q : ℝ) * (1 / Real.sqrt (q : ℝ)))) ≤ Real.exp (-(w8 q / 2)) :=
+  have hexp_le : Real.exp (-((kCut q : ℝ) * (1 / Real.sqrt (q : ℝ)))) ≤ Real.exp (-(w8 q / 2)) :=
     Real.exp_le_exp.mpr (by linarith)
   have hfac := Real.pow_div_factorial_le_exp (w8 q / 2) (by positivity) 16
   have hpos_x : 0 < (w8 q / 2) ^ 16 := by positivity
@@ -453,8 +452,7 @@ lemma abs_log_one_add_sub_logPoly5_le {v : ℝ} (hv : |v| ≤ 1 / 2) :
 /-! ### Part 4: Local logarithmic and exponential ratio expansion -/
 
 /-- Cubic local log-ratio perturbation polynomial in `(t, ε)`. -/
-@[nolint defsWithUnderscore]
-noncomputable def R_approx (t ε : ℝ) : ℝ :=
+noncomputable def rApprox (t ε : ℝ) : ℝ :=
   -ε * t ^ 3 + ε ^ 2 * (-(3 / 2 : ℝ) * t ^ 4 + (3 / 2 : ℝ) * t ^ 2) +
     ε ^ 3 * (-(3 / 2 : ℝ) * t ^ 5 + t ^ 3)
 
@@ -618,7 +616,7 @@ lemma log_ratio_approx {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (hu : |u| ≤ 1 
     let ε := 1 / Real.sqrt (q : ℝ)
     let t := u / ε
     |Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) -
-        (-3 * t ^ 2 + R_approx t ε)| ≤ 300 * ε ^ 4 * (1 + t ^ 6) := by
+        (-3 * t ^ 2 + rApprox t ε)| ≤ 300 * ε ^ 4 * (1 + t ^ 6) := by
   intro ε t
   have hqR : (1 : ℝ) ≤ (q : ℝ) := by exact_mod_cast hq
   have hqpos : (0 : ℝ) < (q : ℝ) := by linarith
@@ -680,7 +678,7 @@ lemma log_ratio_approx {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (hu : |u| ≤ 1 
   have hpoly_id :
       -2 * ((q : ℝ) * (1 + u) + 1 / 2) * logPoly5 u -
         ((q : ℝ) * (1 - 2 * u) + 1 / 2) * logPoly5 (-2 * u) -
-        (-3 * t ^ 2 + R_approx t ε) =
+        (-3 * t ^ 2 + rApprox t ε) =
       -(66 / 5 : ℝ) * (ε ^ 4 * t ^ 6) + (9 / 4 : ℝ) * (ε ^ 4 * t ^ 4) + 3 * (ε ^ 5 * t ^ 5) := by
     have hq3 := hqu_pow 1
     have hq4 := hqu_pow 2
@@ -699,7 +697,7 @@ lemma log_ratio_approx {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (hu : |u| ≤ 1 
           (66 / 5 : ℝ) * ((q : ℝ) * u ^ 6) + (9 / 4 : ℝ) * u ^ 4 + 3 * u ^ 5 := by
       unfold logPoly5; ring
     rw [hexpand, hqu2, hq3, hq4, hq5, hq6, hu2, hu3, hu4, hu5]
-    unfold R_approx; ring
+    unfold rApprox; ring
   have hpoly_tail : |-(66 / 5 : ℝ) * (ε ^ 4 * t ^ 6) + (9 / 4 : ℝ) * (ε ^ 4 * t ^ 4) + 3 * (ε ^ 5 * t ^ 5)| ≤
       20 * ε ^ 4 * (1 + t ^ 6) := by
     have ht4 : t ^ 4 ≤ 1 + t ^ 6 := by
@@ -753,9 +751,9 @@ lemma log_ratio_approx {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (hu : |u| ≤ 1 
     linarith [show 264 * ε ^ 4 * (1 + t ^ 6) = 264 * ε ^ 4 + 264 * (ε ^ 4 * t ^ 6) by ring]
   have htotal :
       Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) -
-        (-3 * t ^ 2 + R_approx t ε) =
+        (-3 * t ^ 2 + rApprox t ε) =
       (-2 * ((q : ℝ) * (1 + u) + 1 / 2) * logPoly5 u -
-        ((q : ℝ) * (1 - 2 * u) + 1 / 2) * logPoly5 (-2 * u) - (-3 * t ^ 2 + R_approx t ε)) +
+        ((q : ℝ) * (1 - 2 * u) + 1 / 2) * logPoly5 (-2 * u) - (-3 * t ^ 2 + rApprox t ε)) +
       (-2 * ((q : ℝ) * (1 + u) + 1 / 2) * e1 - ((q : ℝ) * (1 - 2 * u) + 1 / 2) * e2) + Δst := by
     rw [hlog_id]
     dsimp only [e1, e2, Δst]
@@ -769,9 +767,9 @@ lemma log_ratio_approx {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (hu : |u| ≤ 1 
   linarith
 
 private lemma R_approx_pow4_le {t ε : ℝ} (hε_pos : 0 < ε) (hε_le1 : ε ≤ 1) :
-    |R_approx t ε| ^ 4 ≤ 40000 * ε ^ 4 * (1 + t ^ 20) := by
-  have hRa_bound : |R_approx t ε| ≤ 7 * (ε * (1 + |t| ^ 5)) := by
-    unfold R_approx
+    |rApprox t ε| ^ 4 ≤ 40000 * ε ^ 4 * (1 + t ^ 20) := by
+  have hRa_bound : |rApprox t ε| ≤ 7 * (ε * (1 + |t| ^ 5)) := by
+    unfold rApprox
     set S := ε * (1 + |t| ^ 5)
     have ht2 : |t| ^ 2 ≤ 1 + |t| ^ 5 := abs_pow_le_one_add (by omega)
     have ht3 : |t| ^ 3 ≤ 1 + |t| ^ 5 := abs_pow_le_one_add (by omega)
@@ -820,7 +818,7 @@ private lemma R_approx_pow4_le {t ε : ℝ} (hε_pos : 0 < ε) (hε_le1 : ε ≤
       exact mul_le_mul hε3_le ht3 (by positivity) (le_of_lt hε_pos)
     have hS_nn : 0 ≤ S := by dsimp only [S]; positivity
     linarith
-  have hpow4 : |R_approx t ε| ^ 4 ≤ (7 * (ε * (1 + |t| ^ 5))) ^ 4 :=
+  have hpow4 : |rApprox t ε| ^ 4 ≤ (7 * (ε * (1 + |t| ^ 5))) ^ 4 :=
     pow_le_pow_left₀ (abs_nonneg _) hRa_bound 4
   have h1t4 : (1 + |t| ^ 5) ^ 4 ≤ 16 * (1 + t ^ 20) := by
     have hsq : (1 + |t| ^ 5) ^ 2 ≤ 2 * (1 + |t| ^ 10) := by
@@ -835,25 +833,25 @@ private lemma R_approx_pow4_le {t ε : ℝ} (hε_pos : 0 < ε) (hε_le1 : ε ≤
     rw [ht20] at hsq2
     have hnn : 0 ≤ 1 + t ^ 20 := by positivity
     linarith [show (2 * (1 + |t| ^ 10)) ^ 2 = 4 * (1 + |t| ^ 10) ^ 2 by ring]
-  calc |R_approx t ε| ^ 4 ≤ (7 * (ε * (1 + |t| ^ 5))) ^ 4 := hpow4
+  calc |rApprox t ε| ^ 4 ≤ (7 * (ε * (1 + |t| ^ 5))) ^ 4 := hpow4
     _ = 2401 * ε ^ 4 * (1 + |t| ^ 5) ^ 4 := by ring
     _ ≤ 2401 * ε ^ 4 * (16 * (1 + t ^ 20)) := mul_le_mul_of_nonneg_left h1t4 (by positivity)
     _ ≤ 40000 * ε ^ 4 * (1 + t ^ 20) := by
         have : 0 ≤ ε ^ 4 * (1 + t ^ 20) := by positivity
         linarith
 
-/-- Unified local exponential-ratio expansion to cubic order in `R_approx`. -/
+/-- Unified local exponential-ratio expansion to cubic order in `rApprox`. -/
 lemma exp_ratio_approx {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (hu : |u| ≤ 1 / 4)
     (hm1 : (m1 : ℝ) = (q : ℝ) * (1 + u)) (hm2 : (m2 : ℝ) = (q : ℝ) * (1 - 2 * u))
-    (hR_small : |R_approx (u / (1 / Real.sqrt (q : ℝ))) (1 / Real.sqrt (q : ℝ))| ≤ 1 / 2)
+    (hR_small : |rApprox (u / (1 / Real.sqrt (q : ℝ))) (1 / Real.sqrt (q : ℝ))| ≤ 1 / 2)
     (herr_small : 300 * (1 / Real.sqrt (q : ℝ)) ^ 4 * (1 + (u / (1 / Real.sqrt (q : ℝ))) ^ 6) ≤ 1 / 2) :
     let ε := 1 / Real.sqrt (q : ℝ)
     let t := u / ε
     |((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ)) -
-        Real.exp (-3 * t ^ 2) * T3 (R_approx t ε)| ≤
+        Real.exp (-3 * t ^ 2) * T3 (rApprox t ε)| ≤
       42000 * ε ^ 4 * (1 + t ^ 20) * Real.exp (-3 * t ^ 2) := by
   intro ε t
-  change |R_approx t ε| ≤ 1 / 2 at hR_small
+  change |rApprox t ε| ≤ 1 / 2 at hR_small
   change 300 * ε ^ 4 * (1 + t ^ 6) ≤ 1 / 2 at herr_small
   have hqR : (1 : ℝ) ≤ (q : ℝ) := by exact_mod_cast hq
   have hqpos : (0 : ℝ) < (q : ℝ) := by linarith
@@ -867,14 +865,14 @@ lemma exp_ratio_approx {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (hu : |u| ≤ 1 
   have hrat_pos : 0 < ((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ)) := by
     positivity
   set R := Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) - (-3 * t ^ 2)
-  set Ra := R_approx t ε
+  set Ra := rApprox t ε
   have hlog := log_ratio_approx hq hu hm1 hm2
   have hR_diff : |R - Ra| ≤ 300 * ε ^ 4 * (1 + t ^ 6) := by
     dsimp only [R, Ra]
     rw [show Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) - -3 * t ^ 2 -
-        R_approx t ε =
+        rApprox t ε =
         Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) -
-          (-3 * t ^ 2 + R_approx t ε) by ring]
+          (-3 * t ^ 2 + rApprox t ε) by ring]
     exact hlog
   have hRa_le1 : |Ra| ≤ 1 := by linarith
   have hR_le1 : R ≤ 1 := by
@@ -922,19 +920,19 @@ lemma exp_ratio_approx {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (hu : |u| ≤ 1 
   linarith [show Real.exp (-3 * t ^ 2) * (42000 * ε ^ 4 * (1 + t ^ 20)) =
     42000 * ε ^ 4 * (1 + t ^ 20) * Real.exp (-3 * t ^ 2) by ring]
 
-/-! ### Part 5: Exact polynomial decomposition of `T3(R_approx t ε) ∓ T3(R_approx (-t) ε)` -/
+/-! ### Part 5: Exact polynomial decomposition of `T3(rApprox t ε) ∓ T3(rApprox (-t) ε)` -/
 
 lemma T3_diff_bound {t ε : ℝ} (ht : 0 ≤ t) (hε0 : 0 ≤ ε) (hε1 : ε ≤ 1) :
-    |(T3 (R_approx t ε) - T3 (R_approx (-t) ε)) -
+    |(T3 (rApprox t ε) - T3 (rApprox (-t) ε)) -
       (-2 * ε * t ^ 3 + ε ^ 3 * (-(1 / 3 : ℝ) * t ^ 9 + 3 * t ^ 7 - 6 * t ^ 5 + 2 * t ^ 3))| ≤
       100 * ε ^ 5 * (1 + t ^ 15) := by
   have hexact :
-      (T3 (R_approx t ε) - T3 (R_approx (-t) ε)) -
+      (T3 (rApprox t ε) - T3 (rApprox (-t) ε)) -
         (-2 * ε * t ^ 3 + ε ^ 3 * (-(1 / 3 : ℝ) * t ^ 9 + 3 * t ^ 7 - 6 * t ^ 5 + 2 * t ^ 3)) =
       ε ^ 5 * ((-(15 / 4 : ℝ) * t ^ 11 + 10 * t ^ 9 - (39 / 4 : ℝ) * t ^ 7 + 3 * t ^ 5) +
         ε ^ 2 * (-(45 / 8 : ℝ) * t ^ 13 + 12 * t ^ 11 - (71 / 8 : ℝ) * t ^ 9 + (9 / 4 : ℝ) * t ^ 7) +
         ε ^ 4 * (-(9 / 8 : ℝ) * t ^ 15 + (9 / 4 : ℝ) * t ^ 13 - (3 / 2 : ℝ) * t ^ 11 + (1 / 3 : ℝ) * t ^ 9)) := by
-    unfold T3 R_approx; ring
+    unfold T3 rApprox; ring
   rw [hexact, abs_mul, abs_of_nonneg (by positivity : 0 ≤ ε ^ 5)]
   have hε2 : ε ^ 2 ≤ 1 := by nlinarith
   have hε4 : ε ^ 4 ≤ 1 := by nlinarith
@@ -975,16 +973,16 @@ lemma T3_diff_bound {t ε : ℝ} (ht : 0 ≤ t) (hε0 : 0 ≤ ε) (hε1 : ε ≤
   linarith [show ε ^ 5 * (100 * (1 + t ^ 15)) = 100 * ε ^ 5 * (1 + t ^ 15) by ring]
 
 lemma T3_sum_bound {t ε : ℝ} (ht : 0 ≤ t) (hε0 : 0 ≤ ε) (hε1 : ε ≤ 1) :
-    |(T3 (R_approx t ε) + T3 (R_approx (-t) ε)) -
+    |(T3 (rApprox t ε) + T3 (rApprox (-t) ε)) -
       (2 + ε ^ 2 * (t ^ 6 - 3 * t ^ 4 + 3 * t ^ 2))| ≤
       100 * ε ^ 4 * (1 + t ^ 14) := by
   have hexact :
-      (T3 (R_approx t ε) + T3 (R_approx (-t) ε)) -
+      (T3 (rApprox t ε) + T3 (rApprox (-t) ε)) -
         (2 + ε ^ 2 * (t ^ 6 - 3 * t ^ 4 + 3 * t ^ 2)) =
       ε ^ 4 * ((-(3 / 2 : ℝ) * t ^ 10 + (27 / 4 : ℝ) * t ^ 8 - (13 / 2 : ℝ) * t ^ 6 + (9 / 4 : ℝ) * t ^ 4) +
         ε ^ 2 * (-(45 / 8 : ℝ) * t ^ 12 + (105 / 8 : ℝ) * t ^ 10 - (75 / 8 : ℝ) * t ^ 8 + (17 / 8 : ℝ) * t ^ 6) +
         ε ^ 4 * (-(27 / 8 : ℝ) * t ^ 14 + (63 / 8 : ℝ) * t ^ 12 - 6 * t ^ 10 + (3 / 2 : ℝ) * t ^ 8)) := by
-    unfold T3 R_approx; ring
+    unfold T3 rApprox; ring
   rw [hexact, abs_mul, abs_of_nonneg (by positivity : 0 ≤ ε ^ 4)]
   have hε2 : ε ^ 2 ≤ 1 := by nlinarith
   have hε4 : ε ^ 4 ≤ 1 := by nlinarith
@@ -1039,10 +1037,10 @@ lemma sum_pow_exp_neg_three_sq_le (m : ℕ) {h : ℝ} (hh0 : 0 < h) (hh1 : h ≤
         mul_le_mul_of_nonneg_left (sum_exp_neg_step_le hh0 hh1 K) (by positivity)
     _ = (3 * Real.exp 1 * (1 + (m.factorial : ℝ))) / h := by ring
 
-/-- The discrete Gaussian moment sum `G_j(q) = (1/√q) * ∑_{k=1}^{K_cut q} (k/√q)^(2j+1) * exp(-3 k^2/q)`. -/
+/-- The discrete Gaussian moment sum `G_j(q) = (1/√q) * ∑_{k=1}^{kCut q} (k/√q)^(2j+1) * exp(-3 k^2/q)`. -/
 noncomputable def Gsum (j q : ℕ) : ℝ :=
   (1 / Real.sqrt (q : ℝ)) *
-    ∑ k ∈ Finset.Icc 1 (K_cut q),
+    ∑ k ∈ Finset.Icc 1 (kCut q),
       ((k : ℝ) * (1 / Real.sqrt (q : ℝ))) ^ (2 * j + 1) *
         Real.exp (-3 * ((k : ℝ) * (1 / Real.sqrt (q : ℝ))) ^ 2)
 
@@ -1081,7 +1079,7 @@ lemma tendsto_q_mul_Gsum_err (j : ℕ) :
     simpa using this
   have hε2 : (1 / Real.sqrt (q : ℝ)) ^ 2 = 1 / (q : ℝ) := by
     rw [div_pow, one_pow, Real.sq_sqrt (le_of_lt hqpos)]
-  have hmain := hC hε_pos (K_cut q)
+  have hmain := hC hε_pos (kCut q)
   have hite : (if j = 0 then (1 / Real.sqrt (q : ℝ)) ^ 2 / 12 else 0) =
       (if j = 0 then 1 / (12 * (q : ℝ)) else 0) := by
     rw [hε2]; split_ifs <;> ring
@@ -1094,12 +1092,12 @@ lemma tendsto_q_mul_Gsum_err (j : ℕ) :
     ring
   have hstep : (q : ℝ) * ((1 / Real.sqrt (q : ℝ)) ^ 3 +
       (1 + 1 / Real.sqrt (q : ℝ) + (1 / Real.sqrt (q : ℝ)) ^ 2) *
-        Real.exp (-((K_cut q : ℝ) * (1 / Real.sqrt (q : ℝ))))) ≤
+        Real.exp (-((kCut q : ℝ) * (1 / Real.sqrt (q : ℝ))))) ≤
       1 / Real.sqrt (q : ℝ) + 3 * C_em / (q : ℝ) := by
     have ha : (q : ℝ) * (1 / Real.sqrt (q : ℝ)) ^ 3 = 1 / Real.sqrt (q : ℝ) := by
       rw [h3]; field_simp
     have hb : (q : ℝ) * ((1 + 1 / Real.sqrt (q : ℝ) + (1 / Real.sqrt (q : ℝ)) ^ 2) *
-        Real.exp (-((K_cut q : ℝ) * (1 / Real.sqrt (q : ℝ))))) ≤ 3 * C_em / (q : ℝ) := by
+        Real.exp (-((kCut q : ℝ) * (1 / Real.sqrt (q : ℝ))))) ≤ 3 * C_em / (q : ℝ) := by
       have hm1 := mul_le_mul h12 hcut (le_of_lt (Real.exp_pos _)) (by norm_num)
       have hm2 := mul_le_mul_of_nonneg_left hm1 (le_of_lt hqpos)
       have heq : (q : ℝ) * (3 * (C_em / (q : ℝ) ^ 2)) = 3 * C_em / (q : ℝ) := by field_simp
@@ -1109,11 +1107,11 @@ lemma tendsto_q_mul_Gsum_err (j : ℕ) :
           if j = 0 then 1 / (12 * (q : ℝ)) else 0)|
       ≤ (q : ℝ) * (C * ((1 / Real.sqrt (q : ℝ)) ^ 3 +
           (1 + 1 / Real.sqrt (q : ℝ) + (1 / Real.sqrt (q : ℝ)) ^ 2) *
-            Real.exp (-((K_cut q : ℝ) * (1 / Real.sqrt (q : ℝ)))))) :=
+            Real.exp (-((kCut q : ℝ) * (1 / Real.sqrt (q : ℝ)))))) :=
         mul_le_mul_of_nonneg_left hmain (le_of_lt hqpos)
     _ = C * ((q : ℝ) * ((1 / Real.sqrt (q : ℝ)) ^ 3 +
           (1 + 1 / Real.sqrt (q : ℝ) + (1 / Real.sqrt (q : ℝ)) ^ 2) *
-            Real.exp (-((K_cut q : ℝ) * (1 / Real.sqrt (q : ℝ)))))) := by ring
+            Real.exp (-((kCut q : ℝ) * (1 / Real.sqrt (q : ℝ)))))) := by ring
     _ ≤ C * (1 / Real.sqrt (q : ℝ) + 3 * C_em / (q : ℝ)) :=
         mul_le_mul_of_nonneg_left hstep hC0
 
@@ -1133,13 +1131,13 @@ lemma tendsto_Gsum (j : ℕ) (hj : j ≠ 0) :
     field_simp
   simpa using hdiff.add (tendsto_const_nhds (x := (j.factorial : ℝ) / (2 * (3 : ℝ) ^ (j + 1))))
 
-/-! ### Part 7: Per-term local approximation on `1 ≤ k ≤ K_cut q` -/
+/-! ### Part 7: Per-term local approximation on `1 ≤ k ≤ kCut q` -/
 
-private lemma local_smallness {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ K_cut q) (s : ℝ) (hs : |s| = 1) :
+private lemma local_smallness {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ kCut q) (s : ℝ) (hs : |s| = 1) :
     let ε := 1 / Real.sqrt (q : ℝ)
     let u := s * (k : ℝ) / (q : ℝ)
     let t := u / ε
-    |u| ≤ 1 / 4 ∧ |R_approx t ε| ≤ 1 / 2 ∧ 300 * ε ^ 4 * (1 + t ^ 6) ≤ 1 / 2 := by
+    |u| ≤ 1 / 4 ∧ |rApprox t ε| ≤ 1 / 2 ∧ 300 * ε ^ 4 * (1 + t ^ 6) ≤ 1 / 2 := by
   intro ε u t
   have hw10 := w8_ge_ten hq
   have hw_pos : 0 < w8 q := by linarith
@@ -1169,8 +1167,8 @@ private lemma local_smallness {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ K_cut 
     linarith [show (w8 q) ^ 5 * (w8 q) ^ 4 = w8 q * (w8 q) ^ 8 by ring]
   have hε_eq : ε = 1 / (w8 q) ^ 4 := by dsimp only [ε]; rw [hsqq]
   have hε_pos : 0 < ε := by rw [hε_eq]; positivity
-  have hRa_le : |R_approx t ε| ≤ 1 / 2 := by
-    unfold R_approx
+  have hRa_le : |rApprox t ε| ≤ 1 / 2 := by
+    unfold rApprox
     have ht2 : |t| ^ 2 ≤ (w8 q) ^ 2 := pow_le_pow_left₀ (abs_nonneg _) ht_abs 2
     have ht3 : |t| ^ 3 ≤ (w8 q) ^ 3 := pow_le_pow_left₀ (abs_nonneg _) ht_abs 3
     have ht4 : |t| ^ 4 ≤ (w8 q) ^ 4 := pow_le_pow_left₀ (abs_nonneg _) ht_abs 4
@@ -1296,7 +1294,7 @@ private lemma p3q_ratio_neg_eq {q k : ℕ} (hk : k ≤ q) :
   have hfb : ((q + 2 * k).factorial : ℝ) ≠ 0 := by positivity
   field_simp
 
-private lemma local_diff_term_approx {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ K_cut q) :
+private lemma local_diff_term_approx {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ kCut q) :
     let ε := 1 / Real.sqrt (q : ℝ)
     let t := (k : ℝ) * ε
     |(p3q q (q + k) - p3q q (q - k)) / p3q q q -
@@ -1335,20 +1333,20 @@ private lemma local_diff_term_approx {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤
   have happrox_neg := exp_ratio_approx hq1 hneg_sm.1 hm1_neg hm2_neg hneg_sm.2.1 hneg_sm.2.2
   dsimp only at happrox_pos happrox_neg
   change |((q.factorial : ℝ) ^ 3) / (((q + k).factorial : ℝ) ^ 2 * ((q - 2 * k).factorial : ℝ)) -
-      Real.exp (-3 * ((1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) * T3 (R_approx ((1 * (k : ℝ) / (q : ℝ)) / ε) ε)| ≤
+      Real.exp (-3 * ((1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) * T3 (rApprox ((1 * (k : ℝ) / (q : ℝ)) / ε) ε)| ≤
       42000 * ε ^ 4 * (1 + ((1 * (k : ℝ) / (q : ℝ)) / ε) ^ 20) *
         Real.exp (-3 * ((1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) at happrox_pos
   change |((q.factorial : ℝ) ^ 3) / (((q - k).factorial : ℝ) ^ 2 * ((q + 2 * k).factorial : ℝ)) -
-      Real.exp (-3 * ((-1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) * T3 (R_approx ((-1 * (k : ℝ) / (q : ℝ)) / ε) ε)| ≤
+      Real.exp (-3 * ((-1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) * T3 (rApprox ((-1 * (k : ℝ) / (q : ℝ)) / ε) ε)| ≤
       42000 * ε ^ 4 * (1 + ((-1 * (k : ℝ) / (q : ℝ)) / ε) ^ 20) *
         Real.exp (-3 * ((-1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) at happrox_neg
   rw [ht_pos, ← p3q_ratio_pos_eq (by omega)] at happrox_pos
   rw [ht_neg, neg_sq, show (-t) ^ 20 = t ^ 20 by ring, ← p3q_ratio_neg_eq (by omega)] at happrox_neg
   have hT3 := T3_diff_bound ht_nn (le_of_lt hε_pos) hε_le1
-  set D1 := p3q q (q + k) / p3q q q - Real.exp (-3 * t ^ 2) * T3 (R_approx t ε)
-  set D2 := p3q q (q - k) / p3q q q - Real.exp (-3 * t ^ 2) * T3 (R_approx (-t) ε)
+  set D1 := p3q q (q + k) / p3q q q - Real.exp (-3 * t ^ 2) * T3 (rApprox t ε)
+  set D2 := p3q q (q - k) / p3q q q - Real.exp (-3 * t ^ 2) * T3 (rApprox (-t) ε)
   set D3 := Real.exp (-3 * t ^ 2) *
-      ((T3 (R_approx t ε) - T3 (R_approx (-t) ε)) -
+      ((T3 (rApprox t ε) - T3 (rApprox (-t) ε)) -
         (-2 * ε * t ^ 3 + ε ^ 3 * (-(1 / 3 : ℝ) * t ^ 9 + 3 * t ^ 7 - 6 * t ^ 5 + 2 * t ^ 3)))
   have hsplit : (p3q q (q + k) - p3q q (q - k)) / p3q q q -
       Real.exp (-3 * t ^ 2) *
@@ -1376,7 +1374,7 @@ private lemma local_diff_term_approx {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤
   have hnn : 0 ≤ ε ^ 4 * (1 + t ^ 20) * Real.exp (-3 * t ^ 2) := by positivity
   linarith
 
-private lemma local_sum_term_approx {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ K_cut q) :
+private lemma local_sum_term_approx {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ kCut q) :
     let ε := 1 / Real.sqrt (q : ℝ)
     let t := (k : ℝ) * ε
     |(p3q q (q + k) + p3q q (q - k)) / p3q q q -
@@ -1414,20 +1412,20 @@ private lemma local_sum_term_approx {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ 
   have happrox_neg := exp_ratio_approx hq1 hneg_sm.1 hm1_neg hm2_neg hneg_sm.2.1 hneg_sm.2.2
   dsimp only at happrox_pos happrox_neg
   change |((q.factorial : ℝ) ^ 3) / (((q + k).factorial : ℝ) ^ 2 * ((q - 2 * k).factorial : ℝ)) -
-      Real.exp (-3 * ((1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) * T3 (R_approx ((1 * (k : ℝ) / (q : ℝ)) / ε) ε)| ≤
+      Real.exp (-3 * ((1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) * T3 (rApprox ((1 * (k : ℝ) / (q : ℝ)) / ε) ε)| ≤
       42000 * ε ^ 4 * (1 + ((1 * (k : ℝ) / (q : ℝ)) / ε) ^ 20) *
         Real.exp (-3 * ((1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) at happrox_pos
   change |((q.factorial : ℝ) ^ 3) / (((q - k).factorial : ℝ) ^ 2 * ((q + 2 * k).factorial : ℝ)) -
-      Real.exp (-3 * ((-1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) * T3 (R_approx ((-1 * (k : ℝ) / (q : ℝ)) / ε) ε)| ≤
+      Real.exp (-3 * ((-1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) * T3 (rApprox ((-1 * (k : ℝ) / (q : ℝ)) / ε) ε)| ≤
       42000 * ε ^ 4 * (1 + ((-1 * (k : ℝ) / (q : ℝ)) / ε) ^ 20) *
         Real.exp (-3 * ((-1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) at happrox_neg
   rw [ht_pos, ← p3q_ratio_pos_eq (by omega)] at happrox_pos
   rw [ht_neg, neg_sq, show (-t) ^ 20 = t ^ 20 by ring, ← p3q_ratio_neg_eq (by omega)] at happrox_neg
   have hT3 := T3_sum_bound ht_nn (le_of_lt hε_pos) hε_le1
-  set D1 := p3q q (q + k) / p3q q q - Real.exp (-3 * t ^ 2) * T3 (R_approx t ε)
-  set D2 := p3q q (q - k) / p3q q q - Real.exp (-3 * t ^ 2) * T3 (R_approx (-t) ε)
+  set D1 := p3q q (q + k) / p3q q q - Real.exp (-3 * t ^ 2) * T3 (rApprox t ε)
+  set D2 := p3q q (q - k) / p3q q q - Real.exp (-3 * t ^ 2) * T3 (rApprox (-t) ε)
   set D3 := Real.exp (-3 * t ^ 2) *
-      ((T3 (R_approx t ε) + T3 (R_approx (-t) ε)) -
+      ((T3 (rApprox t ε) + T3 (rApprox (-t) ε)) -
         (2 + ε ^ 2 * (t ^ 6 - 3 * t ^ 4 + 3 * t ^ 2)))
   have hsplit : (p3q q (q + k) + p3q q (q - k)) / p3q q q -
       Real.exp (-3 * t ^ 2) * (2 + ε ^ 2 * (t ^ 6 - 3 * t ^ 4 + 3 * t ^ 2)) =
@@ -1464,18 +1462,18 @@ private lemma sum_Icc_split {K q : ℕ} (hKq : K ≤ q) (f : ℕ → ℝ) :
   rw [hunion, Finset.sum_union hdisj]
 
 private lemma abs_p3q_tail_sum_le {q : ℕ} (hq : 10 ^ 8 ≤ q) (w : ℕ → ℝ)
-    (hw : ∀ k ∈ Finset.Icc (K_cut q + 1) q, |w k| ≤ 1) (sgn : ℝ) (hsgn : |sgn| = 1) :
-    |∑ k ∈ Finset.Icc (K_cut q + 1) q, w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| ≤
+    (hw : ∀ k ∈ Finset.Icc (kCut q + 1) q, |w k| ≤ 1) (sgn : ℝ) (hsgn : |sgn| = 1) :
+    |∑ k ∈ Finset.Icc (kCut q + 1) q, w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| ≤
       2 * ((Nat.factorial 10 : ℝ) * 3 ^ 10) / ((q : ℝ) * Real.sqrt (q : ℝ)) := by
   have hq1 : 1 ≤ q := le_trans (by norm_num) hq
   have hp0 : 0 < p3q q q := p3q_center_pos q
   have hqpos : (0 : ℝ) < (q : ℝ) := by positivity
   set M := ((Nat.factorial 10 : ℝ) * 3 ^ 10) / ((q : ℝ) ^ 2 * Real.sqrt (q : ℝ))
-  have hterm : ∀ k ∈ Finset.Icc (K_cut q + 1) q,
+  have hterm : ∀ k ∈ Finset.Icc (kCut q + 1) q,
       |w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| ≤ 2 * M := by
     intro k hk
     rw [mem_Icc] at hk
-    have hgt : K_cut q < k := by omega
+    have hgt : kCut q < k := by omega
     have hr := le_trans (p3q_right_ratio_le q k hq1) (exp_tail_bound hq hgt)
     have hl := le_trans (p3q_left_ratio_le q k hq1 hk.2) (exp_tail_bound hq hgt)
     have hr_nn : 0 ≤ p3q q (q + k) / p3q q q := by
@@ -1495,14 +1493,14 @@ private lemma abs_p3q_tail_sum_le {q : ℕ} (hq : 10 ^ 8 ≤ q) (w : ℕ → ℝ
     rw [abs_mul]
     have hwk := hw k (mem_Icc.mpr hk)
     exact le_trans (mul_le_mul hwk hsum_abs (abs_nonneg _) (by norm_num)) (by linarith)
-  have hcard : ((Finset.Icc (K_cut q + 1) q).card : ℝ) ≤ (q : ℝ) := by
-    have : (Finset.Icc (K_cut q + 1) q).card ≤ q := by simp only [Nat.card_Icc]; omega
+  have hcard : ((Finset.Icc (kCut q + 1) q).card : ℝ) ≤ (q : ℝ) := by
+    have : (Finset.Icc (kCut q + 1) q).card ≤ q := by simp only [Nat.card_Icc]; omega
     exact_mod_cast this
-  calc |∑ k ∈ Finset.Icc (K_cut q + 1) q, w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)|
-      ≤ ∑ k ∈ Finset.Icc (K_cut q + 1) q, |w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| :=
+  calc |∑ k ∈ Finset.Icc (kCut q + 1) q, w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)|
+      ≤ ∑ k ∈ Finset.Icc (kCut q + 1) q, |w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| :=
         Finset.abs_sum_le_sum_abs _ _
-    _ ≤ ∑ _k ∈ Finset.Icc (K_cut q + 1) q, (2 * M) := Finset.sum_le_sum hterm
-    _ = ((Finset.Icc (K_cut q + 1) q).card : ℝ) * (2 * M) := by simp
+    _ ≤ ∑ _k ∈ Finset.Icc (kCut q + 1) q, (2 * M) := Finset.sum_le_sum hterm
+    _ = ((Finset.Icc (kCut q + 1) q).card : ℝ) * (2 * M) := by simp
     _ ≤ (q : ℝ) * (2 * M) := mul_le_mul_of_nonneg_right hcard (by dsimp only [M]; positivity)
     _ = 2 * ((Nat.factorial 10 : ℝ) * 3 ^ 10) / ((q : ℝ) * Real.sqrt (q : ℝ)) := by
         dsimp only [M]; field_simp
@@ -1554,7 +1552,7 @@ theorem tendsto_sumA :
       simpa using Real.sqrt_le_sqrt this
     have hε2 : ε ^ 2 = 1 / (q : ℝ) := by
       dsimp only [ε]; rw [div_pow, one_pow, Real.sq_sqrt (le_of_lt hqpos)]
-    have hmain_eq : mainA q = ∑ k ∈ Finset.Icc 1 (K_cut q),
+    have hmain_eq : mainA q = ∑ k ∈ Finset.Icc 1 (kCut q),
         Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
           (-2 * ε * ((k : ℝ) * ε) ^ 3 +
             ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
@@ -1566,29 +1564,29 @@ theorem tendsto_sumA :
       dsimp only [ε]
       ring
     have hsumA_split : sumA q =
-        (∑ k ∈ Finset.Icc 1 (K_cut q), (p3q q (q + k) - p3q q (q - k)) / p3q q q) +
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q) := by
+        (∑ k ∈ Finset.Icc 1 (kCut q), (p3q q (q + k) - p3q q (q - k)) / p3q q q) +
+        (∑ k ∈ Finset.Icc (kCut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q) := by
       unfold sumA
-      rw [Finset.sum_div, sum_Icc_split (K := K_cut q) (by omega)]
+      rw [Finset.sum_div, sum_Icc_split (K := kCut q) (by omega)]
     rw [hsumA_split, hmain_eq, Real.norm_eq_abs, abs_mul, abs_of_pos hqpos]
     have hdiff_split :
-        ((∑ k ∈ Finset.Icc 1 (K_cut q), (p3q q (q + k) - p3q q (q - k)) / p3q q q) +
-          (∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q)) -
-        (∑ k ∈ Finset.Icc 1 (K_cut q),
+        ((∑ k ∈ Finset.Icc 1 (kCut q), (p3q q (q + k) - p3q q (q - k)) / p3q q q) +
+          (∑ k ∈ Finset.Icc (kCut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q)) -
+        (∑ k ∈ Finset.Icc 1 (kCut q),
           Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
             (-2 * ε * ((k : ℝ) * ε) ^ 3 +
               ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
                 6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3))) =
-        (∑ k ∈ Finset.Icc 1 (K_cut q),
+        (∑ k ∈ Finset.Icc 1 (kCut q),
           ((p3q q (q + k) - p3q q (q - k)) / p3q q q -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
               (-2 * ε * ((k : ℝ) * ε) ^ 3 +
                 ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
                   6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3)))) +
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q) := by
+        (∑ k ∈ Finset.Icc (kCut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q) := by
       rw [Finset.sum_sub_distrib]; ring
     rw [hdiff_split]
-    have hbody : |∑ k ∈ Finset.Icc 1 (K_cut q),
+    have hbody : |∑ k ∈ Finset.Icc 1 (kCut q),
         ((p3q q (q + k) - p3q q (q - k)) / p3q q q -
           Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
             (-2 * ε * ((k : ℝ) * ε) ^ 3 +
@@ -1597,23 +1595,23 @@ theorem tendsto_sumA :
         85000 * (3 * Real.exp 1 * (1 + (Nat.factorial 0 : ℝ)) +
           3 * Real.exp 1 * (1 + (Nat.factorial 20 : ℝ))) * ε ^ 3 := by
       refine le_trans (Finset.abs_sum_le_sum_abs _ _) ?_
-      have h1 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h1 : ∑ k ∈ Finset.Icc 1 (kCut q),
           |(p3q q (q + k) - p3q q (q - k)) / p3q q q -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
               (-2 * ε * ((k : ℝ) * ε) ^ 3 +
                 ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
                   6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3))| ≤
-          ∑ k ∈ Finset.Icc 1 (K_cut q),
+          ∑ k ∈ Finset.Icc 1 (kCut q),
             85000 * ε ^ 4 * (1 + ((k : ℝ) * ε) ^ 20) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) :=
         Finset.sum_le_sum fun k hk => local_diff_term_approx hq (mem_Icc.mp hk).2
-      have h2 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h2 : ∑ k ∈ Finset.Icc 1 (kCut q),
             85000 * ε ^ 4 * (1 + ((k : ℝ) * ε) ^ 20) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) =
-          85000 * ε ^ 4 * ((∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 0 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
-            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 20 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
+          85000 * ε ^ 4 * ((∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 0 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
+            (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 20 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
         rw [← Finset.sum_add_distrib, Finset.mul_sum]
         refine Finset.sum_congr rfl fun k _ => by simp [pow_zero]; ring
-      have h3 := sum_pow_exp_neg_three_sq_le 0 hε_pos hε_le1 (K_cut q)
-      have h4 := sum_pow_exp_neg_three_sq_le 20 hε_pos hε_le1 (K_cut q)
+      have h3 := sum_pow_exp_neg_three_sq_le 0 hε_pos hε_le1 (kCut q)
+      have h4 := sum_pow_exp_neg_three_sq_le 20 hε_pos hε_le1 (kCut q)
       rw [h2] at h1
       have h5 := mul_le_mul_of_nonneg_left (add_le_add h3 h4) (by positivity : 0 ≤ 85000 * ε ^ 4)
       have h6 : 85000 * ε ^ 4 *
@@ -1623,7 +1621,7 @@ theorem tendsto_sumA :
             3 * Real.exp 1 * (1 + (Nat.factorial 20 : ℝ))) * ε ^ 3 := by
         field_simp
       linarith
-    have htail : |∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q| ≤
+    have htail : |∑ k ∈ Finset.Icc (kCut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q| ≤
         2 * ((Nat.factorial 10 : ℝ) * 3 ^ 10) / ((q : ℝ) * Real.sqrt (q : ℝ)) := by
       have h := abs_p3q_tail_sum_le hq (fun _ => 1) (fun _ _ => by norm_num) (-1) (by norm_num)
       refine le_trans (le_of_eq ?_) h
@@ -1634,13 +1632,13 @@ theorem tendsto_sumA :
         2 * ((Nat.factorial 10 : ℝ) * 3 ^ 10) * ε := by
       dsimp only [ε]; field_simp
     have htri := abs_add_le
-      (∑ k ∈ Finset.Icc 1 (K_cut q),
+      (∑ k ∈ Finset.Icc 1 (kCut q),
         ((p3q q (q + k) - p3q q (q - k)) / p3q q q -
           Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
             (-2 * ε * ((k : ℝ) * ε) ^ 3 +
               ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
                 6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3))))
-      (∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q)
+      (∑ k ∈ Finset.Icc (kCut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q)
     have hmul := mul_le_mul_of_nonneg_left (le_trans htri (add_le_add hbody htail)) (le_of_lt hqpos)
     dsimp only [C_rem]
     calc (q : ℝ) * |_| ≤ (q : ℝ) * (85000 * (3 * Real.exp 1 * (1 + (Nat.factorial 0 : ℝ)) +
@@ -1704,7 +1702,7 @@ theorem tendsto_sumB :
       dsimp only [ε]; rw [div_pow, one_pow, Real.sq_sqrt (le_of_lt hqpos)]
     have hkq_eq : ∀ k : ℕ, (k : ℝ) / (q : ℝ) = ε * ((k : ℝ) * ε) := by
       intro k; rw [show ε * ((k : ℝ) * ε) = (k : ℝ) * ε ^ 2 by ring, hε2]; ring
-    have hmain_eq : mainB q = ∑ k ∈ Finset.Icc 1 (K_cut q),
+    have hmain_eq : mainB q = ∑ k ∈ Finset.Icc 1 (kCut q),
         ((k : ℝ) / (q : ℝ)) * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
           (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2))) := by
       dsimp only [mainB]; unfold Gsum
@@ -1714,47 +1712,47 @@ theorem tendsto_sumB :
       dsimp only [ε]
       ring
     have hsumB_split : sumB q =
-        (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) +
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) := by
+        (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) +
+        (∑ k ∈ Finset.Icc (kCut q + 1) q, ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) := by
       unfold sumB
-      rw [Finset.sum_div, sum_Icc_split (K := K_cut q) (by omega)]
+      rw [Finset.sum_div, sum_Icc_split (K := kCut q) (by omega)]
       congr 1 <;> (refine Finset.sum_congr rfl fun k _ => by ring)
     rw [hsumB_split, hmain_eq, Real.norm_eq_abs, abs_mul, abs_of_pos hqpos]
     have hdiff_split :
-        ((∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) +
-          (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q))) -
-        (∑ k ∈ Finset.Icc 1 (K_cut q),
+        ((∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) +
+          (∑ k ∈ Finset.Icc (kCut q + 1) q, ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q))) -
+        (∑ k ∈ Finset.Icc 1 (kCut q),
           ((k : ℝ) / (q : ℝ)) * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
             (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))) =
-        (∑ k ∈ Finset.Icc 1 (K_cut q),
+        (∑ k ∈ Finset.Icc 1 (kCut q),
           ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
               (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))) +
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) := by
-      have : (∑ k ∈ Finset.Icc 1 (K_cut q),
+        (∑ k ∈ Finset.Icc (kCut q + 1) q, ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) := by
+      have : (∑ k ∈ Finset.Icc 1 (kCut q),
           ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
               (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))) =
-          (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) -
-          (∑ k ∈ Finset.Icc 1 (K_cut q),
+          (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) -
+          (∑ k ∈ Finset.Icc 1 (kCut q),
             ((k : ℝ) / (q : ℝ)) * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
               (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))) := by
         rw [← Finset.sum_sub_distrib]
         refine Finset.sum_congr rfl fun k _ => by ring
       linarith
     rw [hdiff_split]
-    have hbody : |∑ k ∈ Finset.Icc 1 (K_cut q),
+    have hbody : |∑ k ∈ Finset.Icc 1 (kCut q),
         ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
           Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
             (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))| ≤
         85000 * (3 * Real.exp 1 * (1 + (Nat.factorial 1 : ℝ)) +
           3 * Real.exp 1 * (1 + (Nat.factorial 21 : ℝ))) * ε ^ 3 := by
       refine le_trans (Finset.abs_sum_le_sum_abs _ _) ?_
-      have h1 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h1 : ∑ k ∈ Finset.Icc 1 (kCut q),
           |((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
               (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))| ≤
-          ∑ k ∈ Finset.Icc 1 (K_cut q),
+          ∑ k ∈ Finset.Icc 1 (kCut q),
             85000 * ε ^ 5 * (((k : ℝ) * ε) ^ 1 + ((k : ℝ) * ε) ^ 21) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) := by
         refine Finset.sum_le_sum fun k hk => ?_
         rw [abs_mul, abs_of_nonneg (by positivity : 0 ≤ (k : ℝ) / (q : ℝ)), hkq_eq k]
@@ -1762,14 +1760,14 @@ theorem tendsto_sumB :
         have hm := mul_le_mul_of_nonneg_left hloc (by positivity : 0 ≤ ε * ((k : ℝ) * ε))
         linarith [show ε * ((k : ℝ) * ε) * (85000 * ε ^ 4 * (1 + ((k : ℝ) * ε) ^ 20) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) =
           85000 * ε ^ 5 * (((k : ℝ) * ε) ^ 1 + ((k : ℝ) * ε) ^ 21) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) by ring]
-      have h2 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h2 : ∑ k ∈ Finset.Icc 1 (kCut q),
             85000 * ε ^ 5 * (((k : ℝ) * ε) ^ 1 + ((k : ℝ) * ε) ^ 21) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) =
-          85000 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 1 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
-            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 21 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
+          85000 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 1 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
+            (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 21 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
         rw [← Finset.sum_add_distrib, Finset.mul_sum]
         refine Finset.sum_congr rfl fun k _ => by ring
-      have h3 := sum_pow_exp_neg_three_sq_le 1 hε_pos hε_le1 (K_cut q)
-      have h4 := sum_pow_exp_neg_three_sq_le 21 hε_pos hε_le1 (K_cut q)
+      have h3 := sum_pow_exp_neg_three_sq_le 1 hε_pos hε_le1 (kCut q)
+      have h4 := sum_pow_exp_neg_three_sq_le 21 hε_pos hε_le1 (kCut q)
       rw [h2] at h1
       have h5 := mul_le_mul_of_nonneg_left (add_le_add h3 h4) (by positivity : 0 ≤ 85000 * ε ^ 5)
       have h6 : 85000 * ε ^ 5 *
@@ -1784,10 +1782,10 @@ theorem tendsto_sumB :
         (by positivity : 0 ≤ 85000 * (3 * Real.exp 1 * (1 + (Nat.factorial 1 : ℝ)) +
           3 * Real.exp 1 * (1 + (Nat.factorial 21 : ℝ))))
       exact le_trans h1 (le_trans h5 (by rw [h6]; exact hC_mul))
-    have htail : |∑ k ∈ Finset.Icc (K_cut q + 1) q,
+    have htail : |∑ k ∈ Finset.Icc (kCut q + 1) q,
         ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)| ≤
         2 * ((Nat.factorial 10 : ℝ) * 3 ^ 10) / ((q : ℝ) * Real.sqrt (q : ℝ)) := by
-      have hw : ∀ k ∈ Finset.Icc (K_cut q + 1) q, |(k : ℝ) / (q : ℝ)| ≤ 1 := by
+      have hw : ∀ k ∈ Finset.Icc (kCut q + 1) q, |(k : ℝ) / (q : ℝ)| ≤ 1 := by
         intro k hk; rw [mem_Icc] at hk
         rw [abs_of_nonneg (by positivity), div_le_one hqpos]; exact_mod_cast hk.2
       have h := abs_p3q_tail_sum_le hq (fun k => (k : ℝ) / (q : ℝ)) hw 1 (by norm_num)
@@ -1799,11 +1797,11 @@ theorem tendsto_sumB :
         2 * ((Nat.factorial 10 : ℝ) * 3 ^ 10) * ε := by
       dsimp only [ε]; field_simp
     have htri := abs_add_le
-      (∑ k ∈ Finset.Icc 1 (K_cut q),
+      (∑ k ∈ Finset.Icc 1 (kCut q),
         ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
           Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
             (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2))))
-      (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q))
+      (∑ k ∈ Finset.Icc (kCut q + 1) q, ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q))
     have hmul := mul_le_mul_of_nonneg_left (le_trans htri (add_le_add hbody htail)) (le_of_lt hqpos)
     dsimp only [C_rem]
     calc (q : ℝ) * |_| ≤ (q : ℝ) * (85000 * (3 * Real.exp 1 * (1 + (Nat.factorial 1 : ℝ)) +
@@ -1821,7 +1819,7 @@ theorem tendsto_sumB :
   rw [add_zero] at hcomb
   refine hcomb.congr fun q => by ring
 
-private lemma local_diff_leading_approx {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ K_cut q) :
+private lemma local_diff_leading_approx {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ kCut q) :
     let ε := 1 / Real.sqrt (q : ℝ)
     let t := (k : ℝ) * ε
     |(p3q q (q + k) - p3q q (q - k)) / p3q q q - Real.exp (-3 * t ^ 2) * (-2 * ε * t ^ 3)| ≤
@@ -1908,7 +1906,7 @@ theorem tendsto_sumC :
       dsimp only [ε]; rw [div_pow, one_pow, Real.sq_sqrt (le_of_lt hqpos)]
     have hkq2_eq : ∀ k : ℕ, ((k : ℝ) / (q : ℝ)) ^ 2 = ε ^ 2 * ((k : ℝ) * ε) ^ 2 := by
       intro k; rw [show ε ^ 2 * ((k : ℝ) * ε) ^ 2 = (k : ℝ) ^ 2 * (ε ^ 2) ^ 2 by ring, hε2]; ring
-    have hmain_eq : mainC q = ∑ k ∈ Finset.Icc 1 (K_cut q),
+    have hmain_eq : mainC q = ∑ k ∈ Finset.Icc 1 (kCut q),
         ((k : ℝ) / (q : ℝ)) ^ 2 * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3)) := by
       dsimp only [mainC]; unfold Gsum
       simp only [Finset.mul_sum]
@@ -1917,41 +1915,41 @@ theorem tendsto_sumC :
       dsimp only [ε]
       ring
     have hsumC_split : sumC q =
-        (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) +
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) := by
+        (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) +
+        (∑ k ∈ Finset.Icc (kCut q + 1) q, ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) := by
       unfold sumC
-      rw [Finset.sum_div, sum_Icc_split (K := K_cut q) (by omega)]
+      rw [Finset.sum_div, sum_Icc_split (K := kCut q) (by omega)]
       congr 1 <;> (refine Finset.sum_congr rfl fun k _ => by ring)
     rw [hsumC_split, hmain_eq, Real.norm_eq_abs, abs_mul, abs_of_pos hqpos]
     have hdiff_split :
-        ((∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) +
-          (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q))) -
-        (∑ k ∈ Finset.Icc 1 (K_cut q),
+        ((∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) +
+          (∑ k ∈ Finset.Icc (kCut q + 1) q, ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q))) -
+        (∑ k ∈ Finset.Icc 1 (kCut q),
           ((k : ℝ) / (q : ℝ)) ^ 2 * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))) =
-        (∑ k ∈ Finset.Icc 1 (K_cut q),
+        (∑ k ∈ Finset.Icc 1 (kCut q),
           ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))) +
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) := by
-      have : (∑ k ∈ Finset.Icc 1 (K_cut q),
+        (∑ k ∈ Finset.Icc (kCut q + 1) q, ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) := by
+      have : (∑ k ∈ Finset.Icc 1 (kCut q),
           ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))) =
-          (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) -
-          (∑ k ∈ Finset.Icc 1 (K_cut q),
+          (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) -
+          (∑ k ∈ Finset.Icc 1 (kCut q),
             ((k : ℝ) / (q : ℝ)) ^ 2 * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))) := by
         rw [← Finset.sum_sub_distrib]
         refine Finset.sum_congr rfl fun k _ => by ring
       linarith
     rw [hdiff_split]
-    have hbody : |∑ k ∈ Finset.Icc 1 (K_cut q),
+    have hbody : |∑ k ∈ Finset.Icc 1 (kCut q),
         ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
           Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))| ≤
         85020 * (3 * Real.exp 1 * (1 + (Nat.factorial 2 : ℝ)) +
           3 * Real.exp 1 * (1 + (Nat.factorial 22 : ℝ))) * ε ^ 3 := by
       refine le_trans (Finset.abs_sum_le_sum_abs _ _) ?_
-      have h1 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h1 : ∑ k ∈ Finset.Icc 1 (kCut q),
           |((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))| ≤
-          ∑ k ∈ Finset.Icc 1 (K_cut q),
+          ∑ k ∈ Finset.Icc 1 (kCut q),
             85020 * ε ^ 5 * (((k : ℝ) * ε) ^ 2 + ((k : ℝ) * ε) ^ 22) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) := by
         refine Finset.sum_le_sum fun k hk => ?_
         rw [abs_mul, abs_of_nonneg (by positivity : 0 ≤ ((k : ℝ) / (q : ℝ)) ^ 2), hkq2_eq k]
@@ -1960,14 +1958,14 @@ theorem tendsto_sumC :
         linarith [show ε ^ 2 * ((k : ℝ) * ε) ^ 2 *
           (85020 * ε ^ 3 * (1 + ((k : ℝ) * ε) ^ 20) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) =
           85020 * ε ^ 5 * (((k : ℝ) * ε) ^ 2 + ((k : ℝ) * ε) ^ 22) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) by ring]
-      have h2 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h2 : ∑ k ∈ Finset.Icc 1 (kCut q),
             85020 * ε ^ 5 * (((k : ℝ) * ε) ^ 2 + ((k : ℝ) * ε) ^ 22) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) =
-          85020 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 2 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
-            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 22 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
+          85020 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 2 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
+            (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 22 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
         rw [← Finset.sum_add_distrib, Finset.mul_sum]
         refine Finset.sum_congr rfl fun k _ => by ring
-      have h3 := sum_pow_exp_neg_three_sq_le 2 hε_pos hε_le1 (K_cut q)
-      have h4 := sum_pow_exp_neg_three_sq_le 22 hε_pos hε_le1 (K_cut q)
+      have h3 := sum_pow_exp_neg_three_sq_le 2 hε_pos hε_le1 (kCut q)
+      have h4 := sum_pow_exp_neg_three_sq_le 22 hε_pos hε_le1 (kCut q)
       rw [h2] at h1
       have h5 := mul_le_mul_of_nonneg_left (add_le_add h3 h4) (by positivity : 0 ≤ 85020 * ε ^ 5)
       have h6 : 85020 * ε ^ 5 *
@@ -1982,10 +1980,10 @@ theorem tendsto_sumC :
         (by positivity : 0 ≤ 85020 * (3 * Real.exp 1 * (1 + (Nat.factorial 2 : ℝ)) +
           3 * Real.exp 1 * (1 + (Nat.factorial 22 : ℝ))))
       exact le_trans h1 (le_trans h5 (by rw [h6]; exact hC_mul))
-    have htail : |∑ k ∈ Finset.Icc (K_cut q + 1) q,
+    have htail : |∑ k ∈ Finset.Icc (kCut q + 1) q,
         ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)| ≤
         2 * ((Nat.factorial 10 : ℝ) * 3 ^ 10) / ((q : ℝ) * Real.sqrt (q : ℝ)) := by
-      have hw : ∀ k ∈ Finset.Icc (K_cut q + 1) q, |((k : ℝ) / (q : ℝ)) ^ 2| ≤ 1 := by
+      have hw : ∀ k ∈ Finset.Icc (kCut q + 1) q, |((k : ℝ) / (q : ℝ)) ^ 2| ≤ 1 := by
         intro k hk; rw [mem_Icc] at hk
         rw [abs_of_nonneg (by positivity)]
         have h1 : (k : ℝ) / (q : ℝ) ≤ 1 := (div_le_one hqpos).mpr (by exact_mod_cast hk.2)
@@ -1999,10 +1997,10 @@ theorem tendsto_sumC :
         2 * ((Nat.factorial 10 : ℝ) * 3 ^ 10) * ε := by
       dsimp only [ε]; field_simp
     have htri := abs_add_le
-      (∑ k ∈ Finset.Icc 1 (K_cut q),
+      (∑ k ∈ Finset.Icc 1 (kCut q),
         ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
           Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3)))
-      (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q))
+      (∑ k ∈ Finset.Icc (kCut q + 1) q, ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q))
     have hmul := mul_le_mul_of_nonneg_left (le_trans htri (add_le_add hbody htail)) (le_of_lt hqpos)
     dsimp only [C_rem]
     calc (q : ℝ) * |_| ≤ (q : ℝ) * (85020 * (3 * Real.exp 1 * (1 + (Nat.factorial 2 : ℝ)) +
@@ -2035,15 +2033,15 @@ private lemma exists_bound_all_pos (f : ℕ → ℝ) (N₀ : ℕ) (C₀ : ℝ) (
     have hle : |f q| ≤ S := Finset.single_le_sum (fun k _ => abs_nonneg (f k)) hmem
     linarith [le_abs_self (f q)]
 
-/-- Sharper tail exponential decay `O(q^{-3})` per term for `k > K_cut q`. -/
-private lemma exp_tail_bound_order2 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : K_cut q < k) :
+/-- Sharper tail exponential decay `O(q^{-3})` per term for `k > kCut q`. -/
+private lemma exp_tail_bound_order2 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : kCut q < k) :
     Real.exp (-((k : ℝ) ^ 2) / (3 * (q : ℝ))) ≤
       ((Nat.factorial 12 : ℝ) * 3 ^ 12) / (q : ℝ) ^ 3 := by
   have hw10 := w8_ge_ten hq
   have hw_pos : 0 < w8 q := by linarith
   have hw_eq : Real.sqrt (q : ℝ) * w8 q = (w8 q) ^ 5 := by rw [← w8_pow4 q]; ring
   have hk_gt : (w8 q) ^ 5 < (k : ℝ) := by
-    unfold K_cut at hk
+    unfold kCut at hk
     rw [hw_eq] at hk
     exact (Nat.floor_lt (by positivity)).mp hk
   have hk2_ge : (w8 q) ^ 2 / 3 ≤ (k : ℝ) ^ 2 / (3 * (q : ℝ)) := by
@@ -2072,20 +2070,20 @@ private lemma exp_tail_bound_order2 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : K_cut 
     field_simp
   exact le_trans hexp_le (by rw [← hden_eq]; exact hinv)
 
-/-- Sharper `O(q^{-2})` tail sum bound for `k > K_cut q`. -/
+/-- Sharper `O(q^{-2})` tail sum bound for `k > kCut q`. -/
 private lemma abs_p3q_tail_sum_le_order2 {q : ℕ} (hq : 10 ^ 8 ≤ q) (w : ℕ → ℝ)
-    (hw : ∀ k ∈ Finset.Icc (K_cut q + 1) q, |w k| ≤ 1) (sgn : ℝ) (hsgn : |sgn| = 1) :
-    |∑ k ∈ Finset.Icc (K_cut q + 1) q, w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| ≤
+    (hw : ∀ k ∈ Finset.Icc (kCut q + 1) q, |w k| ≤ 1) (sgn : ℝ) (hsgn : |sgn| = 1) :
+    |∑ k ∈ Finset.Icc (kCut q + 1) q, w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| ≤
       2 * ((Nat.factorial 12 : ℝ) * 3 ^ 12) / (q : ℝ) ^ 2 := by
   have hq1 : 1 ≤ q := le_trans (by norm_num) hq
   have hp0 : 0 < p3q q q := p3q_center_pos q
   have hqpos : (0 : ℝ) < (q : ℝ) := by positivity
   set M := ((Nat.factorial 12 : ℝ) * 3 ^ 12) / (q : ℝ) ^ 3
-  have hterm : ∀ k ∈ Finset.Icc (K_cut q + 1) q,
+  have hterm : ∀ k ∈ Finset.Icc (kCut q + 1) q,
       |w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| ≤ 2 * M := by
     intro k hk
     rw [mem_Icc] at hk
-    have hgt : K_cut q < k := by omega
+    have hgt : kCut q < k := by omega
     have hr := le_trans (p3q_right_ratio_le q k hq1) (exp_tail_bound_order2 hq hgt)
     have hl := le_trans (p3q_left_ratio_le q k hq1 hk.2) (exp_tail_bound_order2 hq hgt)
     have hr_nn : 0 ≤ p3q q (q + k) / p3q q q := by
@@ -2105,14 +2103,14 @@ private lemma abs_p3q_tail_sum_le_order2 {q : ℕ} (hq : 10 ^ 8 ≤ q) (w : ℕ 
     rw [abs_mul]
     have hwk := hw k (mem_Icc.mpr hk)
     exact le_trans (mul_le_mul hwk hsum_abs (abs_nonneg _) (by norm_num)) (by linarith)
-  have hcard : ((Finset.Icc (K_cut q + 1) q).card : ℝ) ≤ (q : ℝ) := by
-    have : (Finset.Icc (K_cut q + 1) q).card ≤ q := by simp only [Nat.card_Icc]; omega
+  have hcard : ((Finset.Icc (kCut q + 1) q).card : ℝ) ≤ (q : ℝ) := by
+    have : (Finset.Icc (kCut q + 1) q).card ≤ q := by simp only [Nat.card_Icc]; omega
     exact_mod_cast this
-  calc |∑ k ∈ Finset.Icc (K_cut q + 1) q, w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)|
-      ≤ ∑ k ∈ Finset.Icc (K_cut q + 1) q, |w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| :=
+  calc |∑ k ∈ Finset.Icc (kCut q + 1) q, w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)|
+      ≤ ∑ k ∈ Finset.Icc (kCut q + 1) q, |w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| :=
         Finset.abs_sum_le_sum_abs _ _
-    _ ≤ ∑ _k ∈ Finset.Icc (K_cut q + 1) q, (2 * M) := Finset.sum_le_sum hterm
-    _ = ((Finset.Icc (K_cut q + 1) q).card : ℝ) * (2 * M) := by simp
+    _ ≤ ∑ _k ∈ Finset.Icc (kCut q + 1) q, (2 * M) := Finset.sum_le_sum hterm
+    _ = ((Finset.Icc (kCut q + 1) q).card : ℝ) * (2 * M) := by simp
     _ ≤ (q : ℝ) * (2 * M) := mul_le_mul_of_nonneg_right hcard (by dsimp only [M]; positivity)
     _ = 2 * ((Nat.factorial 12 : ℝ) * 3 ^ 12) / (q : ℝ) ^ 2 := by
         dsimp only [M]; field_simp
@@ -2140,7 +2138,7 @@ lemma gsum_err_O_inv_sq (j : ℕ) :
   have hε4 : (1 / Real.sqrt (q : ℝ)) ^ 4 = 1 / (q : ℝ) ^ 2 := by
     rw [show (1 / Real.sqrt (q : ℝ)) ^ 4 = ((1 / Real.sqrt (q : ℝ)) ^ 2) ^ 2 by ring, hε2]
     ring
-  have hmain := hC hε_pos (K_cut q)
+  have hmain := hC hε_pos (kCut q)
   have hite : (if j = 0 then (1 / Real.sqrt (q : ℝ)) ^ 2 / 12 else 0) =
       (if j = 0 then 1 / (12 * (q : ℝ)) else 0) := by
     rw [hε2]; split_ifs <;> ring
@@ -2149,7 +2147,7 @@ lemma gsum_err_O_inv_sq (j : ℕ) :
   have h12 : 1 + 1 / Real.sqrt (q : ℝ) + (1 / Real.sqrt (q : ℝ)) ^ 2 ≤ 3 := by nlinarith
   have hbr : (1 / Real.sqrt (q : ℝ)) ^ 4 +
       (1 + 1 / Real.sqrt (q : ℝ) + (1 / Real.sqrt (q : ℝ)) ^ 2) *
-        Real.exp (-((K_cut q : ℝ) * (1 / Real.sqrt (q : ℝ)))) ≤
+        Real.exp (-((kCut q : ℝ) * (1 / Real.sqrt (q : ℝ)))) ≤
       (1 + 3 * C_em) / (q : ℝ) ^ 2 := by
     have hm1 := mul_le_mul h12 hcut (le_of_lt (Real.exp_pos _)) (by norm_num)
     rw [hε4]
@@ -2159,7 +2157,7 @@ lemma gsum_err_O_inv_sq (j : ℕ) :
           if j = 0 then 1 / (12 * (q : ℝ)) else 0)|
       ≤ C * ((1 / Real.sqrt (q : ℝ)) ^ 4 +
           (1 + 1 / Real.sqrt (q : ℝ) + (1 / Real.sqrt (q : ℝ)) ^ 2) *
-            Real.exp (-((K_cut q : ℝ) * (1 / Real.sqrt (q : ℝ))))) := hmain
+            Real.exp (-((kCut q : ℝ) * (1 / Real.sqrt (q : ℝ))))) := hmain
     _ ≤ C * ((1 + 3 * C_em) / (q : ℝ) ^ 2) := mul_le_mul_of_nonneg_left hbr hC0
     _ = C * (1 + 3 * C_em) / (q : ℝ) ^ 2 := by ring
 
@@ -2375,7 +2373,7 @@ noncomputable def r4Term (t ε : ℝ) : ℝ :=
   ε ^ 4 * (-(11 / 5 : ℝ) * t ^ 6 + (9 / 4 : ℝ) * t ^ 4 - (1 / 2 : ℝ) * t ^ 2)
 
 /-- Fourth-order local log-ratio perturbation polynomial in `(t, ε)`. -/
-noncomputable def rApprox4 (t ε : ℝ) : ℝ := R_approx t ε + r4Term t ε
+noncomputable def rApprox4 (t ε : ℝ) : ℝ := rApprox t ε + r4Term t ε
 
 /-- Degree-4 Taylor polynomial `1 + x + x^2/2 + x^3/6 + x^4/24` of `exp x`. -/
 noncomputable def T4 (x : ℝ) : ℝ := T3 x + x ^ 4 / 24
@@ -2466,7 +2464,7 @@ private lemma log_ratio_approx_order5 {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (
     have hu5 : u ^ 5 = ε ^ 5 * t ^ 5 := by rw [hu_eq, mul_pow]
     have hu6 : u ^ 6 = ε ^ 6 * t ^ 6 := by rw [hu_eq, mul_pow]
     rw [logPoly6_combo_eq (q : ℝ) u, hqu2, hq3, hq4, hq5, hq6, hq7, hu2, hu3, hu4, hu5, hu6]
-    unfold rApprox4 r4Term R_approx; ring
+    unfold rApprox4 r4Term rApprox; ring
   have hpoly_tail : |-21 * (ε ^ 5 * t ^ 7) + 3 * (ε ^ 5 * t ^ 5) + (11 / 2 : ℝ) * (ε ^ 6 * t ^ 6)| ≤
       30 * ε ^ 5 * (1 + |t| ^ 7) := by
     have ht5 : |t| ^ 5 ≤ 1 + |t| ^ 7 := abs_pow_le_one_add (by omega)
@@ -2566,8 +2564,8 @@ private lemma rApprox4_abs_le {t ε : ℝ} (hε_pos : 0 < ε) (hε_le1 : ε ≤ 
   have ht6 : |t| ^ 6 ≤ 1 + |t| ^ 6 := by linarith
   set S := ε * (1 + |t| ^ 6)
   have hS : 0 ≤ S := by dsimp only [S]; positivity
-  have hRa : |R_approx t ε| ≤ 7 * S := by
-    unfold R_approx
+  have hRa : |rApprox t ε| ≤ 7 * S := by
+    unfold rApprox
     set A1 := -ε * t ^ 3
     set A2 := ε ^ 2 * (-(3 / 2 : ℝ) * t ^ 4)
     set A3 := ε ^ 2 * ((3 / 2 : ℝ) * t ^ 2)
@@ -2737,12 +2735,12 @@ private lemma bracket4_abs_le {x y e : ℝ} (hx1 : |x| ≤ 1) (hy1 : |y| ≤ 1) 
 
 /-- Clean `O(ε^5)` antisymmetric cancellation bound for `T4 (rApprox4 t ε) - T4 (rApprox4 (-t) ε)`. -/
 private lemma t4_diff_bound {t ε : ℝ} (ht : 0 ≤ t) (hε0 : 0 < ε) (hε1 : ε ≤ 1)
-    (hx1 : |R_approx t ε| ≤ 1) (hy1 : |R_approx (-t) ε| ≤ 1) (he1 : |r4Term t ε| ≤ 1) :
+    (hx1 : |rApprox t ε| ≤ 1) (hy1 : |rApprox (-t) ε| ≤ 1) (he1 : |r4Term t ε| ≤ 1) :
     |(T4 (rApprox4 t ε) - T4 (rApprox4 (-t) ε)) -
       (-2 * ε * t ^ 3 + ε ^ 3 * (-(1 / 3 : ℝ) * t ^ 9 + 3 * t ^ 7 - 6 * t ^ 5 + 2 * t ^ 3))| ≤
       4000 * ε ^ 5 * (1 + t ^ 20) := by
-  set x := R_approx t ε
-  set y := R_approx (-t) ε
+  set x := rApprox t ε
+  set y := rApprox (-t) ε
   set e := r4Term t ε
   have he_even : r4Term (-t) ε = e := by
     dsimp only [e]; unfold r4Term; ring
@@ -2759,7 +2757,7 @@ private lemma t4_diff_bound {t ε : ℝ} (ht : 0 ≤ t) (hε0 : 0 < ε) (hε1 : 
   have hε2 : ε ^ 2 ≤ 1 := by nlinarith
   have hxy_sub : |x - y| ≤ 7 * ε * (1 + t ^ 5) := by
     have hid : x - y = ε * (-2 * t ^ 3 + ε ^ 2 * (-3 * t ^ 5 + 2 * t ^ 3)) := by
-      dsimp only [x, y]; unfold R_approx; ring
+      dsimp only [x, y]; unfold rApprox; ring
     rw [hid, abs_mul, abs_of_pos hε0]
     have ht3 : t ^ 3 ≤ 1 + t ^ 5 := by
       have := abs_pow_le_one_add (x := t) (m := 3) (n := 5) (by omega)
@@ -2780,7 +2778,7 @@ private lemma t4_diff_bound {t ε : ℝ} (ht : 0 ≤ t) (hε0 : 0 < ε) (hε1 : 
     linarith [show ε * (7 * (1 + t ^ 5)) = 7 * ε * (1 + t ^ 5) by ring]
   have hxy_add : |x + y| ≤ 6 * ε ^ 2 * (1 + t ^ 4) := by
     have hid : x + y = ε ^ 2 * (-3 * t ^ 4 + 3 * t ^ 2) := by
-      dsimp only [x, y]; unfold R_approx; ring
+      dsimp only [x, y]; unfold rApprox; ring
     rw [hid, abs_mul, abs_of_pos (by positivity : 0 < ε ^ 2)]
     have ht2 : t ^ 2 ≤ 1 + t ^ 4 := by
       have := abs_pow_le_one_add (x := t) (m := 2) (n := 4) (by omega)
@@ -2790,7 +2788,7 @@ private lemma t4_diff_bound {t ε : ℝ} (ht : 0 ≤ t) (hε0 : 0 < ε) (hε1 : 
     have hm := mul_le_mul_of_nonneg_left hp (by positivity : 0 ≤ ε ^ 2)
     linarith [show ε ^ 2 * (6 * (1 + t ^ 4)) = 6 * ε ^ 2 * (1 + t ^ 4) by ring]
   have hx2y2 : x ^ 2 + y ^ 2 ≤ 200 * ε ^ 2 * (1 + t ^ 10) := by
-    have hbd : ∀ s : ℝ, |R_approx s ε| ≤ 7 * (ε * (1 + |s| ^ 5)) := fun s => by
+    have hbd : ∀ s : ℝ, |rApprox s ε| ≤ 7 * (ε * (1 + |s| ^ 5)) := fun s => by
       have hε2' : ε ^ 2 ≤ ε := by rw [sq]; exact mul_le_of_le_one_right (le_of_lt hε0) hε1
       have hε3' : ε ^ 3 ≤ ε := by
         rw [show ε ^ 3 = ε ^ 2 * ε by ring]
@@ -2799,7 +2797,7 @@ private lemma t4_diff_bound {t ε : ℝ} (ht : 0 ≤ t) (hε0 : 0 < ε) (hε1 : 
       have hs3 : |s| ^ 3 ≤ 1 + |s| ^ 5 := abs_pow_le_one_add (by omega)
       have hs4 : |s| ^ 4 ≤ 1 + |s| ^ 5 := abs_pow_le_one_add (by omega)
       have hs5 : |s| ^ 5 ≤ 1 + |s| ^ 5 := by linarith
-      unfold R_approx
+      unfold rApprox
       set S := ε * (1 + |s| ^ 5)
       set A1 := -ε * s ^ 3
       set A2 := ε ^ 2 * (-(3 / 2 : ℝ) * s ^ 4)
@@ -2920,15 +2918,15 @@ private lemma t4_diff_bound {t ε : ℝ} (ht : 0 ≤ t) (hε0 : 0 < ε) (hε1 : 
     linarith
   linarith [show (0 : ℝ) ≤ ε ^ 5 * (1 + t ^ 20) by positivity]
 
-private lemma local_smallness_order5 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ K_cut q)
+private lemma local_smallness_order5 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ kCut q)
     (s : ℝ) (hs : |s| = 1) :
     let u := s * (k : ℝ) / (q : ℝ)
     let ε := 1 / Real.sqrt (q : ℝ)
     let t := u / ε
     |u| ≤ 1 / 4 ∧ |rApprox4 t ε| ≤ 3 / 4 ∧ 600 * ε ^ 5 * (1 + |t| ^ 7) ≤ 1 / 4 ∧
-      |R_approx t ε| ≤ 1 ∧ |r4Term t ε| ≤ 1 := by
+      |rApprox t ε| ≤ 1 ∧ |r4Term t ε| ≤ 1 := by
   intro u ε t
-  have hsm : |u| ≤ 1 / 4 ∧ |R_approx t ε| ≤ 1 / 2 ∧ 300 * ε ^ 4 * (1 + t ^ 6) ≤ 1 / 2 :=
+  have hsm : |u| ≤ 1 / 4 ∧ |rApprox t ε| ≤ 1 / 2 ∧ 300 * ε ^ 4 * (1 + t ^ 6) ≤ 1 / 2 :=
     local_smallness hq hk s hs
   have hqpos : (0 : ℝ) < (q : ℝ) := by positivity
   have hsqq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hqpos
@@ -2944,8 +2942,8 @@ private lemma local_smallness_order5 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤
       rw [hsq]
     rw [ht_eq, abs_div, abs_mul, hs, one_mul, abs_of_pos hsqq, abs_of_nonneg (Nat.cast_nonneg k)]
     rw [div_le_iff₀ hsqq]
-    have hk_le : (k : ℝ) ≤ (K_cut q : ℝ) := by exact_mod_cast hk
-    have hfl : (K_cut q : ℝ) ≤ Real.sqrt (q : ℝ) * w8 q := Nat.floor_le (by positivity)
+    have hk_le : (k : ℝ) ≤ (kCut q : ℝ) := by exact_mod_cast hk
+    have hfl : (kCut q : ℝ) ≤ Real.sqrt (q : ℝ) * w8 q := Nat.floor_le (by positivity)
     linarith
   have hr4_le : |r4Term t ε| ≤ 1 / 4 := by
     unfold r4Term
@@ -2988,7 +2986,7 @@ private lemma local_smallness_order5 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤
     linarith
   exact ⟨hsm.1, hr4_approx, herr5, by linarith [hsm.2.1], by linarith⟩
 
-private lemma local_diff_term_approx_order5 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ K_cut q) :
+private lemma local_diff_term_approx_order5 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ kCut q) :
     let ε := 1 / Real.sqrt (q : ℝ)
     let t := (k : ℝ) * ε
     |(p3q q (q + k) - p3q q (q - k)) / p3q q q -
@@ -3036,8 +3034,8 @@ private lemma local_diff_term_approx_order5 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk 
         Real.exp (-3 * ((-1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) at happrox_neg
   rw [ht_pos, abs_of_nonneg ht_nn, ← p3q_ratio_pos_eq (by omega)] at happrox_pos
   rw [ht_neg, neg_sq, abs_neg, abs_of_nonneg ht_nn, ← p3q_ratio_neg_eq (by omega)] at happrox_neg
-  have hx1 : |R_approx t ε| ≤ 1 := by rw [← ht_pos]; exact hpos_sm.2.2.2.1
-  have hy1 : |R_approx (-t) ε| ≤ 1 := by rw [← ht_neg]; exact hneg_sm.2.2.2.1
+  have hx1 : |rApprox t ε| ≤ 1 := by rw [← ht_pos]; exact hpos_sm.2.2.2.1
+  have hy1 : |rApprox (-t) ε| ≤ 1 := by rw [← ht_neg]; exact hneg_sm.2.2.2.1
   have he1 : |r4Term t ε| ≤ 1 := by rw [← ht_pos]; exact hpos_sm.2.2.2.2
   have hT4 := t4_diff_bound ht_nn hε_pos hε_le1 hx1 hy1 he1
   set D1 := p3q q (q + k) / p3q q q - Real.exp (-3 * t ^ 2) * T4 (rApprox4 t ε)
@@ -3101,7 +3099,7 @@ theorem sumA_O_inv_sq :
       dsimp only [ε]; rw [div_pow, one_pow, Real.sq_sqrt (le_of_lt hqpos)]
     have hε4 : ε ^ 4 = 1 / (q : ℝ) ^ 2 := by
       rw [show ε ^ 4 = (ε ^ 2) ^ 2 by ring, hε2]; ring
-    have hmain_eq : mainA q = ∑ k ∈ Finset.Icc 1 (K_cut q),
+    have hmain_eq : mainA q = ∑ k ∈ Finset.Icc 1 (kCut q),
         Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
           (-2 * ε * ((k : ℝ) * ε) ^ 3 +
             ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
@@ -3111,33 +3109,33 @@ theorem sumA_O_inv_sq :
       refine Finset.sum_congr rfl fun k _ => ?_
       rw [← hε2]; dsimp only [ε]; ring
     have hsumA_split : sumA q =
-        (∑ k ∈ Finset.Icc 1 (K_cut q), (p3q q (q + k) - p3q q (q - k)) / p3q q q) +
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q) := by
-      unfold sumA; rw [Finset.sum_div, sum_Icc_split (K := K_cut q) (by omega)]
-    have hbody : |∑ k ∈ Finset.Icc 1 (K_cut q),
+        (∑ k ∈ Finset.Icc 1 (kCut q), (p3q q (q + k) - p3q q (q - k)) / p3q q q) +
+        (∑ k ∈ Finset.Icc (kCut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q) := by
+      unfold sumA; rw [Finset.sum_div, sum_Icc_split (K := kCut q) (by omega)]
+    have hbody : |∑ k ∈ Finset.Icc 1 (kCut q),
         ((p3q q (q + k) - p3q q (q - k)) / p3q q q -
           Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
             (-2 * ε * ((k : ℝ) * ε) ^ 3 +
               ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
                 6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3)))| ≤ C_body / (q : ℝ) ^ 2 := by
       refine le_trans (Finset.abs_sum_le_sum_abs _ _) ?_
-      have h1 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h1 : ∑ k ∈ Finset.Icc 1 (kCut q),
           |(p3q q (q + k) - p3q q (q - k)) / p3q q q -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
               (-2 * ε * ((k : ℝ) * ε) ^ 3 +
                 ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
                   6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3))| ≤
-          ∑ k ∈ Finset.Icc 1 (K_cut q),
+          ∑ k ∈ Finset.Icc 1 (kCut q),
             8028000 * ε ^ 5 * (1 + ((k : ℝ) * ε) ^ 30) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) :=
         Finset.sum_le_sum fun k hk => local_diff_term_approx_order5 hq (mem_Icc.mp hk).2
-      have h2 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h2 : ∑ k ∈ Finset.Icc 1 (kCut q),
             8028000 * ε ^ 5 * (1 + ((k : ℝ) * ε) ^ 30) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) =
-          8028000 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 0 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
-            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 30 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
+          8028000 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 0 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
+            (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 30 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
         rw [← Finset.sum_add_distrib, Finset.mul_sum]
         refine Finset.sum_congr rfl fun k _ => by simp [pow_zero]; ring
-      have h3 := sum_pow_exp_neg_three_sq_le 0 hε_pos hε_le1 (K_cut q)
-      have h4 := sum_pow_exp_neg_three_sq_le 30 hε_pos hε_le1 (K_cut q)
+      have h3 := sum_pow_exp_neg_three_sq_le 0 hε_pos hε_le1 (kCut q)
+      have h4 := sum_pow_exp_neg_three_sq_le 30 hε_pos hε_le1 (kCut q)
       rw [h2] at h1
       have h5 := mul_le_mul_of_nonneg_left (add_le_add h3 h4) (by positivity : 0 ≤ 8028000 * ε ^ 5)
       have h6 : 8028000 * ε ^ 5 *
@@ -3150,30 +3148,30 @@ theorem sumA_O_inv_sq :
             3 * Real.exp 1 * (1 + (Nat.factorial 30 : ℝ))) * ε ^ 4 := by field_simp
         rw [mul_assoc, this, hε4]; ring
       linarith
-    have htail : |∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q| ≤
+    have htail : |∑ k ∈ Finset.Icc (kCut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q| ≤
         C_tail / (q : ℝ) ^ 2 := by
       have h := abs_p3q_tail_sum_le_order2 hq (fun _ => 1) (fun _ _ => by norm_num) (-1) (by norm_num)
       refine le_trans (le_of_eq ?_) h
       congr 1; refine Finset.sum_congr rfl fun k _ => by ring
     have hrem : |sumA q - mainA q| ≤ (C_body + C_tail) / (q : ℝ) ^ 2 := by
       have hsp : sumA q - mainA q =
-          (∑ k ∈ Finset.Icc 1 (K_cut q),
+          (∑ k ∈ Finset.Icc 1 (kCut q),
             ((p3q q (q + k) - p3q q (q - k)) / p3q q q -
               Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
                 (-2 * ε * ((k : ℝ) * ε) ^ 3 +
                   ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
                     6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3)))) +
-          (∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q) := by
+          (∑ k ∈ Finset.Icc (kCut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q) := by
         rw [hsumA_split, hmain_eq, Finset.sum_sub_distrib]; ring
       rw [hsp]
       linarith [abs_add_le
-        (∑ k ∈ Finset.Icc 1 (K_cut q),
+        (∑ k ∈ Finset.Icc 1 (kCut q),
           ((p3q q (q + k) - p3q q (q - k)) / p3q q q -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
               (-2 * ε * ((k : ℝ) * ε) ^ 3 +
                 ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
                   6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3))))
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q),
+        (∑ k ∈ Finset.Icc (kCut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q),
         show (C_body + C_tail) / (q : ℝ) ^ 2 = C_body / (q : ℝ) ^ 2 + C_tail / (q : ℝ) ^ 2 by ring]
     have hmain_err : |mainA q - (-(1 / 9 : ℝ) - 4 / (243 * (q : ℝ)))| ≤ C_main / (q : ℝ) ^ 2 := by
       have e1 := hG1 q hq; norm_num [Nat.factorial] at e1
@@ -3281,7 +3279,7 @@ theorem sumB_O_inv_sq :
       rw [show ε ^ 4 = (ε ^ 2) ^ 2 by ring, hε2]; ring
     have hkq_eq : ∀ k : ℕ, (k : ℝ) / (q : ℝ) = ε * ((k : ℝ) * ε) := by
       intro k; rw [show ε * ((k : ℝ) * ε) = (k : ℝ) * ε ^ 2 by ring, hε2]; ring
-    have hmain_eq : mainB q = ∑ k ∈ Finset.Icc 1 (K_cut q),
+    have hmain_eq : mainB q = ∑ k ∈ Finset.Icc 1 (kCut q),
         ((k : ℝ) / (q : ℝ)) * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
           (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2))) := by
       dsimp only [mainB]; unfold Gsum
@@ -3289,21 +3287,21 @@ theorem sumB_O_inv_sq :
       refine Finset.sum_congr rfl fun k _ => ?_
       rw [hkq_eq k, ← hε2]; dsimp only [ε]; ring
     have hsumB_split : sumB q =
-        (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) +
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) := by
-      unfold sumB; rw [Finset.sum_div, sum_Icc_split (K := K_cut q) (by omega)]
+        (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) +
+        (∑ k ∈ Finset.Icc (kCut q + 1) q, ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) := by
+      unfold sumB; rw [Finset.sum_div, sum_Icc_split (K := kCut q) (by omega)]
       congr 1 <;> (refine Finset.sum_congr rfl fun k _ => by ring)
-    have hbody : |∑ k ∈ Finset.Icc 1 (K_cut q),
+    have hbody : |∑ k ∈ Finset.Icc 1 (kCut q),
         ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
           Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
             (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))| ≤
         C_body / (q : ℝ) ^ 2 := by
       refine le_trans (Finset.abs_sum_le_sum_abs _ _) ?_
-      have h1 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h1 : ∑ k ∈ Finset.Icc 1 (kCut q),
           |((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
               (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))| ≤
-          ∑ k ∈ Finset.Icc 1 (K_cut q),
+          ∑ k ∈ Finset.Icc 1 (kCut q),
             85000 * ε ^ 5 * (((k : ℝ) * ε) ^ 1 + ((k : ℝ) * ε) ^ 21) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) := by
         refine Finset.sum_le_sum fun k hk => ?_
         rw [abs_mul, abs_of_nonneg (by positivity : 0 ≤ (k : ℝ) / (q : ℝ)), hkq_eq k]
@@ -3311,14 +3309,14 @@ theorem sumB_O_inv_sq :
         have hm := mul_le_mul_of_nonneg_left hloc (by positivity : 0 ≤ ε * ((k : ℝ) * ε))
         linarith [show ε * ((k : ℝ) * ε) * (85000 * ε ^ 4 * (1 + ((k : ℝ) * ε) ^ 20) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) =
           85000 * ε ^ 5 * (((k : ℝ) * ε) ^ 1 + ((k : ℝ) * ε) ^ 21) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) by ring]
-      have h2 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h2 : ∑ k ∈ Finset.Icc 1 (kCut q),
             85000 * ε ^ 5 * (((k : ℝ) * ε) ^ 1 + ((k : ℝ) * ε) ^ 21) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) =
-          85000 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 1 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
-            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 21 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
+          85000 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 1 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
+            (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 21 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
         rw [← Finset.sum_add_distrib, Finset.mul_sum]
         refine Finset.sum_congr rfl fun k _ => by ring
-      have h3 := sum_pow_exp_neg_three_sq_le 1 hε_pos hε_le1 (K_cut q)
-      have h4 := sum_pow_exp_neg_three_sq_le 21 hε_pos hε_le1 (K_cut q)
+      have h3 := sum_pow_exp_neg_three_sq_le 1 hε_pos hε_le1 (kCut q)
+      have h4 := sum_pow_exp_neg_three_sq_le 21 hε_pos hε_le1 (kCut q)
       rw [h2] at h1
       have h5 := mul_le_mul_of_nonneg_left (add_le_add h3 h4) (by positivity : 0 ≤ 85000 * ε ^ 5)
       have h6 : 85000 * ε ^ 5 *
@@ -3331,9 +3329,9 @@ theorem sumB_O_inv_sq :
             3 * Real.exp 1 * (1 + (Nat.factorial 21 : ℝ))) * ε ^ 4 := by field_simp
         rw [mul_assoc, this, hε4]; ring
       linarith
-    have htail : |∑ k ∈ Finset.Icc (K_cut q + 1) q,
+    have htail : |∑ k ∈ Finset.Icc (kCut q + 1) q,
         ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)| ≤ C_tail / (q : ℝ) ^ 2 := by
-      have hw : ∀ k ∈ Finset.Icc (K_cut q + 1) q, |(k : ℝ) / (q : ℝ)| ≤ 1 := by
+      have hw : ∀ k ∈ Finset.Icc (kCut q + 1) q, |(k : ℝ) / (q : ℝ)| ≤ 1 := by
         intro k hk; rw [mem_Icc] at hk
         rw [abs_of_nonneg (by positivity), div_le_one hqpos]; exact_mod_cast hk.2
       have h := abs_p3q_tail_sum_le_order2 hq (fun k => (k : ℝ) / (q : ℝ)) hw 1 (by norm_num)
@@ -3341,30 +3339,30 @@ theorem sumB_O_inv_sq :
       congr 1; refine Finset.sum_congr rfl fun k _ => by ring
     have hrem : |sumB q - mainB q| ≤ (C_body + C_tail) / (q : ℝ) ^ 2 := by
       have hsp : sumB q - mainB q =
-          (∑ k ∈ Finset.Icc 1 (K_cut q),
+          (∑ k ∈ Finset.Icc 1 (kCut q),
             ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
               Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
                 (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))) +
-          (∑ k ∈ Finset.Icc (K_cut q + 1) q,
+          (∑ k ∈ Finset.Icc (kCut q + 1) q,
             ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) := by
         rw [hsumB_split, hmain_eq]
-        have hsub : (∑ k ∈ Finset.Icc 1 (K_cut q),
+        have hsub : (∑ k ∈ Finset.Icc 1 (kCut q),
             ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
               Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
                 (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))) =
-            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) -
-            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+            (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) -
+            (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
               (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))) := by
           rw [← Finset.sum_sub_distrib]
           refine Finset.sum_congr rfl fun k _ => by ring
         linarith
       rw [hsp]
       linarith [abs_add_le
-        (∑ k ∈ Finset.Icc 1 (K_cut q),
+        (∑ k ∈ Finset.Icc 1 (kCut q),
           ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
               (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2))))
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q,
+        (∑ k ∈ Finset.Icc (kCut q + 1) q,
           ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)),
         show (C_body + C_tail) / (q : ℝ) ^ 2 = C_body / (q : ℝ) ^ 2 + C_tail / (q : ℝ) ^ 2 by ring]
     have hmain_err : |mainB q - (1 / 3 - 2 / (27 * (q : ℝ)))| ≤ C_main / (q : ℝ) ^ 2 := by
@@ -3459,25 +3457,25 @@ theorem sumC_O_inv_sq :
     have hkq2_eq : ∀ k : ℕ, ((k : ℝ) / (q : ℝ)) ^ 2 = ε ^ 2 * ((k : ℝ) * ε) ^ 2 := by
       intro k
       rw [show ε ^ 2 * ((k : ℝ) * ε) ^ 2 = (k : ℝ) ^ 2 * (ε ^ 2) ^ 2 by ring, hε2]; ring
-    have hmain_eq : mainC q = ∑ k ∈ Finset.Icc 1 (K_cut q),
+    have hmain_eq : mainC q = ∑ k ∈ Finset.Icc 1 (kCut q),
         ((k : ℝ) / (q : ℝ)) ^ 2 * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3)) := by
       dsimp only [mainC]; unfold Gsum
       simp only [Finset.mul_sum]
       refine Finset.sum_congr rfl fun k _ => ?_
       rw [hkq2_eq k, ← hε2]; dsimp only [ε]; ring
     have hsumC_split : sumC q =
-        (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) +
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) := by
-      unfold sumC; rw [Finset.sum_div, sum_Icc_split (K := K_cut q) (by omega)]
+        (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) +
+        (∑ k ∈ Finset.Icc (kCut q + 1) q, ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) := by
+      unfold sumC; rw [Finset.sum_div, sum_Icc_split (K := kCut q) (by omega)]
       congr 1 <;> (refine Finset.sum_congr rfl fun k _ => by ring)
-    have hbody : |∑ k ∈ Finset.Icc 1 (K_cut q),
+    have hbody : |∑ k ∈ Finset.Icc 1 (kCut q),
         ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
           Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))| ≤ C_body / (q : ℝ) ^ 2 := by
       refine le_trans (Finset.abs_sum_le_sum_abs _ _) ?_
-      have h1 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h1 : ∑ k ∈ Finset.Icc 1 (kCut q),
           |((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))| ≤
-          ∑ k ∈ Finset.Icc 1 (K_cut q),
+          ∑ k ∈ Finset.Icc 1 (kCut q),
             85020 * ε ^ 5 * (((k : ℝ) * ε) ^ 2 + ((k : ℝ) * ε) ^ 22) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) := by
         refine Finset.sum_le_sum fun k hk => ?_
         rw [abs_mul, abs_of_nonneg (by positivity : 0 ≤ ((k : ℝ) / (q : ℝ)) ^ 2), hkq2_eq k]
@@ -3485,14 +3483,14 @@ theorem sumC_O_inv_sq :
         have hm := mul_le_mul_of_nonneg_left hloc (by positivity : 0 ≤ ε ^ 2 * ((k : ℝ) * ε) ^ 2)
         linarith [show ε ^ 2 * ((k : ℝ) * ε) ^ 2 * (85020 * ε ^ 3 * (1 + ((k : ℝ) * ε) ^ 20) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) =
           85020 * ε ^ 5 * (((k : ℝ) * ε) ^ 2 + ((k : ℝ) * ε) ^ 22) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) by ring]
-      have h2 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+      have h2 : ∑ k ∈ Finset.Icc 1 (kCut q),
             85020 * ε ^ 5 * (((k : ℝ) * ε) ^ 2 + ((k : ℝ) * ε) ^ 22) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) =
-          85020 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 2 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
-            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 22 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
+          85020 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 2 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
+            (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) * ε) ^ 22 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
         rw [← Finset.sum_add_distrib, Finset.mul_sum]
         refine Finset.sum_congr rfl fun k _ => by ring
-      have h3 := sum_pow_exp_neg_three_sq_le 2 hε_pos hε_le1 (K_cut q)
-      have h4 := sum_pow_exp_neg_three_sq_le 22 hε_pos hε_le1 (K_cut q)
+      have h3 := sum_pow_exp_neg_three_sq_le 2 hε_pos hε_le1 (kCut q)
+      have h4 := sum_pow_exp_neg_three_sq_le 22 hε_pos hε_le1 (kCut q)
       rw [h2] at h1
       have h5 := mul_le_mul_of_nonneg_left (add_le_add h3 h4) (by positivity : 0 ≤ 85020 * ε ^ 5)
       have h6 : 85020 * ε ^ 5 *
@@ -3505,9 +3503,9 @@ theorem sumC_O_inv_sq :
             3 * Real.exp 1 * (1 + (Nat.factorial 22 : ℝ))) * ε ^ 4 := by field_simp
         rw [mul_assoc, this, hε4]; ring
       linarith
-    have htail : |∑ k ∈ Finset.Icc (K_cut q + 1) q,
+    have htail : |∑ k ∈ Finset.Icc (kCut q + 1) q,
         ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)| ≤ C_tail / (q : ℝ) ^ 2 := by
-      have hw : ∀ k ∈ Finset.Icc (K_cut q + 1) q, |((k : ℝ) / (q : ℝ)) ^ 2| ≤ 1 := by
+      have hw : ∀ k ∈ Finset.Icc (kCut q + 1) q, |((k : ℝ) / (q : ℝ)) ^ 2| ≤ 1 := by
         intro k hk; rw [mem_Icc] at hk
         have h1 : (k : ℝ) / (q : ℝ) ≤ 1 := (div_le_one hqpos).mpr (by exact_mod_cast hk.2)
         rw [abs_of_nonneg (by positivity)]
@@ -3517,27 +3515,27 @@ theorem sumC_O_inv_sq :
       congr 1; refine Finset.sum_congr rfl fun k _ => by ring
     have hrem : |sumC q - mainC q| ≤ (C_body + C_tail) / (q : ℝ) ^ 2 := by
       have hsp : sumC q - mainC q =
-          (∑ k ∈ Finset.Icc 1 (K_cut q),
+          (∑ k ∈ Finset.Icc 1 (kCut q),
             ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
               Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))) +
-          (∑ k ∈ Finset.Icc (K_cut q + 1) q,
+          (∑ k ∈ Finset.Icc (kCut q + 1) q,
             ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) := by
         rw [hsumC_split, hmain_eq]
-        have hsub : (∑ k ∈ Finset.Icc 1 (K_cut q),
+        have hsub : (∑ k ∈ Finset.Icc 1 (kCut q),
             ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
               Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))) =
-            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) -
-            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) ^ 2 *
+            (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) -
+            (∑ k ∈ Finset.Icc 1 (kCut q), ((k : ℝ) / (q : ℝ)) ^ 2 *
               (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))) := by
           rw [← Finset.sum_sub_distrib]
           refine Finset.sum_congr rfl fun k _ => by ring
         linarith
       rw [hsp]
       linarith [abs_add_le
-        (∑ k ∈ Finset.Icc 1 (K_cut q),
+        (∑ k ∈ Finset.Icc 1 (kCut q),
           ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
             Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3)))
-        (∑ k ∈ Finset.Icc (K_cut q + 1) q,
+        (∑ k ∈ Finset.Icc (kCut q + 1) q,
           ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)),
         show (C_body + C_tail) / (q : ℝ) ^ 2 = C_body / (q : ℝ) ^ 2 + C_tail / (q : ℝ) ^ 2 by ring]
     have hmain_err : |mainC q - (-(2 / (27 * (q : ℝ))))| ≤ C_main / (q : ℝ) ^ 2 := by

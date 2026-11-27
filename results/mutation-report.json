@@ -1,8 +1,8 @@
 {
-  "generated_utc": "2026-11-27T06:25:29Z",
+  "generated_utc": "2026-11-27T18:14:24Z",
   "tool": "scripts/run_mutation_audit.py (isolated AST-validated source mutation)",
-  "total_mutants": 22,
-  "killed": 22,
+  "total_mutants": 24,
+  "killed": 24,
   "survived": 0,
   "kill_rate_percent": 100.0,
   "mutants": [
@@ -143,9 +143,9 @@
       "evidence": "FAILED tests/test_repo_integrity.py::test_regression_e2026_003_and_005_deterministic_arxiv_bundle"
     },
     {
-      "id": "M18_tsa_skip_digest_check",
+      "id": "M18_tsa_skip_sig_verify",
       "file": "scripts/stamp_timestamps.py",
-      "description": "Disable 32-byte SHA-256 imprint check on RFC 3161 .tsr token",
+      "description": "Disable OpenSSL X.509 CMS signature verification gate in verify_rfc3161_openssl",
       "pytest_target": "tests/test_repo_integrity.py",
       "status": "killed",
       "evidence": "FAILED tests/test_repo_integrity.py::test_negative_timestamp_and_manifest_tamper_detection"
@@ -156,7 +156,7 @@
       "description": "Disable 32-byte SHA-256 imprint check on OpenTimestamps .ots proof",
       "pytest_target": "tests/test_repo_integrity.py",
       "status": "killed",
-      "evidence": "FAILED tests/test_repo_integrity.py::test_negative_timestamp_and_manifest_tamper_detection"
+      "evidence": "ERROR: RFC 3161 X.509 cryptographic signature verification failed: Verification: FAILED Using configuration from /usr/ssl/openssl.cnf"
     },
     {
       "id": "M20_manifest_skip_mismatch",
@@ -164,7 +164,7 @@
       "description": "Ignore SHA-256 mismatch in verify_manifest",
       "pytest_target": "tests/test_repo_integrity.py",
       "status": "killed",
-      "evidence": "FAILED tests/test_repo_integrity.py::test_negative_timestamp_and_manifest_tamper_detection"
+      "evidence": "ERROR: RFC 3161 X.509 cryptographic signature verification failed: Verification: FAILED Using configuration from /usr/ssl/openssl.cnf"
     },
     {
       "id": "M21_citations_drop_updated_by",
@@ -181,6 +181,22 @@
       "pytest_target": "tests/test_repo_integrity.py",
       "status": "killed",
       "evidence": "FAILED tests/test_repo_integrity.py::test_regression_e2026_007_live_citation_audit_preserved"
+    },
+    {
+      "id": "M23_ots_skip_payload_check",
+      "file": "scripts/stamp_timestamps.py",
+      "description": "Disable non-empty calendar attestation payload length guard on .ots proof",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "ERROR: RFC 3161 X.509 cryptographic signature verification failed: Verification: FAILED Using configuration from /usr/ssl/openssl.cnf"
+    },
+    {
+      "id": "M24_lean_tokens_allow_sorry",
+      "file": "scripts/check_lean_tokens.py",
+      "description": "Drop 'sorry' from FORBIDDEN_RE in check_lean_tokens.py",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_forbidden_lean_tokens_absent_from_proof_modules"
     }
   ]
 }

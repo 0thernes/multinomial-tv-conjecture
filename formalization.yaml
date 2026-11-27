@@ -2,8 +2,8 @@
 # Honest AI/human provenance record (NOT a claim of Palomar registration or peer review)
 title: "Proof of Conjecture 7.7 on the Second-Order Variance Constant of Multinomial Discrete Total Variation"
 repository: "https://github.com/0thernes/multinomial-tv-conjecture"
-version: "2.6.0"
-date: "2026-11-26"
+version: "2.7.0"
+date: "2026-11-27"
 license:
   code: "Apache-2.0"
   documentation_and_papers: "CC-BY-4.0"
@@ -24,7 +24,7 @@ batteries_rev: "66e469188fe0"
 lake_package_dir: "lean"
 libraries:
   - name: "MultinomialTVConjecture"
-    summary: "Complete Lean 4.35.0 (module-header Palomar spec across all 10 files, weak.linter.mathlibStandardSet = true) proof of Conjecture 7.7 and the quantitative O(L^{-2}) remainder of Lemma 7.3 of Banić & Elezović (arXiv:2610.17046v1, posted 2026-10-12, unrefereed v1 preprint): exact combinatorial 2D->1D reduction, refined Stirling asymptotics, 3rd- and 4th-order Gaussian Euler-Maclaurin summation, residue-class 1/L limits b_0, b_1, b_2 and O(L^{-2}) remainder lemma_7_3_O_inv_sq, exact constants a_triangle = 1/32 - 4*sqrt(3)/243, gamma_2, d_0, five algebraic recombination identities for linear gamma(n), cyclic gamma_c(n), degenerate small-bin gamma(3;N) (both rearranged and literal Part 2 §7.2 source form) and gamma(4;N), 10 isolated comparator targets replayed in six checker runs (two of which are the Lean kernel), 189 author-written theorems and lemmas (894 audited theorem constants including 705 compiler-generated auxiliaries), and 20 NonVacuity theorems (6 direct hAdj 0..5 definition checks and 14 closed-form corollaries/refutations, independently replayed via leanchecker)."
+    summary: "Complete Lean 4.35.0 (module-header Palomar spec across all 10 files, weak.linter.mathlibStandardSet = true, zero @[nolint] suppressions) proof of Conjecture 7.7 and the quantitative O(L^{-2}) remainder of Lemma 7.3 of Banić & Elezović (arXiv:2610.17046v1, posted 2026-10-12, unrefereed v1 preprint): exact combinatorial 2D->1D reduction, refined Stirling asymptotics, 3rd- and 4th-order Gaussian Euler-Maclaurin summation, residue-class 1/L limits b_0, b_1, b_2 and O(L^{-2}) remainder lemma_7_3_O_inv_sq, exact constants a_triangle = 1/32 - 4*sqrt(3)/243, gamma_2, d_0, five algebraic recombination identities for linear gamma(n), cyclic gamma_c(n), degenerate small-bin gamma(3;N) (both rearranged and literal Part 2 §7.2 source form) and gamma(4;N), 10 isolated comparator targets replayed in six checker runs (two of which are the Lean kernel, paired with a live negative sorry-tamper comparator check), 191 author-written theorems and lemmas (896 audited theorem constants + 65 audited definitions), and 22 NonVacuity theorems (6 direct hAdj 0..5 definition checks and 16 closed-form corollaries/refutations covering all 10 targets, independently replayed via leanchecker)."
 challenge_module: "Challenge"
 solution_module: "Solution"
 comparator_config: "lean/comparator.json"

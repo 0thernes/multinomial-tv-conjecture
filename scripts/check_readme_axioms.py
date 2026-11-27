@@ -17,7 +17,7 @@ ALLOWED = {"propext", "Classical.choice", "Quot.sound"}
 AXIOM_LINE_RE = re.compile(r"^'([^']+)' depends on axioms: \[(.*)\]$")
 NO_AXIOM_RE = re.compile(r"^'([^']+)' does not depend on any axioms$")
 EXHAUSTIVE_RE = re.compile(
-    r"ALL_THEOREMS_AXIOM_AUDIT_PASS:\s*checked\s+(\d+)\s+theorems.*0 disallowed axioms"
+    r"ALL_THEOREMS_AXIOM_AUDIT_PASS:\s*checked\s+(\d+)\s+theorems(?:\s+and\s+(\d+)\s+definitions)?.*0 disallowed axioms"
 )
 
 
@@ -103,9 +103,10 @@ def main() -> int:
         readme_ex = EXHAUSTIVE_RE.search(readme_text)
         if not readme_ex:
             mismatches.append("README.md is missing the verbatim ALL_THEOREMS_AXIOM_AUDIT_PASS sentinel")
-        elif readme_ex.group(1) != ex_match.group(1):
+        elif readme_ex.group(1) != ex_match.group(1) or readme_ex.group(2) != ex_match.group(2):
             mismatches.append(
-                f"Exhaustive theorem count mismatch: README={readme_ex.group(1)} vs log={ex_match.group(1)}"
+                f"Exhaustive audit count mismatch: README=({readme_ex.group(1)} thms, {readme_ex.group(2)} defs) "
+                f"vs log=({ex_match.group(1)} thms, {ex_match.group(2)} defs)"
             )
 
     if mismatches:
@@ -113,7 +114,8 @@ def main() -> int:
             print("ERROR:", msg, file=sys.stderr)
         return 1
 
-    ex_note = f"; exhaustive audit {ex_match.group(1)} theorems (0 disallowed)" if ex_match else ""
+    defs_str = f" and {ex_match.group(2)} definitions" if (ex_match and ex_match.group(2)) else ""
+    ex_note = f"; exhaustive audit {ex_match.group(1)} theorems{defs_str} (0 disallowed)" if ex_match else ""
     print(
         f"PASS: {len(log_decls)} explicit Lean declarations in {log_path.name} strictly within "
         f"{sorted(ALLOWED)}{ex_note}; {len(readme_decls)} headline declarations verified verbatim in README.md."

@@ -11,10 +11,14 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT_SVG = ROOT / "docs" / "media" / "social-preview.svg"
+
+sys.path.insert(0, str(ROOT / "scripts"))
+import check_lean_tokens as clt  # noqa: E402
 
 
 def read_live_metrics() -> tuple[str, int, int, int, int]:
@@ -22,14 +26,13 @@ def read_live_metrics() -> tuple[str, int, int, int, int]:
     log_path = ROOT / "results" / "lean-axioms-all.log"
     m = re.search(r"checked\s+(\d+)\s+theorems", log_path.read_text(encoding="utf-8")) if log_path.is_file() else None
     constants = int(m.group(1)) if m else 0
-    decl_re = re.compile(r"^\s*(?:(?:public|private|protected)\s+)*(?:theorem|lemma)\s+\S+", re.M)
-    author_decls = 0
-    for lf in sorted((ROOT / "lean").rglob("*.lean")):
-        if ".lake" in lf.parts or lf.name in {"Challenge.lean", "VerifyAxioms.lean"}:
-            continue
-        author_decls += len(decl_re.findall(lf.read_text(encoding="utf-8")))
+    author_decls = clt.count_author_theorems()
     nv_path = ROOT / "lean" / "MultinomialTVConjecture" / "NonVacuity.lean"
-    nonvac = len(re.findall(r"^\s*theorem\s+", nv_path.read_text(encoding="utf-8"), re.M)) if nv_path.is_file() else 0
+    nonvac = (
+        len(re.findall(r"^\s*theorem\s+", clt.strip_lean_comments(nv_path.read_text(encoding="utf-8")), re.M))
+        if nv_path.is_file()
+        else 0
+    )
     comp = json.loads((ROOT / "lean" / "comparator.json").read_text(encoding="utf-8"))
     targets = len(comp["theorem_names"])
     return version, author_decls, constants, nonvac, targets

@@ -38,6 +38,7 @@ TRACKED_ARTIFACTS = [
     "dist/Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf",
     "dist/arxiv_submission.tar.gz",
     "scripts/verify_conjecture.py",
+    "scripts/check_lean_tokens.py",
     "scripts/verification_results.json",
     "results/lean-axioms-all.log",
     "results/comparator-paranoid.log",

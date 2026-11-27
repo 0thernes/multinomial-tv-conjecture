@@ -7,7 +7,7 @@ Covers Build Standard v1.2.0 items:
 - A32: Agent entry points (AGENTS.md, CLAUDE.md, GEMINI.md, llms.txt)
 - B03: Deterministic byte-reproducible arXiv tarball
 - B06: Negative tamper-detection tests on axiom parser & forbidden-token lexer
-- B07: Regression tests for every erratum E-2026-001..017
+- B07: Regression tests for every erratum E-2026-001..020 and F-64..F-83
 - B08: Golden snapshot checks on results/lean-axioms-all.log
 - B13: Code mutation audit report verification (results/mutation-report.json)
 - R4:  Zero banned files (PULL_REQUEST_TEMPLATE.md, dependabot.yml, etc.)
@@ -30,6 +30,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import build_arxiv_bundle as bab  # noqa: E402
 import check_citations as cc  # noqa: E402
+import check_lean_tokens as clt  # noqa: E402
 import check_readme_axioms as cra  # noqa: E402
 import generate_manifest as gm  # noqa: E402
 import stamp_timestamps as st_mod  # noqa: E402
@@ -148,7 +149,7 @@ def test_regression_e2026_004_axiom_log_and_readme_sync(tmp_path: Path) -> None:
     assert log_path.is_file()
     log_text = log_path.read_text(encoding="utf-8")
     decls = cra.parse_log(log_text)
-    assert len(decls) == 57
+    assert len(decls) == 59
     for name, axioms in decls.items():
         assert axioms <= cra.ALLOWED, f"Non-standard axiom in {name}: {axioms}"
     assert cra.EXHAUSTIVE_RE.search(log_text), "Missing ALL_THEOREMS_AXIOM_AUDIT_PASS sentinel"
@@ -190,67 +191,27 @@ def test_regression_e2026_004_axiom_log_and_readme_sync(tmp_path: Path) -> None:
 
 
 def test_forbidden_lean_tokens_absent_from_proof_modules() -> None:
-    """Soundness check (Claim C5): zero sorry/admit/axiom/native_decide/unsafe in proof modules."""
-    def strip_lean_comments(src: str) -> str:
-        out, i, n, depth, in_str = [], 0, len(src), 0, False
-        while i < n:
-            if depth > 0:
-                if src[i : i + 2] == "/-":
-                    depth += 1
-                    i += 2
-                elif src[i : i + 2] == "-/":
-                    depth -= 1
-                    i += 2
-                else:
-                    if src[i] == "\n":
-                        out.append("\n")
-                    i += 1
-            elif in_str:
-                if src[i] == "\\" and i + 1 < n:
-                    i += 2
-                elif src[i] == '"':
-                    in_str = False
-                    i += 1
-                else:
-                    if src[i] == "\n":
-                        out.append("\n")
-                    i += 1
-            else:
-                if src[i : i + 2] == "/-":
-                    depth = 1
-                    i += 2
-                elif src[i : i + 2] == "--":
-                    while i < n and src[i] != "\n":
-                        i += 1
-                elif src[i] == '"':
-                    in_str = True
-                    i += 1
-                else:
-                    out.append(src[i])
-                    i += 1
-        return "".join(out)
+    """Soundness check (Claim C5, F-75, F-81): zero sorry/admit/axiom/native_decide/unsafe/@[nolint] in proof modules."""
+    hits = clt.scan_proof_modules()
+    assert hits == [], f"Forbidden Lean tokens or missing module headers: {hits}"
+    assert clt.count_author_theorems() >= 191
 
-    forbidden = re.compile(
-        r"\b(sorry|admit|native_decide|unsafe)\b"
-        r"|^\s*(?:@\[[^\]]+\]\s+|public\s+|private\s+|protected\s+|noncomputable\s+)*axiom\b"
-        r"|^\s*(?:public\s+|private\s+|protected\s+)*partial\s+(?:def|theorem)\b"
-        r"|implemented_by|@\[extern"
-    )
-    proof_files = (
-        sorted((ROOT / "lean" / "MultinomialTVConjecture").rglob("*.lean"))
-        + [ROOT / "lean" / "MultinomialTVConjecture.lean", ROOT / "lean" / "Solution.lean"]
-    )
-    assert len(proof_files) >= 8
-    for f in proof_files:
-        cleaned = strip_lean_comments(f.read_text(encoding="utf-8"))
-        assert re.search(r"^\s*module\s*$", cleaned, re.M), f"Missing Lean 4.35 module header in {f}"
-        for lineno, line in enumerate(cleaned.splitlines(), 1):
-            assert not forbidden.search(line), f"Forbidden token in {f}:{lineno}: {line.strip()}"
+    # Negative checks (B06, F-37, F-75, F-81; kills M24_lean_tokens_allow_sorry)
+    assert clt.FORBIDDEN_RE.search("theorem bad : False := by sorry")
+    assert clt.FORBIDDEN_RE.search("theorem bad2 : True := by decide +native")
+    assert clt.FORBIDDEN_RE.search("@[nolint defsWithUnderscore]")
+    assert clt.FORBIDDEN_RE.search("public axiom sneak : False")
+    assert clt.FORBIDDEN_RE.search("noncomputable axiom sneak2 : False")
+    assert clt.FORBIDDEN_RE.search("public partial def loop : Nat := loop")
 
-    # Negative check (B06, F-37): ensure public axiom and partial def are caught by the hardened regex
-    assert forbidden.search("public axiom sneak : False")
-    assert forbidden.search("noncomputable axiom sneak2 : False")
-    assert forbidden.search("public partial def loop : Nat := loop")
+    proc = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "check_lean_tokens.py")],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
 
 
 def test_palomar_module_headers_and_reuse_spdx_headers() -> None:
@@ -281,7 +242,7 @@ def test_citation_cff_and_formalization_lockfile_parity() -> None:
     """Validate CITATION.cff required CFF 1.2.0 fields and formalization.yaml revs against lake-manifest.json."""
     cff = yaml.safe_load((ROOT / "CITATION.cff").read_text(encoding="utf-8"))
     assert cff["cff-version"] == "1.2.0"
-    assert cff["license"] == "Apache-2.0"
+    assert cff["license"] == ["Apache-2.0", "CC-BY-4.0"]
     assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(cff["date-released"]))
     assert cff["authors"][0]["orcid"] == "https://orcid.org/0009-0006-8168-9648"
     assert len(cff["references"]) >= 3
@@ -309,9 +270,9 @@ def test_blueprint_and_site_build_cleanly() -> None:
 
     bp_nodes = json.loads((ROOT / "build" / "site" / "blueprint" / "blueprint.json").read_text(encoding="utf-8"))
     nonvac = next(n for n in bp_nodes if n["id"] == "prop:nonvac")
-    assert len(nonvac["lean"]) == 20, f"Expected all 20 NonVacuity theorems in Blueprint, got {len(nonvac['lean'])}"
+    assert len(nonvac["lean"]) == 22, f"Expected all 22 NonVacuity theorems in Blueprint, got {len(nonvac['lean'])}"
 
-    # Verify strict CSP, SRI integrity on external CDN scripts, and dynamic audited theorem count on portal (F-47, F-52)
+    # Verify strict CSP, SRI integrity on external CDN scripts, and dynamic counts on portal (F-47, F-52, F-80)
     portal_html = (ROOT / "build" / "site" / "index.html").read_text(encoding="utf-8")
     bp_html = (ROOT / "build" / "site" / "blueprint" / "index.html").read_text(encoding="utf-8")
     assert 'http-equiv="Content-Security-Policy"' in portal_html
@@ -319,6 +280,7 @@ def test_blueprint_and_site_build_cleanly() -> None:
     ax_m = cra.EXHAUSTIVE_RE.search((ROOT / "results" / "lean-axioms-all.log").read_text(encoding="utf-8"))
     assert ax_m is not None
     assert f"{ax_m.group(1)} Exhaustively Audited Constants" in portal_html
+    assert "22 theorems in <code>NonVacuity.lean</code> (6 direct <code>hAdj 0..5</code> definition checks + 16 closed-form" in portal_html
     for html_txt in (portal_html, bp_html):
         for tag in re.findall(r"<(?:script|link)\b[^>]+https?://[^>]+>", html_txt):
             assert 'integrity="sha384-' in tag, f"External CDN resource missing sha384 SRI: {tag}"
@@ -513,10 +475,24 @@ def test_negative_timestamp_and_manifest_tamper_detection(
     ots_copy.write_bytes(orig_ots)
     assert st_mod.verify_timestamps() != 0
 
+    # 1b. Tamper CMS RSA signature byte in .tsr while keeping SHA-256 digest intact (F-73, kills M23_tsa_skip_openssl_verify)
+    tampered_sig = bytearray(orig_tsr)
+    tampered_sig[-8] ^= 0xFF
+    assert digest in bytes(tampered_sig), "Signature tamper test must keep 32-byte digest intact"
+    tsr_copy.write_bytes(bytes(tampered_sig))
+    ots_copy.write_bytes(orig_ots)
+    assert st_mod.verify_timestamps() != 0, "Corrupted CMS signature in .tsr was not rejected by openssl ts -verify"
+
     # 2. Tamper .ots digest only (kills M19_ots_skip_digest_check)
     tsr_copy.write_bytes(orig_tsr)
     ots_copy.write_bytes(orig_ots.replace(digest, bad_digest))
     assert st_mod.verify_timestamps() != 0
+
+    # 2b. Truncate .ots to header + digest with empty calendar payload (F-73, kills M23_ots_skip_payload_check)
+    tsr_copy.write_bytes(orig_tsr)
+    ots_prefix = st_mod.OTS_MAGIC + st_mod.OTS_VERSION_1 + st_mod.OTS_OP_SHA256
+    ots_copy.write_bytes(ots_prefix + digest)
+    assert st_mod.verify_timestamps() != 0, "Truncated .ots with empty calendar payload was not rejected"
 
     # 3. Tamper MANIFEST digest (kills M20_manifest_skip_mismatch)
     bad_manifest = tmp_path / "BAD_MANIFEST.sha256"
@@ -571,7 +547,7 @@ def test_comparator_10_targets_and_mutation_report_green() -> None:
     mut_path = ROOT / "results" / "mutation-report.json"
     assert mut_path.is_file(), "Missing B13 mutation report results/mutation-report.json"
     mut = json.loads(mut_path.read_text(encoding="utf-8"))
-    assert mut["total_mutants"] >= 22
+    assert mut["total_mutants"] >= 24
     assert mut["survived"] == 0
     assert mut["kill_rate_percent"] == 100.0
 
@@ -614,6 +590,19 @@ def test_manifest_text_artifacts_strictly_lf_cross_platform() -> None:
         if p.suffix.lower() in binary_ext:
             continue
         assert b"\r\n" not in p.read_bytes(), f"CRLF detected in manifest-tracked text file {rel}"
+
+
+def test_workflow_security_hygiene_persist_credentials_false() -> None:
+    """Regression test (F-79): every actions/checkout step in .github/workflows/ sets persist-credentials: false."""
+    wf_dir = ROOT / ".github" / "workflows"
+    wf_files = sorted(wf_dir.glob("*.yml"))
+    assert len(wf_files) >= 4
+    for wf in wf_files:
+        txt = wf.read_text(encoding="utf-8")
+        checkouts = re.findall(r"uses:\s*actions/checkout@[^\n]+(?:\n\s+with:\n(?:\s+[^\n]+\n)*)?", txt)
+        assert checkouts, f"Expected actions/checkout in {wf.name}"
+        for block in checkouts:
+            assert "persist-credentials: false" in block, f"Missing persist-credentials: false in {wf.name}: {block}"
 
 
 def test_regression_e2026_018_statement_audit_honesty_and_zero_conflict_markers() -> None:

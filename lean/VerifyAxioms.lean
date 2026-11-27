@@ -22,13 +22,13 @@ import all Solution
 
 Prints `#print axioms` for:
   - All 27 primary theorems in `MultinomialTV`
-  - All 20 non-vacuity and adversarial-refutation theorems in `MultinomialTV.NonVacuity`
+  - All 22 non-vacuity and adversarial-refutation theorems in `MultinomialTV.NonVacuity`
   - All 10 isolated comparator target theorems in `MultinomialTV.ComparatorTarget`
-PLUS runs an exhaustive `Lean.collectAxioms` metaprogram auditing EVERY single `theorem`
-declaration across the entire `MultinomialTV` namespace tree.
+PLUS runs an exhaustive `Lean.collectAxioms` metaprogram auditing EVERY `theorem` AND EVERY
+`def` declaration across the entire `MultinomialTV` namespace tree and private proof modules.
 
 Run: `cd lean && lake env lean VerifyAxioms.lean`
-Every theorem must depend strictly on `[propext, Classical.choice, Quot.sound]` (or fewer).
+Every theorem and definition must depend strictly on `[propext, Classical.choice, Quot.sound]` (or fewer).
 -/
 
 -- Primary exported theorems (27 declarations)
@@ -60,7 +60,7 @@ Every theorem must depend strictly on `[propext, Classical.choice, Quot.sound]` 
 #print axioms MultinomialTV.gamma3_source_form
 #print axioms MultinomialTV.gamma4_closed_form
 
--- Non-vacuity witnesses and adversarial definition checks (20 declarations)
+-- Non-vacuity witnesses and adversarial definition checks (22 declarations)
 #print axioms MultinomialTV.NonVacuity.hAdj_zero
 #print axioms MultinomialTV.NonVacuity.hAdj_one
 #print axioms MultinomialTV.NonVacuity.hAdj_two
@@ -81,6 +81,8 @@ Every theorem must depend strictly on `[propext, Classical.choice, Quot.sound]` 
 #print axioms MultinomialTV.NonVacuity.gamma_cyclic_closed_form_witness_n5
 #print axioms MultinomialTV.NonVacuity.gamma3_closed_form_witness_N0
 #print axioms MultinomialTV.NonVacuity.gamma4_closed_form_witness_N0
+#print axioms MultinomialTV.NonVacuity.adversarial_lemma_7_3_zero_const_false
+#print axioms MultinomialTV.NonVacuity.gamma3_source_form_witness_N1
 
 -- Isolated Mathlib-only Comparator solution bridge (10 declarations)
 #print axioms MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0
@@ -94,23 +96,27 @@ Every theorem must depend strictly on `[propext, Classical.choice, Quot.sound]` 
 #print axioms MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq
 #print axioms MultinomialTV.ComparatorTarget.target_gamma3_source_form
 
--- Exhaustive Metaprogram Audit: EVERY named & module-private theorem across all project modules
+-- Exhaustive Metaprogram Audit: EVERY named & module-private theorem AND definition across all project modules
 open Lean Elab Command in
 run_cmd do
   let env ← getEnv
   let prefixes : Array Name :=
     #[`MultinomialTV, `_private.MultinomialTVConjecture, `_private.Solution]
   let allowed : Array Name := #[`propext, `Classical.choice, `Quot.sound]
-  let all := env.constants.toList.filter fun (name, info) =>
+  let allThms := env.constants.toList.filter fun (name, info) =>
     info.isTheorem && prefixes.any (fun p => p.isPrefixOf name)
-  if all.isEmpty then
+  let allDefs := env.constants.toList.filter fun (name, info) =>
+    info.isDef && prefixes.any (fun p => p.isPrefixOf name)
+  if allThms.isEmpty then
     throwError "No project theorems found for exhaustive axiom audit"
+  if allDefs.isEmpty then
+    throwError "No project definitions found for exhaustive axiom audit"
   let mut bad : Array String := #[]
-  for (name, _) in all do
+  for (name, _) in allThms ++ allDefs do
     let axioms ← Lean.collectAxioms name
     let forbidden := axioms.filter fun a => !allowed.contains a
     if !forbidden.isEmpty then
       bad := bad.push s!"{name}: {forbidden}"
   if !bad.isEmpty then
-    throwError s!"Disallowed axioms detected across project theorems:\n{String.intercalate "\n" bad.toList}"
-  logInfo m!"ALL_THEOREMS_AXIOM_AUDIT_PASS: checked {all.length} theorems across MultinomialTV — 0 disallowed axioms."
+    throwError s!"Disallowed axioms detected across project declarations:\n{String.intercalate "\n" bad.toList}"
+  logInfo m!"ALL_THEOREMS_AXIOM_AUDIT_PASS: checked {allThms.length} theorems and {allDefs.length} definitions across MultinomialTV — 0 disallowed axioms."
