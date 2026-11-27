@@ -11,10 +11,10 @@ This repository enforces defense-in-depth verification across **three independen
 2. **Forbidden-Token Lexer (`.github/workflows/lean-verify.yml`):**
    - Comment- and string-aware nested Lean lexer scans every `.lean` proof file in `lean/MultinomialTVConjecture/` and `lean/Solution.lean` for `sorry`, `admit`, `axiom` (including `public`/`private`/`protected`/`noncomputable`), `partial def`/`theorem`, `native_decide`, `unsafe`, `implemented_by`, and `@[extern]`, and asserts every file carries a `module` header. Zero hits required.
 3. **Exhaustive Axiom Audit (`lean/VerifyAxioms.lean`):**
-   - Runs `#print axioms` on all 49 exported declarations (21 primary + 20 `NonVacuity` + 8 `ComparatorTarget`) AND a Lean metaprogram (`import all` across all proof modules) iterating `Lean.collectAxioms` over **every** named and module-private theorem (**730 theorems total**), emitting `ALL_THEOREMS_AXIOM_AUDIT_PASS` only if every theorem lies strictly within `[propext, Classical.choice, Quot.sound]`.
+   - Runs `#print axioms` on all 55 exported declarations (26 primary + 20 `NonVacuity` + 9 `ComparatorTarget`) AND a Lean metaprogram (`import all` across all proof modules) iterating `Lean.collectAxioms` over **every** named and module-private theorem (**892 theorems total**), emitting `ALL_THEOREMS_AXIOM_AUDIT_PASS` only if every theorem lies strictly within `[propext, Classical.choice, Quot.sound]`.
    - `scripts/check_readme_axioms.py --require-exhaustive` verifies that `README.md`'s verbatim `#print axioms` block and exact theorem count match `results/lean-axioms-all.log` line-for-line.
 4. **Six-Kernel Comparator (`lake comparator --config comparator.json --paranoid`):**
-   - Compares isolated Mathlib-only `lean/Challenge.lean` (8 target stubs, zero proof imports) against sorry-free `lean/Solution.lean` across all 6 independent type-checkers shipped in Lean 4.35.0:
+   - Compares isolated Mathlib-only `lean/Challenge.lean` (9 target stubs including `target_lemma_7_3_O_inv_sq`, zero proof imports) against sorry-free `lean/Solution.lean` across all 6 independent type-checkers shipped in Lean 4.35.0:
      1. Official Lean 4.35.0 C++ kernel
      2. `leanchecker-paranoid` (v4.35.0)
      3. `lean4lean` (v4.35.0, Lean-in-Lean kernel)
@@ -31,14 +31,14 @@ This repository enforces defense-in-depth verification across **three independen
 | Test Category (Build Standard) | Implementation |
 |---|---|
 | **Exact rational oracle (`B12`)** | Exact `fractions.Fraction` 2D multinomial sum vs. 1D `hAdj_mod0..2` formulas (`L = 3..45` in `verify_conjecture.py` and Hypothesis pytest; golden snapshots `L = 0..6`). |
-| **Property-based testing (`B10`)** | `hypothesis` strategies verifying exact algebraic invariants, symmetry, non-negativity, and residue-class formulas over generated $L \in [3,45]$ and $n \in [5,500]$. |
-| **Negative & adversarial tests (`B06`)** | Verifies false constants (`a_△ = 1/32`, `d_0 = 0`, constant `b_r`), invalid inputs (`n = 0`), tampered axiom logs, and a live negative Lean kernel test (`aTriangle = 1/32`) in CI are explicitly rejected. |
-| **Regression tests (`B07`)** | Permanently guards fixed defects `E-2026-001`..`E-2026-011` (citation truncation, `0thernes LLC`, deterministic arXiv bundle + figures + `.bbl`, axiom sync, exact `L = 3..45` & `Theorem 2.3` fidelity parity, Table 1 exact line counts & Claim `C6`, zero local path leaks, 120-dps tail precision, `module` & SPDX headers, dual RFC 3161 `.tsr` + OpenTimestamps `.ots` cryptographic imprint binding). |
+| **Property-based testing (`B10`)** | `hypothesis` strategies verifying exact algebraic invariants, $S_3$ pointwise identity (1,000 cases), consecutive-ratio Gaussian tail bounds (1,000 cases), linear/cyclic $\gamma$ identities (1,000 cases), and 2D==1D rational reduction over $L \in [3,45]$ (>3,000 total cases). |
+| **Negative & adversarial tests (`B06`)** | Verifies false constants (`a_△ = 1/32`, `d_0 = 0`, constant `b_r`), invalid inputs (`n = 0`), tampered axiom logs, tampered `.tsr`/`.ots`/manifest digests, broken citation parity, and a live negative Lean kernel test (`aTriangle = 1/32`) in CI are explicitly rejected. |
+| **Regression tests (`B07`)** | Permanently guards fixed defects `E-2026-001`..`E-2026-017` (citation truncation, `0thernes LLC`, deterministic arXiv bundle + figures + `.bbl`, axiom sync, exact `L = 3..45` & `Theorem 2.3` fidelity parity, Table 1 exact line counts & Claim `C6`, zero local path leaks, 120-dps tail precision, `module` & SPDX headers, dual RFC 3161 `.tsr` + OpenTimestamps `.ots` cryptographic imprint binding, Part 5 `Theorem 3.10`/`Proposition 4.2`/`math.PR` primary-source citation accuracy, and 9-target comparator + 20-mutant report parity). |
 | **Golden snapshot tests (`B08`)** | Exact rational table `hAdj(0..6)` and `results/lean-axioms-all.log` theorem count / sentinel checks. |
-| **Differential & metamorphic tests (`B11`, `B14`)** | 2D vs. 1D differential agreement; permutation invariance of $(X_1, X_3)$, mod-3 shift relations, linear/cyclic asymptotic coefficient ratios. |
-| **Numeric stability (`B20`)** | Cross-precision stability checks across `mp.dps = 50, 80, 120` quantifying catastrophic cancellation in $L(h_{\mathrm{adj}}(L) - c_L L - a_*)$. |
-| **Mutation self-check (`B13`)** | Automated mutant-injection tests confirming every sign/coefficient perturbation to `a_△`, `b_0`, `b_1`, `b_2`, `d_0`, `γ_2` is killed by the verifier. |
-| **Static analysis & types (`B17`, `B18`)** | `ruff check scripts/ tests/` and `mypy --ignore-missing-imports scripts/` (report-only). |
+| **Differential & metamorphic tests (`B11`, `B14`)** | 2D vs. 1D exact rational differential check + 1,140-input differential oracle (`p3q_exact` vs independent `mpmath.loggamma`); permutation invariance of $(X_1, X_3)$, mod-3 shift relations, linear/cyclic asymptotic coefficient ratios. |
+| **Numeric stability (`B20`)** | Cross-precision stability checks across `mp.dps = 50, 80, 120` quantifying catastrophic cancellation in $L(h_{\mathrm{adj}}(L) - c_L L - a_*)$, plus empirical $O(L^{-2})$ boundedness of $L(b_r(L)-b_r)$. |
+| **Code mutation audit (`B13`)** | Isolated AST-validated source mutation runner `scripts/run_mutation_audit.py` injecting 20 semantic code mutants across 6 core verification scripts (`verify_conjecture.py`, `check_readme_axioms.py`, `check_citations.py`, `build_arxiv_bundle.py`, `stamp_timestamps.py`, `generate_manifest.py`) behind a mandatory unmutated baseline PASS gate (`results/mutation-report.json`: 20/20 killed, 100.0%), plus constant-perturbation tests. |
+| **Static analysis & types (`B17`, `B18`)** | `ruff check scripts/ tests/` and `mypy --ignore-missing-imports scripts/ tests/` (report-only). |
 
 ## Layer 3: Supply-Chain, Citation, Blueprint & Release Integrity
 

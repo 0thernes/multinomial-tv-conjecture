@@ -151,7 +151,7 @@ theorem target_gamma_closed_form (n : ℝ) (hn : n ≠ 0) :
   rw [aTriangle_eq_core]
   exact MultinomialTV.gamma_closed_form n hn
 
-/-- Target 6: Unconditional cyclic second-order variance coefficient `γ_c(n)` (Part 5, Thm. 5.2). -/
+/-- Target 6: Unconditional cyclic second-order variance coefficient `γ_c(n)` (Part 5, Thm. 3.10). -/
 theorem target_gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
     let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
@@ -186,6 +186,15 @@ theorem target_gamma4_closed_form (N : ℕ) :
   dsimp only
   rw [aTriangle_eq_core]
   exact MultinomialTV.gamma4_closed_form N
+
+/-- Target 9: Quantitative `O(L^{-2})` remainder bound of Lemma 7.3 (Part 2, §7.2). -/
+theorem target_lemma_7_3_O_inv_sq :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ L : ℕ, 1 ≤ L →
+      |hAdj L - cL * (L : ℝ) - aStar - bRes (L % 3) / (L : ℝ)| ≤ C / (L : ℝ) ^ 2 := by
+  obtain ⟨C, hC, hbd⟩ := MultinomialTV.lemma_7_3_O_inv_sq
+  refine ⟨C, hC, fun L hL => ?_⟩
+  rw [hAdj_eq_core, cL_eq_core, aStar_eq_core, bRes_eq_core]
+  exact hbd L hL
 
 end MultinomialTV.ComparatorTarget
 

@@ -3,6 +3,22 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and Semantic Versioning (`VERSION` is the single source of truth).
 
+## [2.4.0] - 2026-11-26
+
+### Added
+- **Quantitative $O(\ell^{-2})$ remainder bound of Lemma 7.3 formally proved in Lean 4.35.0 (`F-56`, `E-2026-016`):** Added 4th-order odd-Gaussian Euler–Maclaurin summation (`oddGauss_sum_approx_order4` via $\tilde{P}_4(u)=u^2(u-h)^2/24$ in `GaussianEulerMaclaurin.lean`), 5th-order local log-ratio and antisymmetric $T_4$ cancellation expansions (`sumA_O_inv_sq`, `sumB_O_inv_sq`, `sumC_O_inv_sq` in `LocalAsymptotics.lean`), and uniform assembly across all three residue classes (`lemma_7_3_O_inv_sq` in `Main.lean`), promoted as **Target 9** (`target_lemma_7_3_O_inv_sq`) in `Challenge.lean` (`149` lines), `Solution.lean` (`201` lines), and `comparator.json` across all 6 kernels (**55** explicit `#print axioms`, **892** exhaustively audited named + module-private theorems, **8,082** exact Lean lines, **0** compiler/Batteries/Mathlib warnings).
+- **Anti-bench-maxing verification upgrades (`F-57`, `F-61`, `E-2026-017`):**
+  - `B10`: Upgraded `tests/test_exact_and_properties.py` to 3,000+ Hypothesis examples (three 1,000-example property suites for the $S_3$ pointwise identity, consecutive-ratio Gaussian tail bounds, and linear/cyclic $\gamma$ algebraic identities).
+  - `B11`: Added 1,140-input differential oracle comparing exact factorial `p3q_exact` vs independent `mpmath.loggamma` across $q \in [1, 38]$.
+  - `B13`: Added isolated AST-validated source-code mutation runner `scripts/run_mutation_audit.py` (20 semantic mutants across 6 core scripts with mandatory unmutated baseline PASS gate) and negative tamper tests in `tests/test_repo_integrity.py`, outputting `results/mutation-report.json` (`20/20` killed, `100.0%`) tracked in `data/MANIFEST.sha256` (31 entries).
+  - `A05`: Added reproducible `scripts/generate_social_preview.py` dynamically generating `docs/media/social-preview.svg` from current repo artifacts.
+  - `F-61`: Added empirical $L(b_r(L) - b_r)$ $O(L^{-2})$ coefficient output to `scripts/verify_conjecture.py` and `test_empirical_lemma_7_3_O_inv_sq_boundedness`.
+  - `A35` / Playbook #29: Submitted repository to Software Heritage Save Code Now API and verified GitHub Release SLSA attestations live via `gh attestation verify`.
+
+### Fixed
+- **Primary-source Part 5 citation numbers & arXiv primaryClass (`error`, `F-55`, `E-2026-015`):** Live audit of `arXiv:2611.14735v1` corrected shifted cross-references everywhere (`Theorem 5.2` → `Theorem 3.10`, `Proposition 6.2` → `Proposition 4.2`, `Remarks 5.3, 5.5, and 6.3` → `Remarks 3.11, 3.13, and 4.3`) and fixed `primaryClass = {math.PR}` on `banic_elezovic_p1` and `banic_elezovic_p2` in `paper/refs.bib`, permanently guarded by `test_regression_e2026_015_part5_citation_numbers_and_primary_class`.
+- **Honest `B44` status, `R15` disclosures, glossary fix, and workstation-path firewall (`F-56`–`F-60`, `E-2026-016`–`017`):** Reclassified `B44` (`Independent replication`) honestly as `partial` in `repo.yaml` with an explicit open banner in `REPLICATION.md` (`0` outside human operators yet); documented explicit `R15` caveats on `gamma_closed_form`/`gamma_cyclic_closed_form` (`n : ℝ`) and `gamma4_closed_form` (`(-1)^N/(2π)` algebraic passthrough); fixed `docs/glossary.md` $\gamma(n)$ order definition; purged leaked local drive reference from `docs/reviews/red-team-2026-11-25.md` and hardened `leak_re`; synchronized all stale version/target/line counts across `README.md`, `AGENTS.md`, `llms.txt`, `docs/`, `VerifyAxioms.lean`, and `paper/main.tex`.
+
 ## [2.3.0] - 2026-11-26
 
 ### Added

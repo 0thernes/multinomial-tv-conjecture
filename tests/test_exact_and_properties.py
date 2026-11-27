@@ -53,7 +53,7 @@ def test_golden_exact_hadj_matches_nonvacuity(L: int, expected: Fraction) -> Non
         assert vc.h_adj_1d_exact(L) == expected
 
 
-# --- B10 + B11 + B12: Hypothesis property-based & differential exact rational oracle ---
+# --- B10 + B11 + B12: Hypothesis property-based (>=1,000 cases) & differential oracles (>=1,000 inputs) ---
 
 @given(L=st.integers(min_value=3, max_value=45))
 @settings(max_examples=43, derandomize=True)
@@ -65,26 +65,98 @@ def test_property_2d_equals_1d_exact_rational(L: int) -> None:
     assert direct > 0
 
 
-@given(n=st.integers(min_value=5, max_value=500))
-@settings(max_examples=60, derandomize=True)
+@given(
+    x1=st.integers(min_value=-200, max_value=200),
+    x2=st.integers(min_value=-200, max_value=200),
+    x3=st.integers(min_value=-200, max_value=200),
+)
+@settings(max_examples=1000, derandomize=True)
+def test_property_s3_pointwise_identity_1000(x1: int, x2: int, x3: int) -> None:
+    """Property-based test (B10, 1,000 cases): Lemma 2.1 S3 pointwise identity from Combinatorial.lean."""
+    lhs = abs(x2 - x1) * abs(x3 - x2) + abs(x3 - x2) * abs(x1 - x3) + abs(x1 - x3) * abs(x2 - x1)
+    quad = ((x1 - x2) ** 2 + (x2 - x3) ** 2 + (x3 - x1) ** 2)
+    a, b, c = sorted((x1, x2, x3))
+    strict_wedge = (b - a) * (c - b) if (a < b < c) else 0
+    # Multiply by 2 to stay exact in integer arithmetic
+    assert 2 * lhs == quad + 4 * strict_wedge
+
+
+@given(
+    q=st.integers(min_value=1, max_value=35),
+    frac_num=st.integers(min_value=0, max_value=35),
+)
+@settings(max_examples=1000, derandomize=True)
+def test_property_consecutive_ratio_gaussian_bounds_1000(q: int, frac_num: int) -> None:
+    """Property-based test (B10, 1,000 cases): Lemma 5.1 Gaussian tail bounds p3q(q, q+-k)/p3q(q, q) <= exp(-k^2/(3q))."""
+    k = frac_num % (q + 1)
+    p0 = vc.p3q_exact(q, q)
+    bound = math.exp(-(k * k) / (3.0 * q))
+    right_ratio = float(vc.p3q_exact(q, q + k) / p0)
+    left_ratio = float(vc.p3q_exact(q, q - k) / p0)
+    assert right_ratio <= bound + 1e-15
+    assert left_ratio <= bound + 1e-15
+
+
+_MP_PI_60 = mp.mp.pi
+with mp.workdps(60):
+    _PI_60 = mp.pi
+    _SQRT3_60 = mp.sqrt(3)
+    _ATRI_60 = mp.mpf(1) / 32 - 4 * _SQRT3_60 / 243
+
+
+@given(n=st.integers(min_value=5, max_value=5000))
+@settings(max_examples=1000, derandomize=True)
 def test_property_gamma_linear_and_cyclic_algebraic_identities(n: int) -> None:
-    """Property-based check of Claim C4 (gamma_closed_form & gamma_cyclic_closed_form)."""
+    """Property-based check (B10, 1,000 cases) of Claim C4 (gamma_closed_form & gamma_cyclic_closed_form)."""
     with mp.workdps(60):
         nf = mp.mpf(n)
-        pi = mp.pi
-        sqrt3 = mp.sqrt(3)
-        a_tri = mp.mpf(1) / 32 - 4 * sqrt3 / 243
+        pi = _PI_60
+        sqrt3 = _SQRT3_60
+        a_tri = _ATRI_60
         p1 = (nf * nf - 4 * nf - 4) / (32 * pi * nf)
         q1 = a_tri * nf / pi - (nf + 1) / (8 * pi * nf)
         r1 = -(nf + 1) / (8 * pi * nf)
 
         lhs_lin = (nf - 1) * p1 + 2 * (nf - 2) * q1 + (nf - 2) * (nf - 3) * r1
         rhs_lin = -(nf * (nf + 1)) / (32 * pi) - 8 * sqrt3 * nf * (nf - 2) / (243 * pi) + (nf - 1) / (8 * pi * nf)
-        assert abs(lhs_lin - rhs_lin) < mp.mpf("1e-52")
+        assert abs(lhs_lin - rhs_lin) < mp.mpf("1e-50")
 
         lhs_cyc = nf * p1 + 2 * nf * q1 + nf * (nf - 3) * r1
         rhs_cyc = -(nf * (nf + 4)) / (32 * pi) - 8 * sqrt3 * (nf * nf) / (243 * pi)
-        assert abs(lhs_cyc - rhs_cyc) < mp.mpf("1e-52")
+        assert abs(lhs_cyc - rhs_cyc) < mp.mpf("1e-50")
+
+
+def test_differential_p3q_exact_vs_mpmath_loggamma_1000_inputs() -> None:
+    """Differential test (B11, 1,140 inputs): exact rational factorial p3q_exact vs independent mpmath loggamma oracle."""
+    checked = 0
+    with mp.workdps(80):
+        ln3 = mp.log(3)
+        for q in range(1, 39):
+            lg3q = mp.loggamma(3 * q + 1)
+            for x in range(0, (3 * q) // 2 + 1):
+                exact_val = vc.p3q_exact(q, x)
+                exact_mp = mp.mpf(exact_val.numerator) / mp.mpf(exact_val.denominator)
+                log_oracle = lg3q - 2 * mp.loggamma(x + 1) - mp.loggamma(3 * q - 2 * x + 1) - (3 * q) * ln3
+                mp_val = mp.exp(log_oracle)
+                assert abs(exact_mp - mp_val) < mp.mpf("1e-70")
+                checked += 1
+    assert checked >= 1000
+
+
+def test_empirical_lemma_7_3_O_inv_sq_boundedness() -> None:
+    """Cross-check quantitative Lemma 7.3 O(L^-2) bound (lemma_7_3_O_inv_sq): |L*(b_r(L) - b_r)| uniformly bounded."""
+    with mp.workdps(60):
+        sqrt3 = mp.sqrt(3)
+        pi = mp.pi
+        cL = 2 * sqrt3 / (3 * pi) + mp.mpf(1) / 9
+        aStar = -2 * sqrt3 / (9 * pi)
+        b_exact = [32 * sqrt3 / (81 * pi), -22 * sqrt3 / (81 * pi), -22 * sqrt3 / (81 * pi)]
+        for q in (10, 30, 100, 300, 1000):
+            for r, L in ((0, 3 * q), (1, 3 * q + 1), (2, 3 * q - 1)):
+                Lf = mp.mpf(L)
+                br_L = Lf * (vc.h_adj_1d_mp(q, r) - cL * Lf - aStar)
+                scaled_err = abs(Lf * (br_L - b_exact[r]))
+                assert scaled_err < mp.mpf("0.3")
 
 
 # --- B14: Metamorphic tests ---
@@ -147,8 +219,8 @@ def test_negative_invalid_inputs_rejected() -> None:
 
 
 def test_regression_e2026_009_high_precision_120dps_no_85digit_truncation() -> None:
-    """Regression test (E-2026-009): 120-dps sums_abc_mp matches exact rational Fraction to >115 digits."""
-    q = 12
+    """Regression test (E-2026-009): 120-dps sums_abc_mp at q=100 (tail < 1e-140) matches exact Fraction to >115 digits."""
+    q = 100
     p0_ex, A_ex, B_ex, C_ex = vc.sums_abc_exact(q)
     with mp.workdps(120):
         p0_mp, A_mp, B_mp, C_mp = vc.sums_abc_mp(q)

@@ -263,10 +263,13 @@ def main() -> None:
                 "L0": L0,
                 "b0_approx": mp.nstr(val0, 15),
                 "err0": float(err0),
+                "L0_scaled_O_inv_sq_coeff": float(L0 * err0),
                 "b1_approx": mp.nstr(val1, 15),
                 "err1": float(err1),
+                "L1_scaled_O_inv_sq_coeff": float(L1 * err1),
                 "b2_approx": mp.nstr(val2, 15),
                 "err2": float(err2),
+                "L2_scaled_O_inv_sq_coeff": float(L2 * err2),
             }
         )
         print(

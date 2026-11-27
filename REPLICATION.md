@@ -53,6 +53,8 @@ bash scripts/audit-repo.sh .
 
 ## 4. Replication Log
 
+> **Independent External Operator Status (`B44: partial`):** All clean-room replications logged below were executed either by the author locally or by public GitHub Actions hosted runners across Linux (`ubuntu-24.04`), Windows, and macOS. **Zero independent outside human operators have yet submitted an external replication.** Build Standard item `B44` is therefore recorded honestly as `partial` in `repo.yaml` until an external researcher submits an independent replication log.
+
 | Date | Replicator | Environment | Commit / Tag | Lean 6-Kernel | Python / Pytest | Notes |
 |---|---|---|---|---|---|---|
 | 2026-11-25 | Alexander S. Donahue (author, local clean check) | Windows 11, Lean 4.35.0, Python 3.13.12, Tectonic 0.17.0 | `v2.0.0` | PASS (5/6 kernels directly on Windows: `lean`, `leanchecker-paranoid`, `nanoda`, `con-leche`, `con-ron`; full 6/6 incl. `lean4lean` in Ubuntu 24.04 CI) | PASS (24/24 pytest) | Initial v2.0.0 release check; see `docs/run-log.md`. |

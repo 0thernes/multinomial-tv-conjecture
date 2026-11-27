@@ -7,8 +7,9 @@ Covers Build Standard v1.2.0 items:
 - A32: Agent entry points (AGENTS.md, CLAUDE.md, GEMINI.md, llms.txt)
 - B03: Deterministic byte-reproducible arXiv tarball
 - B06: Negative tamper-detection tests on axiom parser & forbidden-token lexer
-- B07: Regression tests for every erratum E-2026-001..011
+- B07: Regression tests for every erratum E-2026-001..017
 - B08: Golden snapshot checks on results/lean-axioms-all.log
+- B13: Code mutation audit report verification (results/mutation-report.json)
 - R4:  Zero banned files (PULL_REQUEST_TEMPLATE.md, dependabot.yml, etc.)
 """
 from __future__ import annotations
@@ -21,6 +22,7 @@ import tarfile
 from pathlib import Path
 
 import jsonschema
+import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,6 +31,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import build_arxiv_bundle as bab  # noqa: E402
 import check_citations as cc  # noqa: E402
 import check_readme_axioms as cra  # noqa: E402
+import generate_manifest as gm  # noqa: E402
+import stamp_timestamps as st_mod  # noqa: E402
 
 
 def test_repo_yaml_matches_json_schema() -> None:
@@ -72,13 +76,34 @@ def test_r4_no_banned_files() -> None:
         assert not (ROOT / rel).exists(), f"R4 banned file present: {rel}"
 
 
-def test_regression_e2026_001_citations_and_no_truncated_arxiv() -> None:
-    """Regression test (B07) for E-2026-001: truncated arXiv:2610.1336 must never reappear."""
+def test_regression_e2026_001_citations_and_no_truncated_arxiv(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Regression & negative test (B06, B07) for E-2026-001: truncated arXiv:2610.1336 and cite parity."""
     scan = cc.scan_citations()
     assert scan["placeholders"] == []
     assert scan["malformed"] == []
     assert "2610.13366" in scan["arxiv_ids"]
     assert "2610.1336" not in scan["arxiv_ids"]
+
+    # Negative check (kills M14_citations_drop_bad_arxiv & M15_citations_skip_parity)
+    assert "2610.1336" in cc.KNOWN_BAD_ARXIV
+    fake_paper = tmp_path / "paper"
+    fake_paper.mkdir()
+    (fake_paper / "main.tex").write_text(
+        "See arXiv:2610.1336 and \\cite{missing_key}.\n", encoding="utf-8", newline="\n"
+    )
+    (fake_paper / "refs.bib").write_text(
+        "@article{uncited_key, title={Dummy}, year={2026}}\n", encoding="utf-8", newline="\n"
+    )
+    monkeypatch.setattr(cc, "PAPER_DIR", fake_paper)
+    monkeypatch.setattr(cc, "ROOT", tmp_path)
+    bad_scan = cc.scan_citations()
+    assert any(hit["id"] == "2610.1336" for hit in bad_scan["malformed"])
+    missing_keys, uncited_keys, bib_cnt = cc.check_bib_cite_parity()
+    assert missing_keys == ["missing_key"]
+    assert uncited_keys == ["uncited_key"]
+    assert bib_cnt == 1
 
 
 def test_regression_e2026_002_no_unformed_llc_in_active_metadata() -> None:
@@ -117,20 +142,42 @@ def test_regression_e2026_003_and_005_deterministic_arxiv_bundle(tmp_path: Path)
             assert member.gid == 0
 
 
-def test_regression_e2026_004_axiom_log_and_readme_sync() -> None:
-    """Regression & golden snapshot test (B07, B08) for exhaustive Lean axiom log & README sync."""
+def test_regression_e2026_004_axiom_log_and_readme_sync(tmp_path: Path) -> None:
+    """Regression & golden snapshot test (B06, B07, B08) for exhaustive Lean axiom log & README sync."""
     log_path = ROOT / "results" / "lean-axioms-all.log"
     assert log_path.is_file()
     log_text = log_path.read_text(encoding="utf-8")
     decls = cra.parse_log(log_text)
-    assert len(decls) == 49
+    assert len(decls) == 55
     for name, axioms in decls.items():
         assert axioms <= cra.ALLOWED, f"Non-standard axiom in {name}: {axioms}"
     assert cra.EXHAUSTIVE_RE.search(log_text), "Missing ALL_THEOREMS_AXIOM_AUDIT_PASS sentinel"
 
-    # Negative check (B06): tampered log with sorryAx must be detected
+    # Negative check (B06, kills M12_axioms_allow_sorry): tampered log with sorryAx must be detected
     tampered = cra.parse_log("'MultinomialTV.fake' depends on axioms: [propext, sorryAx]\n")
     assert not (tampered["MultinomialTV.fake"] <= cra.ALLOWED)
+
+    # Negative check (B06, kills M13_axioms_skip_exhaustive): missing exhaustive sentinel must fail --require-exhaustive
+    no_ex_log = tmp_path / "no-exhaustive.log"
+    no_ex_log.write_text(
+        "\n".join(ln for ln in log_text.splitlines() if "ALL_THEOREMS_AXIOM_AUDIT_PASS" not in ln) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    neg_proc = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "check_readme_axioms.py"),
+            "--log",
+            str(no_ex_log),
+            "--require-exhaustive",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    assert neg_proc.returncode != 0, "Expected failure when ALL_THEOREMS_AXIOM_AUDIT_PASS sentinel is absent"
 
     proc = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "check_readme_axioms.py"), "--require-exhaustive"],
@@ -361,7 +408,10 @@ def test_regression_e2026_008_no_workstation_path_leaks_and_6kernel_log() -> Non
     tracked = subprocess.check_output(
         ["git", "-C", str(ROOT), "ls-files"], text=True, encoding="utf-8"
     ).splitlines()
-    leak_re = re.compile(r"Vibe Coded|Z:\\|C:/Users/Alexa|C:\\Users\\Alexa", re.I)
+    leak_re = re.compile(
+        r"Vibe Coded|Z:\\|I:\\|I:/|All GH Repos|C:/Users/Alexa|C:\\Users\\Alexa",
+        re.I,
+    )
     for rel in tracked:
         if rel == "tests/test_repo_integrity.py":
             continue
@@ -382,6 +432,93 @@ def test_dual_cryptographic_timestamps_bind_manifest() -> None:
         encoding="utf-8",
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
+def test_negative_timestamp_and_manifest_tamper_detection(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Negative tamper tests (B06, kills M18, M19, M20): tampered .tsr, .ots, and MANIFEST digests must fail."""
+    import hashlib
+
+    orig_manifest = (ROOT / "data" / "MANIFEST.sha256").read_bytes()
+    orig_tsr = (ROOT / "data" / "MANIFEST.sha256.tsr").read_bytes()
+    orig_ots = (ROOT / "data" / "MANIFEST.sha256.ots").read_bytes()
+    digest = hashlib.sha256(orig_manifest).digest()
+    bad_digest = bytes([b ^ 0xFF for b in digest])
+
+    m_copy = tmp_path / "MANIFEST.sha256"
+    tsr_copy = tmp_path / "MANIFEST.sha256.tsr"
+    ots_copy = tmp_path / "MANIFEST.sha256.ots"
+    m_copy.write_bytes(orig_manifest)
+    monkeypatch.setattr(st_mod, "MANIFEST", m_copy)
+    monkeypatch.setattr(st_mod, "TSR_PATH", tsr_copy)
+    monkeypatch.setattr(st_mod, "OTS_PATH", ots_copy)
+
+    # 1. Tamper .tsr digest only (kills M18_tsa_skip_digest_check)
+    tsr_copy.write_bytes(orig_tsr.replace(digest, bad_digest))
+    ots_copy.write_bytes(orig_ots)
+    assert st_mod.verify_timestamps() != 0
+
+    # 2. Tamper .ots digest only (kills M19_ots_skip_digest_check)
+    tsr_copy.write_bytes(orig_tsr)
+    ots_copy.write_bytes(orig_ots.replace(digest, bad_digest))
+    assert st_mod.verify_timestamps() != 0
+
+    # 3. Tamper MANIFEST digest (kills M20_manifest_skip_mismatch)
+    bad_manifest = tmp_path / "BAD_MANIFEST.sha256"
+    bad_manifest.write_text(("0" * 64) + "  VERSION\n", encoding="utf-8", newline="\n")
+    monkeypatch.setattr(gm, "MANIFEST", bad_manifest)
+    assert gm.verify_manifest() != 0
+
+
+def test_regression_e2026_015_part5_citation_numbers_and_primary_class() -> None:
+    """Regression test (B07, E-2026-015): Part 5 uses Thm 3.10 / Prop 4.2 / Rems 3.11, 3.13, 4.3; Part 1/2 math.PR."""
+    bad_refs = re.compile(
+        r"(?:Theorem|Thm\.?)\s+5\.2|Proposition\s+6\.2|Remarks?\s+5\.3|Remark\s+5\.5|Remark\s+6\.3"
+    )
+    active_files = [
+        "paper/main.tex",
+        "README.md",
+        "CLAIMS.md",
+        "LIMITATIONS.md",
+        "docs/statement-fidelity.md",
+        "docs/faq.md",
+        "formalization.yaml",
+        "blueprint/src/content.tex",
+        "lean/Challenge.lean",
+        "lean/Solution.lean",
+        "lean/MultinomialTVConjecture/Main.lean",
+    ]
+    for rel in active_files:
+        txt = (ROOT / rel).read_text(encoding="utf-8")
+        assert not bad_refs.search(txt), f"Stale shifted Part 5 theorem/proposition number in {rel}"
+
+    refs_bib = (ROOT / "paper" / "refs.bib").read_text(encoding="utf-8")
+    for key, expected_cls in (
+        ("banic_elezovic_p1", "math.PR"),
+        ("banic_elezovic_p2", "math.PR"),
+        ("banic_elezovic_p5", "math.ST"),
+    ):
+        m = re.search(rf"@misc\{{{key},.*?\n\}}", refs_bib, re.S)
+        assert m is not None, f"Missing {key} in paper/refs.bib"
+        assert f"primaryClass  = {{{expected_cls}}}" in m.group(0), (
+            f"Expected primaryClass = {{{expected_cls}}} for {key}"
+        )
+
+
+def test_comparator_9_targets_and_mutation_report_green() -> None:
+    """Verify comparator.json covers all 9 targets (incl. Lemma 7.3 O(L^-2)) and B13 mutation report is 100%."""
+    comp = json.loads((ROOT / "lean" / "comparator.json").read_text(encoding="utf-8"))
+    names = comp["theorem_names"]
+    assert len(names) == 9
+    assert "MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq" in names
+
+    mut_path = ROOT / "results" / "mutation-report.json"
+    assert mut_path.is_file(), "Missing B13 mutation report results/mutation-report.json"
+    mut = json.loads(mut_path.read_text(encoding="utf-8"))
+    assert mut["total_mutants"] >= 20
+    assert mut["survived"] == 0
+    assert mut["kill_rate_percent"] == 100.0
 
 
 def test_manifest_text_artifacts_strictly_lf_cross_platform() -> None:

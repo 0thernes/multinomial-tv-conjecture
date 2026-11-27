@@ -2020,6 +2020,1555 @@ theorem tendsto_sumC :
   rw [add_zero] at hcomb
   refine hcomb.congr fun q => by ring
 
+/-! ### Part 9: Quantitative `O(q^{-2})` remainder bounds for `sumA`, `sumB`, `sumC` (Lemma 7.3) -/
+
+/-- Extends a uniform upper bound valid for `q ≥ N₀` to all `q ≥ 1` via finite-prefix domination. -/
+private lemma exists_bound_all_pos (f : ℕ → ℝ) (N₀ : ℕ) (C₀ : ℝ) (hC₀ : 0 ≤ C₀)
+    (hge : ∀ q, N₀ ≤ q → f q ≤ C₀) :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ q, 1 ≤ q → f q ≤ C := by
+  let S : ℝ := ∑ k ∈ Finset.range N₀, |f k|
+  have hS_nn : 0 ≤ S := Finset.sum_nonneg fun _ _ => abs_nonneg _
+  refine ⟨C₀ + S, by linarith, fun q _ => ?_⟩
+  by_cases hq : N₀ ≤ q
+  · linarith [hge q hq]
+  · have hmem : q ∈ Finset.range N₀ := Finset.mem_range.mpr (by omega)
+    have hle : |f q| ≤ S := Finset.single_le_sum (fun k _ => abs_nonneg (f k)) hmem
+    linarith [le_abs_self (f q)]
+
+/-- Sharper tail exponential decay `O(q^{-3})` per term for `k > K_cut q`. -/
+private lemma exp_tail_bound_order2 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : K_cut q < k) :
+    Real.exp (-((k : ℝ) ^ 2) / (3 * (q : ℝ))) ≤
+      ((Nat.factorial 12 : ℝ) * 3 ^ 12) / (q : ℝ) ^ 3 := by
+  have hw10 := w8_ge_ten hq
+  have hw_pos : 0 < w8 q := by linarith
+  have hw_eq : Real.sqrt (q : ℝ) * w8 q = (w8 q) ^ 5 := by rw [← w8_pow4 q]; ring
+  have hk_gt : (w8 q) ^ 5 < (k : ℝ) := by
+    unfold K_cut at hk
+    rw [hw_eq] at hk
+    exact (Nat.floor_lt (by positivity)).mp hk
+  have hk2_ge : (w8 q) ^ 2 / 3 ≤ (k : ℝ) ^ 2 / (3 * (q : ℝ)) := by
+    rw [← w8_pow8 q]
+    have hsq : (w8 q) ^ 10 ≤ (k : ℝ) ^ 2 := by
+      have := pow_le_pow_left₀ (by positivity) (le_of_lt hk_gt) 2
+      linarith [show ((w8 q) ^ 5) ^ 2 = (w8 q) ^ 10 by ring]
+    rw [div_le_div_iff₀ (by norm_num) (by positivity)]
+    nlinarith [show (w8 q) ^ 2 * (3 * (w8 q) ^ 8) = 3 * (w8 q) ^ 10 by ring]
+  have hexp_le : Real.exp (-((k : ℝ) ^ 2) / (3 * (q : ℝ))) ≤ Real.exp (-((w8 q) ^ 2 / 3)) := by
+    apply Real.exp_le_exp.mpr
+    rw [neg_div]; linarith
+  have hfac := Real.pow_div_factorial_le_exp ((w8 q) ^ 2 / 3) (by positivity) 12
+  have hpos_x : 0 < ((w8 q) ^ 2 / 3) ^ 12 := by positivity
+  have hinv : Real.exp (-((w8 q) ^ 2 / 3)) ≤ (Nat.factorial 12 : ℝ) / ((w8 q) ^ 2 / 3) ^ 12 := by
+    rw [Real.exp_neg, inv_eq_one_div, div_le_div_iff₀ (Real.exp_pos _) hpos_x]
+    have hmul := (div_le_iff₀ (by positivity : (0 : ℝ) < (Nat.factorial 12 : ℝ))).mp hfac
+    linarith
+  have hden_eq : (Nat.factorial 12 : ℝ) / ((w8 q) ^ 2 / 3) ^ 12 =
+      ((Nat.factorial 12 : ℝ) * 3 ^ 12) / (q : ℝ) ^ 3 := by
+    rw [← w8_pow8 q, div_pow]
+    have hne : (w8 q) ^ 24 ≠ 0 := by positivity
+    have hpow : ((w8 q) ^ 2) ^ 12 = (w8 q) ^ 24 := by ring
+    have hpow2 : ((w8 q) ^ 8) ^ 3 = (w8 q) ^ 24 := by ring
+    rw [hpow, hpow2]
+    field_simp
+  exact le_trans hexp_le (by rw [← hden_eq]; exact hinv)
+
+/-- Sharper `O(q^{-2})` tail sum bound for `k > K_cut q`. -/
+private lemma abs_p3q_tail_sum_le_order2 {q : ℕ} (hq : 10 ^ 8 ≤ q) (w : ℕ → ℝ)
+    (hw : ∀ k ∈ Finset.Icc (K_cut q + 1) q, |w k| ≤ 1) (sgn : ℝ) (hsgn : |sgn| = 1) :
+    |∑ k ∈ Finset.Icc (K_cut q + 1) q, w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| ≤
+      2 * ((Nat.factorial 12 : ℝ) * 3 ^ 12) / (q : ℝ) ^ 2 := by
+  have hq1 : 1 ≤ q := le_trans (by norm_num) hq
+  have hp0 : 0 < p3q q q := p3q_center_pos q
+  have hqpos : (0 : ℝ) < (q : ℝ) := by positivity
+  set M := ((Nat.factorial 12 : ℝ) * 3 ^ 12) / (q : ℝ) ^ 3
+  have hterm : ∀ k ∈ Finset.Icc (K_cut q + 1) q,
+      |w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| ≤ 2 * M := by
+    intro k hk
+    rw [mem_Icc] at hk
+    have hgt : K_cut q < k := by omega
+    have hr := le_trans (p3q_right_ratio_le q k hq1) (exp_tail_bound_order2 hq hgt)
+    have hl := le_trans (p3q_left_ratio_le q k hq1 hk.2) (exp_tail_bound_order2 hq hgt)
+    have hr_nn : 0 ≤ p3q q (q + k) / p3q q q := by
+      refine div_nonneg ?_ (le_of_lt hp0)
+      unfold p3q; split_ifs
+      · have := T_pos (q + k) (q + k) (3 * q - 2 * (q + k)); positivity
+      · rfl
+    have hl_nn : 0 ≤ p3q q (q - k) / p3q q q := by
+      refine div_nonneg ?_ (le_of_lt hp0)
+      rw [p3q_eq_of_le (by omega)]
+      have := T_pos (q - k) (q - k) (3 * q - 2 * (q - k)); positivity
+    have hsum_abs : |(p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q| ≤ 2 * M := by
+      rw [add_div, mul_div_assoc]
+      refine le_trans (abs_add_le _ _) ?_
+      rw [abs_mul, hsgn, one_mul, abs_of_nonneg hr_nn, abs_of_nonneg hl_nn]
+      dsimp only [M]; linarith
+    rw [abs_mul]
+    have hwk := hw k (mem_Icc.mpr hk)
+    exact le_trans (mul_le_mul hwk hsum_abs (abs_nonneg _) (by norm_num)) (by linarith)
+  have hcard : ((Finset.Icc (K_cut q + 1) q).card : ℝ) ≤ (q : ℝ) := by
+    have : (Finset.Icc (K_cut q + 1) q).card ≤ q := by simp only [Nat.card_Icc]; omega
+    exact_mod_cast this
+  calc |∑ k ∈ Finset.Icc (K_cut q + 1) q, w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)|
+      ≤ ∑ k ∈ Finset.Icc (K_cut q + 1) q, |w k * ((p3q q (q + k) + sgn * p3q q (q - k)) / p3q q q)| :=
+        Finset.abs_sum_le_sum_abs _ _
+    _ ≤ ∑ _k ∈ Finset.Icc (K_cut q + 1) q, (2 * M) := Finset.sum_le_sum hterm
+    _ = ((Finset.Icc (K_cut q + 1) q).card : ℝ) * (2 * M) := by simp
+    _ ≤ (q : ℝ) * (2 * M) := mul_le_mul_of_nonneg_right hcard (by dsimp only [M]; positivity)
+    _ = 2 * ((Nat.factorial 12 : ℝ) * 3 ^ 12) / (q : ℝ) ^ 2 := by
+        dsimp only [M]; field_simp
+
+/-- Fourth-order Euler-Maclaurin bound for `Gsum j q`: error is `O(q^{-2})` for `q ≥ 10^8`. -/
+lemma gsum_err_O_inv_sq (j : ℕ) :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ q : ℕ, 10 ^ 8 ≤ q →
+      |Gsum j q - ((j.factorial : ℝ) / (2 * (3 : ℝ) ^ (j + 1)) -
+        if j = 0 then 1 / (12 * (q : ℝ)) else 0)| ≤ C / (q : ℝ) ^ 2 := by
+  obtain ⟨C, hC0, hC⟩ := oddGauss_sum_approx_order4 j
+  set C_em : ℝ := (Nat.factorial 16 : ℝ) * 2 ^ 16
+  refine ⟨C * (1 + 3 * C_em), by positivity, fun q hq => ?_⟩
+  have hqR : (1 : ℝ) ≤ (q : ℝ) := by
+    have : 1 ≤ q := le_trans (by norm_num) hq
+    exact_mod_cast this
+  have hqpos : (0 : ℝ) < (q : ℝ) := by linarith
+  have hsqq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hqpos
+  have hε_pos : 0 < 1 / Real.sqrt (q : ℝ) := by positivity
+  have hε_le1 : 1 / Real.sqrt (q : ℝ) ≤ 1 := by
+    rw [div_le_one hsqq]
+    have : Real.sqrt 1 ≤ Real.sqrt (q : ℝ) := Real.sqrt_le_sqrt hqR
+    simpa using this
+  have hε2 : (1 / Real.sqrt (q : ℝ)) ^ 2 = 1 / (q : ℝ) := by
+    rw [div_pow, one_pow, Real.sq_sqrt (le_of_lt hqpos)]
+  have hε4 : (1 / Real.sqrt (q : ℝ)) ^ 4 = 1 / (q : ℝ) ^ 2 := by
+    rw [show (1 / Real.sqrt (q : ℝ)) ^ 4 = ((1 / Real.sqrt (q : ℝ)) ^ 2) ^ 2 by ring, hε2]
+    ring
+  have hmain := hC hε_pos (K_cut q)
+  have hite : (if j = 0 then (1 / Real.sqrt (q : ℝ)) ^ 2 / 12 else 0) =
+      (if j = 0 then 1 / (12 * (q : ℝ)) else 0) := by
+    rw [hε2]; split_ifs <;> ring
+  rw [hite] at hmain
+  have hcut := exp_cutoff_bound hq
+  have h12 : 1 + 1 / Real.sqrt (q : ℝ) + (1 / Real.sqrt (q : ℝ)) ^ 2 ≤ 3 := by nlinarith
+  have hbr : (1 / Real.sqrt (q : ℝ)) ^ 4 +
+      (1 + 1 / Real.sqrt (q : ℝ) + (1 / Real.sqrt (q : ℝ)) ^ 2) *
+        Real.exp (-((K_cut q : ℝ) * (1 / Real.sqrt (q : ℝ)))) ≤
+      (1 + 3 * C_em) / (q : ℝ) ^ 2 := by
+    have hm1 := mul_le_mul h12 hcut (le_of_lt (Real.exp_pos _)) (by norm_num)
+    rw [hε4]
+    have heq : 1 / (q : ℝ) ^ 2 + 3 * (C_em / (q : ℝ) ^ 2) = (1 + 3 * C_em) / (q : ℝ) ^ 2 := by ring
+    linarith
+  calc |Gsum j q - ((j.factorial : ℝ) / (2 * (3 : ℝ) ^ (j + 1)) -
+          if j = 0 then 1 / (12 * (q : ℝ)) else 0)|
+      ≤ C * ((1 / Real.sqrt (q : ℝ)) ^ 4 +
+          (1 + 1 / Real.sqrt (q : ℝ) + (1 / Real.sqrt (q : ℝ)) ^ 2) *
+            Real.exp (-((K_cut q : ℝ) * (1 / Real.sqrt (q : ℝ))))) := hmain
+    _ ≤ C * ((1 + 3 * C_em) / (q : ℝ) ^ 2) := mul_le_mul_of_nonneg_left hbr hC0
+    _ = C * (1 + 3 * C_em) / (q : ℝ) ^ 2 := by ring
+
+/-- Six-term Taylor polynomial of `log (1 + v)` on `[-1/2, 1/2]`. -/
+noncomputable def logPoly6 (v : ℝ) : ℝ := logPoly5 v - v ^ 6 / 6
+
+lemma abs_log_one_add_sub_logPoly6_le {v : ℝ} (hv : |v| ≤ 1 / 2) :
+    |Real.log (1 + v) - logPoly6 v| ≤ 2 * |v| ^ 7 := by
+  let f : ℝ → ℝ := fun t => Real.log (1 + t) - logPoly6 t
+  have hf0 : f 0 = 0 := by simp [f, logPoly6, logPoly5]
+  have hf_deriv : ∀ t ∈ Set.Icc (-(1 / 2) : ℝ) (1 / 2),
+      HasDerivAt f (t ^ 6 / (1 + t)) t := by
+    intro t ht
+    have h1t : 1 + t ≠ 0 := by linarith [ht.1]
+    have hlog : HasDerivAt (fun u => Real.log (1 + u)) (1 / (1 + t)) t := by
+      have h1 : HasDerivAt (fun u => 1 + u) 1 t := (hasDerivAt_id t).const_add 1
+      have h2 := h1.log h1t
+      convert h2 using 1
+    have hpoly : HasDerivAt logPoly6 (1 - t + t ^ 2 - t ^ 3 + t ^ 4 - t ^ 5) t := by
+      have d1 := hasDerivAt_id t
+      have d2 := (hasDerivAt_pow 2 t).div_const 2
+      have d3 := (hasDerivAt_pow 3 t).div_const 3
+      have d4 := (hasDerivAt_pow 4 t).div_const 4
+      have d5 := (hasDerivAt_pow 5 t).div_const 5
+      have d6 := (hasDerivAt_pow 6 t).div_const 6
+      have h := ((((d1.sub d2).add d3).sub d4).add d5).sub d6
+      have heq : (((((id - fun x : ℝ => x ^ 2 / 2) + fun x : ℝ => x ^ 3 / 3) -
+          fun x : ℝ => x ^ 4 / 4) + fun x : ℝ => x ^ 5 / 5) - fun x : ℝ => x ^ 6 / 6) = logPoly6 := by
+        ext x; unfold logPoly6 logPoly5; simp [Pi.add_apply, Pi.sub_apply]
+      rw [heq] at h
+      convert h using 1; norm_num
+    have hd := hlog.sub hpoly
+    convert hd using 1
+    field_simp; ring
+  have hmono_f : MonotoneOn f (Set.Icc (-(1 / 2)) (1 / 2)) := by
+    refine monotoneOn_of_deriv_nonneg (convex_Icc (-(1 / 2)) (1 / 2)) ?_ ?_ ?_
+    · exact fun t ht => (hf_deriv t ht).continuousAt.continuousWithinAt
+    · exact fun t ht => (hf_deriv t (interior_subset ht)).differentiableAt.differentiableWithinAt
+    · intro t ht
+      have hm := interior_subset ht
+      rw [(hf_deriv t hm).deriv]
+      have h1t : 0 < 1 + t := by linarith [hm.1]
+      positivity
+  have hmono_gap : MonotoneOn (fun u => 2 * u ^ 7 - f u) (Set.Icc (-(1 / 2)) (1 / 2)) := by
+    refine monotoneOn_of_deriv_nonneg (convex_Icc (-(1 / 2)) (1 / 2)) ?_ ?_ ?_
+    · exact fun t ht => (((hasDerivAt_pow 7 t).const_mul (2 : ℝ)).sub (hf_deriv t ht)).continuousAt.continuousWithinAt
+    · exact fun t ht => (((hasDerivAt_pow 7 t).const_mul (2 : ℝ)).sub
+        (hf_deriv t (interior_subset ht))).differentiableAt.differentiableWithinAt
+    · intro t ht
+      have hm := interior_subset ht
+      have hd : HasDerivAt (fun u => 2 * u ^ 7 - f u) (14 * t ^ 6 - t ^ 6 / (1 + t)) t := by
+        have h := ((hasDerivAt_pow 7 t).const_mul (2 : ℝ)).sub (hf_deriv t hm)
+        convert h using 1; ring
+      rw [hd.deriv]
+      have h1t : 1 / 2 ≤ 1 + t := by linarith [hm.1]
+      have ht6 : 0 ≤ t ^ 6 := by positivity
+      have hdiv : t ^ 6 / (1 + t) ≤ 2 * t ^ 6 := by
+        rw [div_le_iff₀ (by linarith)]; nlinarith
+      linarith
+  have hv_mem : v ∈ Set.Icc (-(1 / 2) : ℝ) (1 / 2) := abs_le.mp hv
+  have h0_mem : (0 : ℝ) ∈ Set.Icc (-(1 / 2) : ℝ) (1 / 2) := by constructor <;> norm_num
+  rw [abs_le]
+  by_cases hv0 : 0 ≤ v
+  · have h1 := hmono_f h0_mem hv_mem hv0
+    have h2 := hmono_gap h0_mem hv_mem hv0
+    simp only [hf0, zero_pow (by norm_num : 7 ≠ 0), mul_zero, sub_zero] at h1 h2
+    rw [abs_of_nonneg hv0]
+    exact ⟨by linarith [pow_nonneg hv0 7], by linarith⟩
+  · push Not at hv0
+    have h1 := hmono_f hv_mem h0_mem (le_of_lt hv0)
+    have h2 := hmono_gap hv_mem h0_mem (le_of_lt hv0)
+    simp only [hf0, zero_pow (by norm_num : 7 ≠ 0), mul_zero, sub_zero] at h1 h2
+    have habs7 : |v| ^ 7 = -v ^ 7 := by
+      rw [abs_of_neg hv0, neg_pow]; norm_num
+    rw [habs7]
+    exact ⟨by linarith, by linarith [show 0 ≤ -v ^ 7 by rw [← habs7]; positivity]⟩
+
+/-- Fifth-order bound on the Stirling remainder difference around its even `-(1/2) ε^4 t^2` leading term. -/
+private lemma stirling_diff_order5 {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (hu : |u| ≤ 1 / 4)
+    (hm1 : (m1 : ℝ) = (q : ℝ) * (1 + u)) (hm2 : (m2 : ℝ) = (q : ℝ) * (1 - 2 * u)) :
+    let ε := 1 / Real.sqrt (q : ℝ)
+    let t := u / ε
+    |(3 * stirlingRem q - 2 * stirlingRem m1 - stirlingRem m2) - (-(1 / 2 : ℝ) * ε ^ 4 * t ^ 2)| ≤
+      6 * ε ^ 5 * (1 + |t| ^ 3) := by
+  intro ε t
+  have hqR : (1 : ℝ) ≤ (q : ℝ) := by exact_mod_cast hq
+  have hqpos : (0 : ℝ) < (q : ℝ) := by linarith
+  have hsqq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hqpos
+  have hε_pos : 0 < ε := by dsimp only [ε]; positivity
+  have hε_le1 : ε ≤ 1 := by
+    dsimp only [ε]; rw [div_le_one hsqq]
+    have : Real.sqrt 1 ≤ Real.sqrt (q : ℝ) := Real.sqrt_le_sqrt hqR
+    simpa using this
+  have hε2 : ε ^ 2 = 1 / (q : ℝ) := by
+    dsimp only [ε]; rw [div_pow, one_pow, Real.sq_sqrt (le_of_lt hqpos)]
+  have hu_eq : u = ε * t := by dsimp only [t]; field_simp
+  have hu_bounds := abs_le.mp hu
+  have h1u_lb : 3 / 4 ≤ 1 + u := by linarith
+  have h12u_lb : 1 / 2 ≤ 1 - 2 * u := by linarith
+  have hm1_ge1 : 1 ≤ m1 := by
+    have : (0 : ℝ) < (m1 : ℝ) := by rw [hm1]; exact mul_pos hqpos (by linarith)
+    have : 0 < m1 := by exact_mod_cast this
+    omega
+  have hm2_ge1 : 1 ≤ m2 := by
+    have : (0 : ℝ) < (m2 : ℝ) := by rw [hm2]; exact mul_pos hqpos (by linarith)
+    have : 0 < m2 := by exact_mod_cast this
+    omega
+  set Δst := 3 * stirlingRem q - 2 * stirlingRem m1 - stirlingRem m2
+  obtain ⟨hlq, huq⟩ := stirlingRem_bounds q hq
+  obtain ⟨hl1, hu1⟩ := stirlingRem_bounds m1 hm1_ge1
+  obtain ⟨hl2, hu2⟩ := stirlingRem_bounds m2 hm2_ge1
+  set mainSt := 3 / (12 * (q : ℝ)) - 2 / (12 * (m1 : ℝ)) - 1 / (12 * (m2 : ℝ))
+  have hmainSt_eq : mainSt = -(u ^ 2 / (2 * (q : ℝ) * (1 + u) * (1 - 2 * u))) := by
+    dsimp only [mainSt]; rw [hm1, hm2]
+    have h1 : (1 + u) ≠ 0 := by linarith
+    have h2 : (1 - 2 * u) ≠ 0 := by linarith
+    field_simp; ring
+  have hmain_diff : mainSt - (-(1 / 2 : ℝ) * ε ^ 4 * t ^ 2) =
+      -(u ^ 2 * (u + 2 * u ^ 2) / (2 * (q : ℝ) * (1 + u) * (1 - 2 * u))) := by
+    have hrew : ε ^ 4 * t ^ 2 = u ^ 2 / (q : ℝ) := by
+      rw [hu_eq, mul_pow, div_eq_mul_inv, show (q : ℝ)⁻¹ = ε ^ 2 by rw [hε2, one_div]]; ring
+    rw [hmainSt_eq, show -(1 / 2 : ℝ) * ε ^ 4 * t ^ 2 = -(1 / 2 : ℝ) * (ε ^ 4 * t ^ 2) by ring, hrew]
+    have h1 : 0 < 1 + u := by linarith
+    have h2 : 0 < 1 - 2 * u := by linarith
+    have hden : 2 * (q : ℝ) * (1 + u) * (1 - 2 * u) ≠ 0 := by positivity
+    have hq0 : (q : ℝ) ≠ 0 := ne_of_gt hqpos
+    apply mul_right_cancel₀ hden
+    have hsub1 : -(u ^ 2 / (2 * (q : ℝ) * (1 + u) * (1 - 2 * u))) * (2 * (q : ℝ) * (1 + u) * (1 - 2 * u)) = -u ^ 2 := by
+      rw [neg_mul, div_mul_cancel₀ _ hden]
+    have hsub2 : -(1 / 2 : ℝ) * (u ^ 2 / (q : ℝ)) * (2 * (q : ℝ) * (1 + u) * (1 - 2 * u)) =
+        -u ^ 2 * (1 + u) * (1 - 2 * u) := by
+      field_simp [hq0]
+    have hsub3 : -(u ^ 2 * (u + 2 * u ^ 2) / (2 * (q : ℝ) * (1 + u) * (1 - 2 * u))) *
+        (2 * (q : ℝ) * (1 + u) * (1 - 2 * u)) = -(u ^ 2 * (u + 2 * u ^ 2)) := by
+      rw [neg_mul, div_mul_cancel₀ _ hden]
+    rw [sub_mul, hsub1, hsub2, hsub3]; ring
+  have hmain_abs : |mainSt - (-(1 / 2 : ℝ) * ε ^ 4 * t ^ 2)| ≤ 3 * ε ^ 5 * |t| ^ 3 := by
+    rw [hmain_diff, abs_neg, abs_div, abs_mul, abs_of_nonneg (sq_nonneg u),
+        abs_of_pos (by positivity : 0 < 2 * (q : ℝ) * (1 + u) * (1 - 2 * u))]
+    have hprod : 3 / 8 ≤ (1 + u) * (1 - 2 * u) :=
+      le_trans (by norm_num) (mul_le_mul h1u_lb h12u_lb (by norm_num) (by linarith))
+    have hu12 : |u + 2 * u ^ 2| ≤ 2 * |u| := by
+      have htri := abs_add_le u (2 * u ^ 2)
+      have hsq : |2 * u ^ 2| = 2 * |u| ^ 2 := by rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 2), abs_pow]
+      have hle : 2 * |u| ^ 2 ≤ |u| := by nlinarith [abs_nonneg u]
+      linarith
+    have hnum : u ^ 2 * |u + 2 * u ^ 2| ≤ 2 * |u| ^ 3 := by
+      have hm := mul_le_mul_of_nonneg_left hu12 (sq_nonneg u)
+      have hsq : u ^ 2 * (2 * |u|) = 2 * |u| ^ 3 := by rw [← sq_abs u]; ring
+      linarith
+    have hdiv : u ^ 2 * |u + 2 * u ^ 2| / (2 * (q : ℝ) * (1 + u) * (1 - 2 * u)) ≤
+        3 * (|u| ^ 3 / (q : ℝ)) := by
+      rw [div_le_iff₀ (by positivity)]
+      have hr : 3 * (|u| ^ 3 / (q : ℝ)) * (2 * (q : ℝ) * (1 + u) * (1 - 2 * u)) =
+          |u| ^ 3 * (6 * ((1 + u) * (1 - 2 * u))) := by field_simp; ring
+      rw [hr]
+      have : 2 * |u| ^ 3 ≤ |u| ^ 3 * (6 * ((1 + u) * (1 - 2 * u))) := by
+        nlinarith [pow_nonneg (abs_nonneg u) 3]
+      linarith
+    have hu3q : |u| ^ 3 / (q : ℝ) = ε ^ 5 * |t| ^ 3 := by
+      rw [hu_eq, abs_mul, abs_of_pos hε_pos, mul_pow, div_eq_mul_inv,
+          show (q : ℝ)⁻¹ = ε ^ 2 by rw [hε2, one_div]]; ring
+    rw [hu3q] at hdiv
+    linarith
+  have hremSt_abs : |Δst - mainSt| ≤ 2 * ε ^ 5 := by
+    have hlb : -(3 / (15 * (q : ℝ) ^ 3)) ≤ Δst - mainSt := by
+      dsimp only [Δst, mainSt]
+      have hq3 : 3 * (1 / (12 * (q : ℝ))) = 3 / (12 * (q : ℝ)) := by ring
+      have hq3' : 3 * (1 / (15 * (q : ℝ) ^ 3)) = 3 / (15 * (q : ℝ) ^ 3) := by ring
+      have hm12 : 2 * (1 / (12 * (m1 : ℝ))) = 2 / (12 * (m1 : ℝ)) := by ring
+      linarith
+    have hub : Δst - mainSt ≤ 2 / (15 * (m1 : ℝ) ^ 3) + 1 / (15 * (m2 : ℝ) ^ 3) := by
+      dsimp only [Δst, mainSt]
+      have hq3 : 3 * (1 / (12 * (q : ℝ))) = 3 / (12 * (q : ℝ)) := by ring
+      have hm12 : 2 * (1 / (12 * (m1 : ℝ))) = 2 / (12 * (m1 : ℝ)) := by ring
+      have hm15 : 2 * (1 / (15 * (m1 : ℝ) ^ 3)) = 2 / (15 * (m1 : ℝ) ^ 3) := by ring
+      linarith
+    have hm1_lb : (q : ℝ) / 2 ≤ (m1 : ℝ) := by
+      rw [hm1]; exact le_trans (by linarith) (mul_le_mul_of_nonneg_left h1u_lb (le_of_lt hqpos))
+    have hm2_lb : (q : ℝ) / 2 ≤ (m2 : ℝ) := by
+      rw [hm2]; exact le_trans (by linarith) (mul_le_mul_of_nonneg_left h12u_lb (le_of_lt hqpos))
+    have hm1_cube : (q : ℝ) ^ 3 / 8 ≤ (m1 : ℝ) ^ 3 := by
+      have := pow_le_pow_left₀ (by positivity) hm1_lb 3
+      linarith [show ((q : ℝ) / 2) ^ 3 = (q : ℝ) ^ 3 / 8 by ring]
+    have hm2_cube : (q : ℝ) ^ 3 / 8 ≤ (m2 : ℝ) ^ 3 := by
+      have := pow_le_pow_left₀ (by positivity) hm2_lb 3
+      linarith [show ((q : ℝ) / 2) ^ 3 = (q : ℝ) ^ 3 / 8 by ring]
+    have h1_le : 2 / (15 * (m1 : ℝ) ^ 3) ≤ 16 / (15 * (q : ℝ) ^ 3) := by
+      rw [div_le_div_iff₀ (by positivity) (by positivity)]; linarith
+    have h2_le : 1 / (15 * (m2 : ℝ) ^ 3) ≤ 8 / (15 * (q : ℝ) ^ 3) := by
+      rw [div_le_div_iff₀ (by positivity) (by positivity)]; linarith
+    have hcube : 1 / (q : ℝ) ^ 3 ≤ ε ^ 5 := by
+      have hq3 : 1 / (q : ℝ) ^ 3 = ε ^ 6 := by
+        rw [show (6 : ℕ) = 2 * 3 by rfl, pow_mul, hε2, one_div_pow]
+      rw [hq3, show ε ^ 6 = ε ^ 5 * ε by ring]
+      exact mul_le_of_le_one_right (by positivity) hε_le1
+    have hnn3 : 0 ≤ 1 / (q : ℝ) ^ 3 := by positivity
+    rw [abs_le]
+    exact ⟨by linarith [show 3 / (15 * (q : ℝ) ^ 3) = (3 / 15 : ℝ) * (1 / (q : ℝ) ^ 3) by ring],
+      by linarith [show 16 / (15 * (q : ℝ) ^ 3) + 8 / (15 * (q : ℝ) ^ 3) = (24 / 15 : ℝ) * (1 / (q : ℝ) ^ 3) by ring]⟩
+  have hsplit : Δst - (-(1 / 2 : ℝ) * ε ^ 4 * t ^ 2) =
+      (Δst - mainSt) + (mainSt - (-(1 / 2 : ℝ) * ε ^ 4 * t ^ 2)) := by ring
+  rw [hsplit]
+  have htri := abs_add_le (Δst - mainSt) (mainSt - (-(1 / 2 : ℝ) * ε ^ 4 * t ^ 2))
+  have hnn : 0 ≤ ε ^ 5 := by positivity
+  have ht3_nn : 0 ≤ |t| ^ 3 := by positivity
+  have hprod_nn : 0 ≤ ε ^ 5 * |t| ^ 3 := mul_nonneg hnn ht3_nn
+  linarith [show 6 * ε ^ 5 * (1 + |t| ^ 3) = 6 * ε ^ 5 + 6 * (ε ^ 5 * |t| ^ 3) by ring,
+            show 3 * ε ^ 5 * |t| ^ 3 = 3 * (ε ^ 5 * |t| ^ 3) by ring]
+
+/-- Even `ε^4` correction term in the local log-ratio expansion. -/
+noncomputable def r4Term (t ε : ℝ) : ℝ :=
+  ε ^ 4 * (-(11 / 5 : ℝ) * t ^ 6 + (9 / 4 : ℝ) * t ^ 4 - (1 / 2 : ℝ) * t ^ 2)
+
+/-- Fourth-order local log-ratio perturbation polynomial in `(t, ε)`. -/
+noncomputable def rApprox4 (t ε : ℝ) : ℝ := R_approx t ε + r4Term t ε
+
+/-- Degree-4 Taylor polynomial `1 + x + x^2/2 + x^3/6 + x^4/24` of `exp x`. -/
+noncomputable def T4 (x : ℝ) : ℝ := T3 x + x ^ 4 / 24
+
+private lemma logPoly6_combo_eq (q u : ℝ) :
+    -2 * (q * (1 + u) + 1 / 2) * logPoly6 u - (q * (1 - 2 * u) + 1 / 2) * logPoly6 (-2 * u) =
+      -3 * (q * u ^ 2) - (q * u ^ 3) - (3 / 2 : ℝ) * (q * u ^ 4) + (3 / 2 : ℝ) * u ^ 2 -
+      (3 / 2 : ℝ) * (q * u ^ 5) + u ^ 3 - (11 / 5 : ℝ) * (q * u ^ 6) + (9 / 4 : ℝ) * u ^ 4 -
+      21 * (q * u ^ 7) + 3 * u ^ 5 + (11 / 2 : ℝ) * u ^ 6 := by
+  unfold logPoly6 logPoly5; ring
+
+/-- Fifth-order unified local log-ratio expansion (`O(ε^5)` remainder). -/
+private lemma log_ratio_approx_order5 {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (hu : |u| ≤ 1 / 4)
+    (hm1 : (m1 : ℝ) = (q : ℝ) * (1 + u)) (hm2 : (m2 : ℝ) = (q : ℝ) * (1 - 2 * u)) :
+    let ε := 1 / Real.sqrt (q : ℝ)
+    let t := u / ε
+    |Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) -
+        (-3 * t ^ 2 + rApprox4 t ε)| ≤ 600 * ε ^ 5 * (1 + |t| ^ 7) := by
+  intro ε t
+  have hqR : (1 : ℝ) ≤ (q : ℝ) := by exact_mod_cast hq
+  have hqpos : (0 : ℝ) < (q : ℝ) := by linarith
+  have hsqq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hqpos
+  have hε_pos : 0 < ε := by dsimp only [ε]; positivity
+  have hε_le1 : ε ≤ 1 := by
+    dsimp only [ε]; rw [div_le_one hsqq]
+    have : Real.sqrt 1 ≤ Real.sqrt (q : ℝ) := Real.sqrt_le_sqrt hqR
+    simpa using this
+  have hε2 : ε ^ 2 = 1 / (q : ℝ) := by
+    dsimp only [ε]; rw [div_pow, one_pow, Real.sq_sqrt (le_of_lt hqpos)]
+  have hu_eq : u = ε * t := by dsimp only [t]; field_simp
+  have hqu2 : (q : ℝ) * u ^ 2 = t ^ 2 := by
+    rw [hu_eq, mul_pow, ← mul_assoc, show (q : ℝ) * ε ^ 2 = 1 by rw [hε2]; field_simp, one_mul]
+  have hqu_pow : ∀ k : ℕ, (q : ℝ) * u ^ (k + 2) = ε ^ k * t ^ (k + 2) := by
+    intro k
+    rw [hu_eq, mul_pow, pow_add, pow_add]
+    have h1 : (q : ℝ) * ε ^ 2 = 1 := by rw [hε2]; field_simp
+    calc (q : ℝ) * (ε ^ k * ε ^ 2 * (t ^ k * t ^ 2))
+        = ((q : ℝ) * ε ^ 2) * (ε ^ k * (t ^ k * t ^ 2)) := by ring
+      _ = ε ^ k * (t ^ k * t ^ 2) := by rw [h1, one_mul]
+  have hu_bounds := abs_le.mp hu
+  have h1u_lb : 3 / 4 ≤ 1 + u := by linarith
+  have h1u_ub : 1 + u ≤ 5 / 4 := by linarith
+  have h12u_lb : 1 / 2 ≤ 1 - 2 * u := by linarith
+  have h12u_ub : 1 - 2 * u ≤ 3 / 2 := by linarith
+  have hlog_id :
+      Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) =
+        -2 * ((q : ℝ) * (1 + u) + 1 / 2) * Real.log (1 + u) -
+        ((q : ℝ) * (1 - 2 * u) + 1 / 2) * Real.log (1 - 2 * u) +
+        (3 * stirlingRem q - 2 * stirlingRem m1 - stirlingRem m2) := by
+    rw [Real.log_div (by positivity) (by positivity),
+        Real.log_mul (by positivity) (by positivity),
+        Real.log_pow, Real.log_pow]
+    have hlm1 : Real.log (m1 : ℝ) = Real.log (q : ℝ) + Real.log (1 + u) := by
+      rw [hm1, Real.log_mul (ne_of_gt hqpos) (by linarith)]
+    have hlm2 : Real.log (m2 : ℝ) = Real.log (q : ℝ) + Real.log (1 - 2 * u) := by
+      rw [hm2, Real.log_mul (ne_of_gt hqpos) (by linarith)]
+    unfold stirlingRem
+    rw [hlm1, hlm2, hm1, hm2]
+    push_cast; ring
+  set Δst := 3 * stirlingRem q - 2 * stirlingRem m1 - stirlingRem m2
+  have hΔst : |Δst - (-(1 / 2 : ℝ) * ε ^ 4 * t ^ 2)| ≤ 6 * ε ^ 5 * (1 + |t| ^ 3) :=
+    stirling_diff_order5 hq hu hm1 hm2
+  set e1 := Real.log (1 + u) - logPoly6 u
+  set e2 := Real.log (1 - 2 * u) - logPoly6 (-2 * u)
+  have he1 : |e1| ≤ 2 * |u| ^ 7 := abs_log_one_add_sub_logPoly6_le (by linarith)
+  have he2 : |e2| ≤ 256 * |u| ^ 7 := by
+    have h := abs_log_one_add_sub_logPoly6_le (v := -2 * u) (by
+      rw [abs_mul, abs_neg, abs_of_pos (by norm_num : (0 : ℝ) < 2)]; linarith)
+    have hrew : 1 + -2 * u = 1 - 2 * u := by ring
+    have hpow : 2 * |-2 * u| ^ 7 = 256 * |u| ^ 7 := by
+      rw [abs_mul, abs_neg, abs_of_pos (by norm_num : (0 : ℝ) < 2), mul_pow]; norm_num; ring
+    rw [hrew, hpow] at h
+    exact h
+  have hpoly_id :
+      -2 * ((q : ℝ) * (1 + u) + 1 / 2) * logPoly6 u -
+        ((q : ℝ) * (1 - 2 * u) + 1 / 2) * logPoly6 (-2 * u) +
+        (-(1 / 2 : ℝ) * ε ^ 4 * t ^ 2) -
+        (-3 * t ^ 2 + rApprox4 t ε) =
+      -21 * (ε ^ 5 * t ^ 7) + 3 * (ε ^ 5 * t ^ 5) + (11 / 2 : ℝ) * (ε ^ 6 * t ^ 6) := by
+    have hq3 := hqu_pow 1
+    have hq4 := hqu_pow 2
+    have hq5 := hqu_pow 3
+    have hq6 := hqu_pow 4
+    have hq7 := hqu_pow 5
+    have hu2 : u ^ 2 = ε ^ 2 * t ^ 2 := by rw [hu_eq, mul_pow]
+    have hu3 : u ^ 3 = ε ^ 3 * t ^ 3 := by rw [hu_eq, mul_pow]
+    have hu4 : u ^ 4 = ε ^ 4 * t ^ 4 := by rw [hu_eq, mul_pow]
+    have hu5 : u ^ 5 = ε ^ 5 * t ^ 5 := by rw [hu_eq, mul_pow]
+    have hu6 : u ^ 6 = ε ^ 6 * t ^ 6 := by rw [hu_eq, mul_pow]
+    rw [logPoly6_combo_eq (q : ℝ) u, hqu2, hq3, hq4, hq5, hq6, hq7, hu2, hu3, hu4, hu5, hu6]
+    unfold rApprox4 r4Term R_approx; ring
+  have hpoly_tail : |-21 * (ε ^ 5 * t ^ 7) + 3 * (ε ^ 5 * t ^ 5) + (11 / 2 : ℝ) * (ε ^ 6 * t ^ 6)| ≤
+      30 * ε ^ 5 * (1 + |t| ^ 7) := by
+    have ht5 : |t| ^ 5 ≤ 1 + |t| ^ 7 := abs_pow_le_one_add (by omega)
+    have ht6 : |t| ^ 6 ≤ 1 + |t| ^ 7 := abs_pow_le_one_add (by omega)
+    have hε6 : ε ^ 6 ≤ ε ^ 5 := by
+      rw [show ε ^ 6 = ε ^ 5 * ε by ring]; exact mul_le_of_le_one_right (by positivity) hε_le1
+    have htri : |-21 * (ε ^ 5 * t ^ 7) + 3 * (ε ^ 5 * t ^ 5) + (11 / 2 : ℝ) * (ε ^ 6 * t ^ 6)| ≤
+        |-21 * (ε ^ 5 * t ^ 7)| + |3 * (ε ^ 5 * t ^ 5)| + |(11 / 2 : ℝ) * (ε ^ 6 * t ^ 6)| := by
+      linarith [abs_add_le (-21 * (ε ^ 5 * t ^ 7) + 3 * (ε ^ 5 * t ^ 5)) ((11 / 2 : ℝ) * (ε ^ 6 * t ^ 6)),
+                abs_add_le (-21 * (ε ^ 5 * t ^ 7)) (3 * (ε ^ 5 * t ^ 5))]
+    have ha : |-21 * (ε ^ 5 * t ^ 7)| ≤ 21 * (ε ^ 5 * (1 + |t| ^ 7)) := by
+      rw [abs_mul, abs_neg, abs_of_pos (by norm_num : (0 : ℝ) < 21), abs_mul,
+          abs_of_pos (by positivity : 0 < ε ^ 5), abs_pow]
+      nlinarith [show (0 : ℝ) ≤ ε ^ 5 by positivity]
+    have hb : |3 * (ε ^ 5 * t ^ 5)| ≤ 3 * (ε ^ 5 * (1 + |t| ^ 7)) := by
+      rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 3), abs_mul,
+          abs_of_pos (by positivity : 0 < ε ^ 5), abs_pow]
+      have hm := mul_le_mul_of_nonneg_left ht5 (by positivity : 0 ≤ ε ^ 5)
+      linarith
+    have hc : |(11 / 2 : ℝ) * (ε ^ 6 * t ^ 6)| ≤ (11 / 2 : ℝ) * (ε ^ 5 * (1 + |t| ^ 7)) := by
+      rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 11 / 2), abs_mul,
+          abs_of_pos (by positivity : 0 < ε ^ 6), abs_pow]
+      have hm := mul_le_mul hε6 ht6 (by positivity) (by positivity)
+      linarith
+    have hnn : 0 ≤ ε ^ 5 * (1 + |t| ^ 7) := by positivity
+    linarith
+  have hlog_err : |-2 * ((q : ℝ) * (1 + u) + 1 / 2) * e1 - ((q : ℝ) * (1 - 2 * u) + 1 / 2) * e2| ≤
+      520 * ε ^ 5 * (1 + |t| ^ 7) := by
+    have hc1_pos : 0 < (q : ℝ) * (1 + u) + 1 / 2 := by
+      have : 0 < (q : ℝ) * (1 + u) := mul_pos hqpos (by linarith); linarith
+    have hc2_pos : 0 < (q : ℝ) * (1 - 2 * u) + 1 / 2 := by
+      have : 0 < (q : ℝ) * (1 - 2 * u) := mul_pos hqpos (by linarith); linarith
+    have hc1_ub : 2 * ((q : ℝ) * (1 + u) + 1 / 2) ≤ 4 * (q : ℝ) := by
+      have := mul_le_mul_of_nonneg_left h1u_ub (le_of_lt hqpos); linarith
+    have hc2_ub : (q : ℝ) * (1 - 2 * u) + 1 / 2 ≤ 2 * (q : ℝ) := by
+      have := mul_le_mul_of_nonneg_left h12u_ub (le_of_lt hqpos); linarith
+    have h1 : |-2 * ((q : ℝ) * (1 + u) + 1 / 2) * e1| ≤ 8 * ((q : ℝ) * |u| ^ 7) := by
+      rw [show -2 * ((q : ℝ) * (1 + u) + 1 / 2) * e1 = -(2 * ((q : ℝ) * (1 + u) + 1 / 2)) * e1 by ring,
+          abs_mul, abs_neg, abs_of_pos (by linarith)]
+      have hmul := mul_le_mul hc1_ub he1 (abs_nonneg e1) (by positivity)
+      linarith [show 4 * (q : ℝ) * (2 * |u| ^ 7) = 8 * ((q : ℝ) * |u| ^ 7) by ring]
+    have h2 : |((q : ℝ) * (1 - 2 * u) + 1 / 2) * e2| ≤ 512 * ((q : ℝ) * |u| ^ 7) := by
+      rw [abs_mul, abs_of_pos hc2_pos]
+      have hmul := mul_le_mul hc2_ub he2 (abs_nonneg e2) (by positivity)
+      linarith [show 2 * (q : ℝ) * (256 * |u| ^ 7) = 512 * ((q : ℝ) * |u| ^ 7) by ring]
+    have hqu7 : (q : ℝ) * |u| ^ 7 = ε ^ 5 * |t| ^ 7 := by
+      rw [hu_eq, abs_mul, abs_of_pos hε_pos, mul_pow,
+          show (q : ℝ) * (ε ^ 7 * |t| ^ 7) = ((q : ℝ) * ε ^ 2) * (ε ^ 5 * |t| ^ 7) by ring,
+          show (q : ℝ) * ε ^ 2 = 1 by rw [hε2]; field_simp, one_mul]
+    have htri := abs_sub (-2 * ((q : ℝ) * (1 + u) + 1 / 2) * e1) (((q : ℝ) * (1 - 2 * u) + 1 / 2) * e2)
+    have hnn : 0 ≤ ε ^ 5 := by positivity
+    linarith [show 520 * ε ^ 5 * (1 + |t| ^ 7) = 520 * ε ^ 5 + 520 * (ε ^ 5 * |t| ^ 7) by ring]
+  have hΔst7 : |Δst - (-(1 / 2 : ℝ) * ε ^ 4 * t ^ 2)| ≤ 12 * ε ^ 5 * (1 + |t| ^ 7) := by
+    have ht3 : |t| ^ 3 ≤ 1 + |t| ^ 7 := abs_pow_le_one_add (by omega)
+    have h1t3 : 1 + |t| ^ 3 ≤ 2 * (1 + |t| ^ 7) := by linarith [show (0 : ℝ) ≤ |t| ^ 7 by positivity]
+    have hm := mul_le_mul_of_nonneg_left h1t3 (by positivity : 0 ≤ 6 * ε ^ 5)
+    linarith [hΔst]
+  have htotal :
+      Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) -
+        (-3 * t ^ 2 + rApprox4 t ε) =
+      (-2 * ((q : ℝ) * (1 + u) + 1 / 2) * logPoly6 u -
+        ((q : ℝ) * (1 - 2 * u) + 1 / 2) * logPoly6 (-2 * u) +
+        (-(1 / 2 : ℝ) * ε ^ 4 * t ^ 2) - (-3 * t ^ 2 + rApprox4 t ε)) +
+      (-2 * ((q : ℝ) * (1 + u) + 1 / 2) * e1 - ((q : ℝ) * (1 - 2 * u) + 1 / 2) * e2) +
+      (Δst - (-(1 / 2 : ℝ) * ε ^ 4 * t ^ 2)) := by
+    rw [hlog_id]
+    dsimp only [e1, e2, Δst]
+    ring
+  rw [htotal, hpoly_id]
+  have htri : |-21 * (ε ^ 5 * t ^ 7) + 3 * (ε ^ 5 * t ^ 5) + (11 / 2 : ℝ) * (ε ^ 6 * t ^ 6) +
+        (-2 * ((q : ℝ) * (1 + u) + 1 / 2) * e1 - ((q : ℝ) * (1 - 2 * u) + 1 / 2) * e2) +
+        (Δst - -(1 / 2 : ℝ) * ε ^ 4 * t ^ 2)| ≤
+      |-21 * (ε ^ 5 * t ^ 7) + 3 * (ε ^ 5 * t ^ 5) + (11 / 2 : ℝ) * (ε ^ 6 * t ^ 6)| +
+      |-2 * ((q : ℝ) * (1 + u) + 1 / 2) * e1 - ((q : ℝ) * (1 - 2 * u) + 1 / 2) * e2| +
+      |Δst - -(1 / 2 : ℝ) * ε ^ 4 * t ^ 2| :=
+    le_trans (abs_add_le _ _) (add_le_add (abs_add_le _ _) le_rfl)
+  have hsum_bd := add_le_add (add_le_add hpoly_tail hlog_err) hΔst7
+  have hcoef : 30 * ε ^ 5 * (1 + |t| ^ 7) + 520 * ε ^ 5 * (1 + |t| ^ 7) +
+      12 * ε ^ 5 * (1 + |t| ^ 7) ≤ 600 * ε ^ 5 * (1 + |t| ^ 7) := by
+    have hnn : 0 ≤ ε ^ 5 * (1 + |t| ^ 7) := by positivity
+    nlinarith only [hnn]
+  exact le_trans htri (le_trans hsum_bd hcoef)
+
+private lemma rApprox4_abs_le {t ε : ℝ} (hε_pos : 0 < ε) (hε_le1 : ε ≤ 1) :
+    |rApprox4 t ε| ≤ 12 * (ε * (1 + |t| ^ 6)) := by
+  have hε2 : ε ^ 2 ≤ ε := by rw [sq]; exact mul_le_of_le_one_right (le_of_lt hε_pos) hε_le1
+  have hε3 : ε ^ 3 ≤ ε := by
+    rw [show ε ^ 3 = ε ^ 2 * ε by ring]
+    exact le_trans (mul_le_mul_of_nonneg_right hε2 (le_of_lt hε_pos)) (by rw [← sq]; exact hε2)
+  have hε4 : ε ^ 4 ≤ ε := by
+    rw [show ε ^ 4 = ε ^ 3 * ε by ring]
+    exact le_trans (mul_le_mul_of_nonneg_right hε3 (le_of_lt hε_pos)) (by rw [← sq]; exact hε2)
+  have ht2 : |t| ^ 2 ≤ 1 + |t| ^ 6 := abs_pow_le_one_add (by omega)
+  have ht3 : |t| ^ 3 ≤ 1 + |t| ^ 6 := abs_pow_le_one_add (by omega)
+  have ht4 : |t| ^ 4 ≤ 1 + |t| ^ 6 := abs_pow_le_one_add (by omega)
+  have ht5 : |t| ^ 5 ≤ 1 + |t| ^ 6 := abs_pow_le_one_add (by omega)
+  have ht6 : |t| ^ 6 ≤ 1 + |t| ^ 6 := by linarith
+  set S := ε * (1 + |t| ^ 6)
+  have hS : 0 ≤ S := by dsimp only [S]; positivity
+  have hRa : |R_approx t ε| ≤ 7 * S := by
+    unfold R_approx
+    set A1 := -ε * t ^ 3
+    set A2 := ε ^ 2 * (-(3 / 2 : ℝ) * t ^ 4)
+    set A3 := ε ^ 2 * ((3 / 2 : ℝ) * t ^ 2)
+    set A4 := ε ^ 3 * (-(3 / 2 : ℝ) * t ^ 5)
+    set A5 := ε ^ 3 * t ^ 3
+    have hrew : -ε * t ^ 3 + ε ^ 2 * (-(3 / 2 : ℝ) * t ^ 4 + (3 / 2 : ℝ) * t ^ 2) +
+          ε ^ 3 * (-(3 / 2 : ℝ) * t ^ 5 + t ^ 3) = A1 + A2 + A3 + A4 + A5 := by
+      dsimp only [A1, A2, A3, A4, A5]; ring
+    rw [hrew]
+    have htri : |A1 + A2 + A3 + A4 + A5| ≤ |A1| + |A2| + |A3| + |A4| + |A5| := by
+      linarith [abs_add_le (A1 + A2 + A3 + A4) A5, abs_add_le (A1 + A2 + A3) A4,
+                abs_add_le (A1 + A2) A3, abs_add_le A1 A2]
+    have ha1 : |A1| ≤ S := by
+      dsimp only [A1, S]; rw [abs_mul, abs_neg, abs_of_pos hε_pos, abs_pow]
+      exact mul_le_mul_of_nonneg_left ht3 (le_of_lt hε_pos)
+    have ha2 : |A2| ≤ (3 / 2 : ℝ) * S := by
+      dsimp only [A2, S]; rw [abs_mul, abs_mul, abs_neg, abs_of_pos (by positivity : 0 < ε ^ 2),
+          abs_of_pos (by norm_num : (0 : ℝ) < 3 / 2), abs_pow]
+      linarith [mul_le_mul hε2 ht4 (by positivity) (le_of_lt hε_pos)]
+    have ha3 : |A3| ≤ (3 / 2 : ℝ) * S := by
+      dsimp only [A3, S]; rw [abs_mul, abs_mul, abs_of_pos (by positivity : 0 < ε ^ 2),
+          abs_of_pos (by norm_num : (0 : ℝ) < 3 / 2), abs_pow]
+      linarith [mul_le_mul hε2 ht2 (by positivity) (le_of_lt hε_pos)]
+    have ha4 : |A4| ≤ (3 / 2 : ℝ) * S := by
+      dsimp only [A4, S]; rw [abs_mul, abs_mul, abs_neg, abs_of_pos (by positivity : 0 < ε ^ 3),
+          abs_of_pos (by norm_num : (0 : ℝ) < 3 / 2), abs_pow]
+      linarith [mul_le_mul hε3 ht5 (by positivity) (le_of_lt hε_pos)]
+    have ha5 : |A5| ≤ S := by
+      dsimp only [A5, S]; rw [abs_mul, abs_of_pos (by positivity : 0 < ε ^ 3), abs_pow]
+      exact mul_le_mul hε3 ht3 (by positivity) (le_of_lt hε_pos)
+    linarith
+  have hR4 : |r4Term t ε| ≤ 5 * S := by
+    unfold r4Term
+    rw [abs_mul, abs_of_pos (by positivity : 0 < ε ^ 4)]
+    have hpoly : |-(11 / 5 : ℝ) * t ^ 6 + (9 / 4 : ℝ) * t ^ 4 - (1 / 2 : ℝ) * t ^ 2| ≤ 5 * (1 + |t| ^ 6) := by
+      have h6 : t ^ 6 = |t| ^ 6 := by rw [show (6 : ℕ) = 2 * 3 by rfl, pow_mul, ← sq_abs, ← pow_mul]
+      have h4 : t ^ 4 = |t| ^ 4 := by
+        rw [show t ^ 4 = (t ^ 2) ^ 2 by ring, ← sq_abs t, show (|t| ^ 2) ^ 2 = |t| ^ 4 by ring]
+      have h2 : t ^ 2 = |t| ^ 2 := (sq_abs t).symm
+      rw [h6, h4, h2, abs_le]
+      constructor <;> linarith [pow_nonneg (abs_nonneg t) 2, pow_nonneg (abs_nonneg t) 4, pow_nonneg (abs_nonneg t) 6]
+    have hm := mul_le_mul hε4 hpoly (abs_nonneg _) (le_of_lt hε_pos)
+    dsimp only [S]; linarith
+  unfold rApprox4
+  exact le_trans (abs_add_le _ _) (by linarith)
+
+private lemma rApprox4_pow5_le {t ε : ℝ} (hε_pos : 0 < ε) (hε_le1 : ε ≤ 1) :
+    |rApprox4 t ε| ^ 5 ≤ 4000000 * ε ^ 5 * (1 + |t| ^ 30) := by
+  have h1 := pow_le_pow_left₀ (abs_nonneg _) (rApprox4_abs_le (t := t) hε_pos hε_le1) 5
+  have hpow5 : ∀ x : ℝ, 0 ≤ x → (1 + x) ^ 5 ≤ 16 * (1 + x ^ 5) := by
+    intro x hx
+    have h2 : (1 + x) ^ 2 ≤ 2 * (1 + x ^ 2) := by nlinarith [sq_nonneg (1 - x)]
+    have h4 : (1 + x) ^ 4 ≤ 8 * (1 + x ^ 4) := by
+      have hsq2 : (1 + x ^ 2) ^ 2 ≤ 2 * (1 + x ^ 4) := by nlinarith [sq_nonneg (1 - x ^ 2)]
+      have hstep : (1 + x) ^ 4 ≤ (2 * (1 + x ^ 2)) ^ 2 := by
+        rw [show (1 + x) ^ 4 = ((1 + x) ^ 2) ^ 2 by ring]
+        exact pow_le_pow_left₀ (by positivity) h2 2
+      linarith [show (2 * (1 + x ^ 2)) ^ 2 = 4 * (1 + x ^ 2) ^ 2 by ring]
+    have h5 : (1 + x) ^ 5 ≤ 8 * (1 + x ^ 4) * (1 + x) := by
+      rw [pow_succ]; exact mul_le_mul_of_nonneg_right h4 (by linarith)
+    have hcross : x ^ 4 + x ≤ 1 + x ^ 5 := by
+      have hprod : 0 ≤ (1 - x) * (1 - x ^ 4) := by
+        by_cases hx1 : x ≤ 1
+        · exact mul_nonneg (by linarith) (by linarith [pow_le_one₀ hx hx1 (n := 4)])
+        · push Not at hx1
+          have : 1 ≤ x ^ 4 := one_le_pow₀ (le_of_lt hx1)
+          exact mul_nonneg_of_nonpos_of_nonpos (by linarith) (by linarith)
+      nlinarith [show (1 - x) * (1 - x ^ 4) = 1 - x - x ^ 4 + x ^ 5 by ring]
+    linarith [show 8 * (1 + x ^ 4) * (1 + x) = 8 * (1 + x ^ 5) + 8 * (x ^ 4 + x) by ring]
+  have h1t5 := hpow5 (|t| ^ 6) (by positivity)
+  have ht30 : (|t| ^ 6) ^ 5 = |t| ^ 30 := by ring
+  rw [ht30] at h1t5
+  calc |rApprox4 t ε| ^ 5 ≤ (12 * (ε * (1 + |t| ^ 6))) ^ 5 := h1
+    _ = 248832 * ε ^ 5 * (1 + |t| ^ 6) ^ 5 := by ring
+    _ ≤ 248832 * ε ^ 5 * (16 * (1 + |t| ^ 30)) := mul_le_mul_of_nonneg_left h1t5 (by positivity)
+    _ ≤ 4000000 * ε ^ 5 * (1 + |t| ^ 30) := by
+        have : 0 ≤ ε ^ 5 * (1 + |t| ^ 30) := by positivity
+        linarith
+
+/-- Fifth-order exponential-ratio expansion using `T4 (rApprox4 t ε)`. -/
+private lemma exp_ratio_approx_order5 {q m1 m2 : ℕ} {u : ℝ} (hq : 1 ≤ q) (hu : |u| ≤ 1 / 4)
+    (hm1 : (m1 : ℝ) = (q : ℝ) * (1 + u)) (hm2 : (m2 : ℝ) = (q : ℝ) * (1 - 2 * u))
+    (hR_small : |rApprox4 (u / (1 / Real.sqrt (q : ℝ))) (1 / Real.sqrt (q : ℝ))| ≤ 3 / 4)
+    (herr_small : 600 * (1 / Real.sqrt (q : ℝ)) ^ 5 * (1 + |u / (1 / Real.sqrt (q : ℝ))| ^ 7) ≤ 1 / 4) :
+    let ε := 1 / Real.sqrt (q : ℝ)
+    let t := u / ε
+    |((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ)) -
+        Real.exp (-3 * t ^ 2) * T4 (rApprox4 t ε)| ≤
+      4010000 * ε ^ 5 * (1 + |t| ^ 30) * Real.exp (-3 * t ^ 2) := by
+  intro ε t
+  change |rApprox4 t ε| ≤ 3 / 4 at hR_small
+  change 600 * ε ^ 5 * (1 + |t| ^ 7) ≤ 1 / 4 at herr_small
+  have hqR : (1 : ℝ) ≤ (q : ℝ) := by exact_mod_cast hq
+  have hqpos : (0 : ℝ) < (q : ℝ) := by linarith
+  have hsqq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hqpos
+  have hε_pos : 0 < ε := by dsimp only [ε]; positivity
+  have hε_le1 : ε ≤ 1 := by
+    dsimp only [ε]; rw [div_le_one hsqq]
+    have : Real.sqrt 1 ≤ Real.sqrt (q : ℝ) := Real.sqrt_le_sqrt hqR
+    simpa using this
+  have hrat_pos : 0 < ((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ)) := by positivity
+  set R := Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) - (-3 * t ^ 2)
+  set Ra := rApprox4 t ε
+  have hlog := log_ratio_approx_order5 hq hu hm1 hm2
+  have hR_diff : |R - Ra| ≤ 600 * ε ^ 5 * (1 + |t| ^ 7) := by
+    dsimp only [R, Ra]
+    rw [show Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) - -3 * t ^ 2 -
+        rApprox4 t ε =
+        Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) -
+          (-3 * t ^ 2 + rApprox4 t ε) by ring]
+    exact hlog
+  have hRa_le1 : |Ra| ≤ 1 := by linarith
+  have hR_le1 : R ≤ 1 := by
+    have h1 : |R| ≤ |Ra| + |R - Ra| := by
+      have : R = Ra + (R - Ra) := by ring
+      conv_lhs => rw [this]
+      exact abs_add_le Ra (R - Ra)
+    exact (abs_le.mp (by linarith : |R| ≤ 1)).2
+  have hRa_ub : Ra ≤ 1 := (abs_le.mp hRa_le1).2
+  have hrat_eq : ((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ)) =
+      Real.exp (-3 * t ^ 2) * Real.exp R := by
+    rw [← Real.exp_add, show -3 * t ^ 2 + R =
+      Real.log (((q.factorial : ℝ) ^ 3) / ((m1.factorial : ℝ) ^ 2 * (m2.factorial : ℝ))) by dsimp only [R]; ring]
+    exact (Real.exp_log hrat_pos).symm
+  rw [hrat_eq, ← mul_sub, abs_mul, abs_of_pos (Real.exp_pos _)]
+  have h1 : |Real.exp R - Real.exp Ra| ≤ 1800 * ε ^ 5 * (1 + |t| ^ 7) := by
+    linarith [abs_exp_sub_exp_le hR_le1 hRa_ub]
+  have h2 : |Real.exp Ra - T4 Ra| ≤ |Ra| ^ 5 := by
+    have hb := Real.exp_bound hRa_le1 (n := 5) (by norm_num)
+    have hsum5 : ∑ m ∈ Finset.range 5, Ra ^ m / (m.factorial : ℝ) = T4 Ra := by
+      unfold T4 T3; simp only [Finset.sum_range_succ, Finset.sum_range_zero, Nat.factorial]; norm_num
+    rw [hsum5] at hb
+    have hcoef : (((Nat.succ 5 : ℕ) : ℝ) / ((Nat.factorial 5 : ℝ) * (5 : ℕ))) ≤ 1 := by
+      norm_num [Nat.factorial]
+    exact le_trans hb (mul_le_of_le_one_right (by positivity) hcoef)
+  have hRa5 := rApprox4_pow5_le (t := t) hε_pos hε_le1
+  have ht7_le : 1 + |t| ^ 7 ≤ 2 * (1 + |t| ^ 30) := by
+    have := abs_pow_le_one_add (x := t) (m := 7) (n := 30) (by omega)
+    linarith [show (0 : ℝ) ≤ |t| ^ 30 by positivity]
+  have hdiff_exp : |Real.exp R - T4 Ra| ≤ 4010000 * ε ^ 5 * (1 + |t| ^ 30) := by
+    have htri : |Real.exp R - T4 Ra| ≤ |Real.exp R - Real.exp Ra| + |Real.exp Ra - T4 Ra| := by
+      have : Real.exp R - T4 Ra = (Real.exp R - Real.exp Ra) + (Real.exp Ra - T4 Ra) := by ring
+      rw [this]; exact abs_add_le _ _
+    have h1800 : 1800 * ε ^ 5 * (1 + |t| ^ 7) ≤ 3600 * ε ^ 5 * (1 + |t| ^ 30) := by
+      linarith [mul_le_mul_of_nonneg_left ht7_le (by positivity : 0 ≤ 1800 * ε ^ 5)]
+    have hnn : 0 ≤ ε ^ 5 * (1 + |t| ^ 30) := by positivity
+    linarith
+  have hmul := mul_le_mul_of_nonneg_left hdiff_exp (le_of_lt (Real.exp_pos (-3 * t ^ 2)))
+  linarith [show Real.exp (-3 * t ^ 2) * (4010000 * ε ^ 5 * (1 + |t| ^ 30)) =
+    4010000 * ε ^ 5 * (1 + |t| ^ 30) * Real.exp (-3 * t ^ 2) by ring]
+
+private lemma bracket4_abs_le {x y e : ℝ} (hx1 : |x| ≤ 1) (hy1 : |y| ≤ 1) (he1 : |e| ≤ 1) :
+    |1 + (x + y + e) / 2 + (4 * (x ^ 2 + x * y + y ^ 2) + 6 * (x + y) * e + 4 * e ^ 2) / 24| ≤ 4 := by
+  have hx_b := abs_le.mp hx1
+  have hy_b := abs_le.mp hy1
+  have he_b := abs_le.mp he1
+  have hx2 : x ^ 2 ≤ 1 := by nlinarith
+  have hy2 : y ^ 2 ≤ 1 := by nlinarith
+  have he2 : e ^ 2 ≤ 1 := by nlinarith
+  have hxy : |x * y| ≤ 1 := by rw [abs_mul]; nlinarith [abs_nonneg x, abs_nonneg y]
+  have hxy_b := abs_le.mp hxy
+  have hxe : |x * e| ≤ 1 := by rw [abs_mul]; nlinarith [abs_nonneg x, abs_nonneg e]
+  have hxe_b := abs_le.mp hxe
+  have hye : |y * e| ≤ 1 := by rw [abs_mul]; nlinarith [abs_nonneg y, abs_nonneg e]
+  have hye_b := abs_le.mp hye
+  rw [abs_le]; constructor <;> linarith [sq_nonneg x, sq_nonneg y, sq_nonneg e]
+
+/-- Clean `O(ε^5)` antisymmetric cancellation bound for `T4 (rApprox4 t ε) - T4 (rApprox4 (-t) ε)`. -/
+private lemma t4_diff_bound {t ε : ℝ} (ht : 0 ≤ t) (hε0 : 0 < ε) (hε1 : ε ≤ 1)
+    (hx1 : |R_approx t ε| ≤ 1) (hy1 : |R_approx (-t) ε| ≤ 1) (he1 : |r4Term t ε| ≤ 1) :
+    |(T4 (rApprox4 t ε) - T4 (rApprox4 (-t) ε)) -
+      (-2 * ε * t ^ 3 + ε ^ 3 * (-(1 / 3 : ℝ) * t ^ 9 + 3 * t ^ 7 - 6 * t ^ 5 + 2 * t ^ 3))| ≤
+      4000 * ε ^ 5 * (1 + t ^ 20) := by
+  set x := R_approx t ε
+  set y := R_approx (-t) ε
+  set e := r4Term t ε
+  have he_even : r4Term (-t) ε = e := by
+    dsimp only [e]; unfold r4Term; ring
+  have hsplit : T4 (rApprox4 t ε) - T4 (rApprox4 (-t) ε) =
+      (T3 x - T3 y) + (x ^ 4 - y ^ 4) / 24 +
+      e * (x - y) * (1 + (x + y + e) / 2 + (4 * (x ^ 2 + x * y + y ^ 2) + 6 * (x + y) * e + 4 * e ^ 2) / 24) := by
+    unfold rApprox4 T4 T3
+    rw [he_even]
+    dsimp only [x, y, e]; ring
+  have hT3 := T3_diff_bound ht (le_of_lt hε0) hε1
+  have hpow : ∀ m ≤ 20, t ^ m ≤ 1 + t ^ 20 := fun m hm => by
+    have := abs_pow_le_one_add (x := t) hm
+    rwa [abs_of_nonneg ht] at this
+  have hε2 : ε ^ 2 ≤ 1 := by nlinarith
+  have hxy_sub : |x - y| ≤ 7 * ε * (1 + t ^ 5) := by
+    have hid : x - y = ε * (-2 * t ^ 3 + ε ^ 2 * (-3 * t ^ 5 + 2 * t ^ 3)) := by
+      dsimp only [x, y]; unfold R_approx; ring
+    rw [hid, abs_mul, abs_of_pos hε0]
+    have ht3 : t ^ 3 ≤ 1 + t ^ 5 := by
+      have := abs_pow_le_one_add (x := t) (m := 3) (n := 5) (by omega)
+      rwa [abs_of_nonneg ht] at this
+    have ht5 : t ^ 5 ≤ 1 + t ^ 5 := by linarith
+    have htri := abs_add_le (-2 * t ^ 3) (ε ^ 2 * (-3 * t ^ 5 + 2 * t ^ 3))
+    have h1 : |-2 * t ^ 3| ≤ 2 * (1 + t ^ 5) := by
+      rw [abs_mul, abs_neg, abs_of_pos (by norm_num : (0 : ℝ) < 2), abs_of_nonneg (pow_nonneg ht 3)]
+      linarith
+    have h2 : |ε ^ 2 * (-3 * t ^ 5 + 2 * t ^ 3)| ≤ 5 * (1 + t ^ 5) := by
+      rw [abs_mul, abs_of_pos (by positivity : 0 < ε ^ 2)]
+      have hp : |-3 * t ^ 5 + 2 * t ^ 3| ≤ 5 * (1 + t ^ 5) := by
+        rw [abs_le]; constructor <;> linarith [pow_nonneg ht 3, pow_nonneg ht 5]
+      exact le_trans (mul_le_mul_of_nonneg_left hp (by positivity))
+        (mul_le_of_le_one_left (by positivity) hε2)
+    have hsum : |-2 * t ^ 3 + ε ^ 2 * (-3 * t ^ 5 + 2 * t ^ 3)| ≤ 7 * (1 + t ^ 5) := by linarith
+    have hm := mul_le_mul_of_nonneg_left hsum (le_of_lt hε0)
+    linarith [show ε * (7 * (1 + t ^ 5)) = 7 * ε * (1 + t ^ 5) by ring]
+  have hxy_add : |x + y| ≤ 6 * ε ^ 2 * (1 + t ^ 4) := by
+    have hid : x + y = ε ^ 2 * (-3 * t ^ 4 + 3 * t ^ 2) := by
+      dsimp only [x, y]; unfold R_approx; ring
+    rw [hid, abs_mul, abs_of_pos (by positivity : 0 < ε ^ 2)]
+    have ht2 : t ^ 2 ≤ 1 + t ^ 4 := by
+      have := abs_pow_le_one_add (x := t) (m := 2) (n := 4) (by omega)
+      rwa [abs_of_nonneg ht] at this
+    have hp : |-3 * t ^ 4 + 3 * t ^ 2| ≤ 6 * (1 + t ^ 4) := by
+      rw [abs_le]; constructor <;> linarith [pow_nonneg ht 2, pow_nonneg ht 4]
+    have hm := mul_le_mul_of_nonneg_left hp (by positivity : 0 ≤ ε ^ 2)
+    linarith [show ε ^ 2 * (6 * (1 + t ^ 4)) = 6 * ε ^ 2 * (1 + t ^ 4) by ring]
+  have hx2y2 : x ^ 2 + y ^ 2 ≤ 200 * ε ^ 2 * (1 + t ^ 10) := by
+    have hbd : ∀ s : ℝ, |R_approx s ε| ≤ 7 * (ε * (1 + |s| ^ 5)) := fun s => by
+      have hε2' : ε ^ 2 ≤ ε := by rw [sq]; exact mul_le_of_le_one_right (le_of_lt hε0) hε1
+      have hε3' : ε ^ 3 ≤ ε := by
+        rw [show ε ^ 3 = ε ^ 2 * ε by ring]
+        exact le_trans (mul_le_mul_of_nonneg_right hε2' (le_of_lt hε0)) (by rw [← sq]; exact hε2')
+      have hs2 : |s| ^ 2 ≤ 1 + |s| ^ 5 := abs_pow_le_one_add (by omega)
+      have hs3 : |s| ^ 3 ≤ 1 + |s| ^ 5 := abs_pow_le_one_add (by omega)
+      have hs4 : |s| ^ 4 ≤ 1 + |s| ^ 5 := abs_pow_le_one_add (by omega)
+      have hs5 : |s| ^ 5 ≤ 1 + |s| ^ 5 := by linarith
+      unfold R_approx
+      set S := ε * (1 + |s| ^ 5)
+      set A1 := -ε * s ^ 3
+      set A2 := ε ^ 2 * (-(3 / 2 : ℝ) * s ^ 4)
+      set A3 := ε ^ 2 * ((3 / 2 : ℝ) * s ^ 2)
+      set A4 := ε ^ 3 * (-(3 / 2 : ℝ) * s ^ 5)
+      set A5 := ε ^ 3 * s ^ 3
+      have hrew : -ε * s ^ 3 + ε ^ 2 * (-(3 / 2 : ℝ) * s ^ 4 + (3 / 2 : ℝ) * s ^ 2) +
+            ε ^ 3 * (-(3 / 2 : ℝ) * s ^ 5 + s ^ 3) = A1 + A2 + A3 + A4 + A5 := by
+        dsimp only [A1, A2, A3, A4, A5]; ring
+      rw [hrew]
+      have htri : |A1 + A2 + A3 + A4 + A5| ≤ |A1| + |A2| + |A3| + |A4| + |A5| := by
+        linarith [abs_add_le (A1 + A2 + A3 + A4) A5, abs_add_le (A1 + A2 + A3) A4,
+                  abs_add_le (A1 + A2) A3, abs_add_le A1 A2]
+      have ha1 : |A1| ≤ S := by
+        dsimp only [A1, S]; rw [abs_mul, abs_neg, abs_of_pos hε0, abs_pow]
+        exact mul_le_mul_of_nonneg_left hs3 (le_of_lt hε0)
+      have ha2 : |A2| ≤ (3 / 2 : ℝ) * S := by
+        dsimp only [A2, S]; rw [abs_mul, abs_mul, abs_neg, abs_of_pos (by positivity : 0 < ε ^ 2),
+            abs_of_pos (by norm_num : (0 : ℝ) < 3 / 2), abs_pow]
+        linarith [mul_le_mul hε2' hs4 (by positivity) (le_of_lt hε0)]
+      have ha3 : |A3| ≤ (3 / 2 : ℝ) * S := by
+        dsimp only [A3, S]; rw [abs_mul, abs_mul, abs_of_pos (by positivity : 0 < ε ^ 2),
+            abs_of_pos (by norm_num : (0 : ℝ) < 3 / 2), abs_pow]
+        linarith [mul_le_mul hε2' hs2 (by positivity) (le_of_lt hε0)]
+      have ha4 : |A4| ≤ (3 / 2 : ℝ) * S := by
+        dsimp only [A4, S]; rw [abs_mul, abs_mul, abs_neg, abs_of_pos (by positivity : 0 < ε ^ 3),
+            abs_of_pos (by norm_num : (0 : ℝ) < 3 / 2), abs_pow]
+        linarith [mul_le_mul hε3' hs5 (by positivity) (le_of_lt hε0)]
+      have ha5 : |A5| ≤ S := by
+        dsimp only [A5, S]; rw [abs_mul, abs_of_pos (by positivity : 0 < ε ^ 3), abs_pow]
+        exact mul_le_mul hε3' hs3 (by positivity) (le_of_lt hε0)
+      have hS_nn : 0 ≤ S := by dsimp only [S]; positivity
+      linarith
+    have hx := hbd t
+    have hy := hbd (-t)
+    rw [abs_of_nonneg ht] at hx
+    rw [abs_neg, abs_of_nonneg ht] at hy
+    have hsq1 : x ^ 2 ≤ (7 * (ε * (1 + t ^ 5))) ^ 2 := by
+      rw [← sq_abs x]; exact pow_le_pow_left₀ (abs_nonneg _) hx 2
+    have hsq2 : y ^ 2 ≤ (7 * (ε * (1 + t ^ 5))) ^ 2 := by
+      rw [← sq_abs y]; exact pow_le_pow_left₀ (abs_nonneg _) hy 2
+    have h1t : (1 + t ^ 5) ^ 2 ≤ 2 * (1 + t ^ 10) := by
+      nlinarith [sq_nonneg (1 - t ^ 5), show (t ^ 5) ^ 2 = t ^ 10 by ring]
+    have hnn : 0 ≤ ε ^ 2 * (1 + t ^ 10) := by positivity
+    nlinarith [show (7 * (ε * (1 + t ^ 5))) ^ 2 = 49 * ε ^ 2 * (1 + t ^ 5) ^ 2 by ring]
+  have hquartic : |(x ^ 4 - y ^ 4) / 24| ≤ 2800 * ε ^ 5 * (1 + t ^ 20) := by
+    have hfac : (x ^ 4 - y ^ 4) / 24 = ((x - y) * (x + y) * (x ^ 2 + y ^ 2)) / 24 := by ring
+    rw [hfac, abs_div, abs_of_pos (by norm_num : (0 : ℝ) < 24), abs_mul, abs_mul,
+        abs_of_nonneg (by positivity : 0 ≤ x ^ 2 + y ^ 2)]
+    have hp1 := mul_le_mul hxy_sub hxy_add (abs_nonneg _) (by positivity)
+    have hp2 := mul_le_mul hp1 hx2y2 (by positivity) (by positivity)
+    have hprod_t : (1 + t ^ 5) * (1 + t ^ 4) * (1 + t ^ 10) ≤ 8 * (1 + t ^ 20) := by
+      have h4 := hpow 4 (by omega)
+      have h5 := hpow 5 (by omega)
+      have h9 := hpow 9 (by omega)
+      have h10 := hpow 10 (by omega)
+      have h14 := hpow 14 (by omega)
+      have h15 := hpow 15 (by omega)
+      have h19 := hpow 19 (by omega)
+      have hexp : (1 + t ^ 5) * (1 + t ^ 4) * (1 + t ^ 10) =
+          1 + t ^ 4 + t ^ 5 + t ^ 9 + t ^ 10 + t ^ 14 + t ^ 15 + t ^ 19 := by ring
+      rw [hexp]; linarith [pow_nonneg ht 20]
+    have hnum_le : 7 * ε * (1 + t ^ 5) * (6 * ε ^ 2 * (1 + t ^ 4)) * (200 * ε ^ 2 * (1 + t ^ 10)) ≤
+        67200 * ε ^ 5 * (1 + t ^ 20) := by
+      have heq : 7 * ε * (1 + t ^ 5) * (6 * ε ^ 2 * (1 + t ^ 4)) * (200 * ε ^ 2 * (1 + t ^ 10)) =
+          8400 * ε ^ 5 * ((1 + t ^ 5) * (1 + t ^ 4) * (1 + t ^ 10)) := by ring
+      rw [heq]
+      have hm := mul_le_mul_of_nonneg_left hprod_t (by positivity : 0 ≤ 8400 * ε ^ 5)
+      linarith [show 8400 * ε ^ 5 * (8 * (1 + t ^ 20)) = 67200 * ε ^ 5 * (1 + t ^ 20) by ring]
+    linarith [show (67200 * ε ^ 5 * (1 + t ^ 20)) / 24 = 2800 * ε ^ 5 * (1 + t ^ 20) by ring]
+  have he_abs : |e| ≤ 5 * ε ^ 4 * (1 + t ^ 6) := by
+    dsimp only [e]; unfold r4Term
+    rw [abs_mul, abs_of_pos (by positivity : 0 < ε ^ 4)]
+    have ht2 : t ^ 2 ≤ 1 + t ^ 6 := by
+      have := abs_pow_le_one_add (x := t) (m := 2) (n := 6) (by omega)
+      rwa [abs_of_nonneg ht] at this
+    have ht4 : t ^ 4 ≤ 1 + t ^ 6 := by
+      have := abs_pow_le_one_add (x := t) (m := 4) (n := 6) (by omega)
+      rwa [abs_of_nonneg ht] at this
+    have hp : |-(11 / 5 : ℝ) * t ^ 6 + (9 / 4 : ℝ) * t ^ 4 - (1 / 2 : ℝ) * t ^ 2| ≤ 5 * (1 + t ^ 6) := by
+      rw [abs_le]; constructor <;> linarith [pow_nonneg ht 2, pow_nonneg ht 4, pow_nonneg ht 6]
+    have hm := mul_le_mul_of_nonneg_left hp (by positivity : 0 ≤ ε ^ 4)
+    linarith [show ε ^ 4 * (5 * (1 + t ^ 6)) = 5 * ε ^ 4 * (1 + t ^ 6) by ring]
+  have hbr_le : |1 + (x + y + e) / 2 + (4 * (x ^ 2 + x * y + y ^ 2) + 6 * (x + y) * e + 4 * e ^ 2) / 24| ≤ 4 :=
+    bracket4_abs_le hx1 hy1 he1
+  have hcross : |e * (x - y) * (1 + (x + y + e) / 2 +
+      (4 * (x ^ 2 + x * y + y ^ 2) + 6 * (x + y) * e + 4 * e ^ 2) / 24)| ≤
+      560 * ε ^ 5 * (1 + t ^ 20) := by
+    rw [abs_mul, abs_mul]
+    have hp1 := mul_le_mul he_abs hxy_sub (abs_nonneg _) (by positivity)
+    have hp2 := mul_le_mul hp1 hbr_le (abs_nonneg _) (by positivity)
+    have hprod_t : (1 + t ^ 6) * (1 + t ^ 5) ≤ 4 * (1 + t ^ 20) := by
+      have h5 := hpow 5 (by omega)
+      have h6 := hpow 6 (by omega)
+      have h11 := hpow 11 (by omega)
+      have hexp : (1 + t ^ 6) * (1 + t ^ 5) = 1 + t ^ 5 + t ^ 6 + t ^ 11 := by ring
+      rw [hexp]; linarith [pow_nonneg ht 20]
+    have hnum : 5 * ε ^ 4 * (1 + t ^ 6) * (7 * ε * (1 + t ^ 5)) * 4 =
+        140 * ε ^ 5 * ((1 + t ^ 6) * (1 + t ^ 5)) := by ring
+    rw [hnum] at hp2
+    have hm := mul_le_mul_of_nonneg_left hprod_t (by positivity : 0 ≤ 140 * ε ^ 5)
+    linarith [show 140 * ε ^ 5 * (4 * (1 + t ^ 20)) = 560 * ε ^ 5 * (1 + t ^ 20) by ring]
+  -- Wait: combine hT3 (<= 200) + hquartic (<= 2800) + hcross (<= 560) <= 4000!
+  rw [hsplit]
+  set U1 := (T3 x - T3 y) - (-2 * ε * t ^ 3 + ε ^ 3 * (-(1 / 3 : ℝ) * t ^ 9 + 3 * t ^ 7 - 6 * t ^ 5 + 2 * t ^ 3))
+  set U2 := (x ^ 4 - y ^ 4) / 24
+  set U3 := e * (x - y) * (1 + (x + y + e) / 2 +
+      (4 * (x ^ 2 + x * y + y ^ 2) + 6 * (x + y) * e + 4 * e ^ 2) / 24)
+  have hrew : (T3 x - T3 y) + U2 + U3 -
+      (-2 * ε * t ^ 3 + ε ^ 3 * (-(1 / 3 : ℝ) * t ^ 9 + 3 * t ^ 7 - 6 * t ^ 5 + 2 * t ^ 3)) =
+      U1 + U2 + U3 := by dsimp only [U1]; ring
+  rw [hrew]
+  have htri : |U1 + U2 + U3| ≤ |U1| + |U2| + |U3| := by
+    linarith [abs_add_le (U1 + U2) U3, abs_add_le U1 U2]
+  have ht15 : 1 + t ^ 15 ≤ 2 * (1 + t ^ 20) := by linarith [hpow 15 (by omega), pow_nonneg ht 20]
+  have hU1 : |U1| ≤ 200 * ε ^ 5 * (1 + t ^ 20) := by
+    have hm := mul_le_mul_of_nonneg_left ht15 (by positivity : 0 ≤ 100 * ε ^ 5)
+    linarith
+  linarith [show (0 : ℝ) ≤ ε ^ 5 * (1 + t ^ 20) by positivity]
+
+private lemma local_smallness_order5 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ K_cut q)
+    (s : ℝ) (hs : |s| = 1) :
+    let u := s * (k : ℝ) / (q : ℝ)
+    let ε := 1 / Real.sqrt (q : ℝ)
+    let t := u / ε
+    |u| ≤ 1 / 4 ∧ |rApprox4 t ε| ≤ 3 / 4 ∧ 600 * ε ^ 5 * (1 + |t| ^ 7) ≤ 1 / 4 ∧
+      |R_approx t ε| ≤ 1 ∧ |r4Term t ε| ≤ 1 := by
+  intro u ε t
+  have hsm : |u| ≤ 1 / 4 ∧ |R_approx t ε| ≤ 1 / 2 ∧ 300 * ε ^ 4 * (1 + t ^ 6) ≤ 1 / 2 :=
+    local_smallness hq hk s hs
+  have hqpos : (0 : ℝ) < (q : ℝ) := by positivity
+  have hsqq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hqpos
+  have hw10 := w8_ge_ten hq
+  have hw_pos : 0 < w8 q := by linarith
+  have hε_eq : ε = 1 / (w8 q) ^ 4 := by dsimp only [ε]; rw [w8_pow4]
+  have ht_abs : |t| ≤ w8 q := by
+    have ht_eq : t = s * (k : ℝ) / Real.sqrt (q : ℝ) := by
+      dsimp only [t, u, ε]
+      rw [div_div_eq_mul_div, div_one]
+      have hsq : Real.sqrt (q : ℝ) ^ 2 = (q : ℝ) := Real.sq_sqrt (le_of_lt hqpos)
+      field_simp
+      rw [hsq]
+    rw [ht_eq, abs_div, abs_mul, hs, one_mul, abs_of_pos hsqq, abs_of_nonneg (Nat.cast_nonneg k)]
+    rw [div_le_iff₀ hsqq]
+    have hk_le : (k : ℝ) ≤ (K_cut q : ℝ) := by exact_mod_cast hk
+    have hfl : (K_cut q : ℝ) ≤ Real.sqrt (q : ℝ) * w8 q := Nat.floor_le (by positivity)
+    linarith
+  have hr4_le : |r4Term t ε| ≤ 1 / 4 := by
+    unfold r4Term
+    rw [abs_mul, abs_of_pos (by positivity : 0 < ε ^ 4)]
+    have ht2 : |t| ^ 2 ≤ 1 + t ^ 6 := by
+      have h := abs_pow_le_one_add (x := t) (m := 2) (n := 6) (by omega)
+      rwa [show |t| ^ 6 = t ^ 6 by rw [show (6 : ℕ) = 2 * 3 by rfl, pow_mul, sq_abs, ← pow_mul]] at h
+    have ht4 : |t| ^ 4 ≤ 1 + t ^ 6 := by
+      have h := abs_pow_le_one_add (x := t) (m := 4) (n := 6) (by omega)
+      rwa [show |t| ^ 6 = t ^ 6 by rw [show (6 : ℕ) = 2 * 3 by rfl, pow_mul, sq_abs, ← pow_mul]] at h
+    have h4 : t ^ 4 = |t| ^ 4 := by
+      rw [show t ^ 4 = (t ^ 2) ^ 2 by ring, ← sq_abs t, show (|t| ^ 2) ^ 2 = |t| ^ 4 by ring]
+    have h2 : t ^ 2 = |t| ^ 2 := (sq_abs t).symm
+    have hpoly : |-(11 / 5 : ℝ) * t ^ 6 + (9 / 4 : ℝ) * t ^ 4 - (1 / 2 : ℝ) * t ^ 2| ≤ 5 * (1 + t ^ 6) := by
+      rw [h4, h2, abs_le]
+      constructor <;> linarith [pow_nonneg (abs_nonneg t) 2, pow_nonneg (abs_nonneg t) 4,
+        show (0 : ℝ) ≤ t ^ 6 by positivity]
+    have hm := mul_le_mul_of_nonneg_left hpoly (by positivity : 0 ≤ ε ^ 4)
+    linarith [hsm.2.2]
+  have hr4_approx : |rApprox4 t ε| ≤ 3 / 4 := by
+    unfold rApprox4
+    exact le_trans (abs_add_le _ _) (by linarith [hsm.2.1])
+  have herr5 : 600 * ε ^ 5 * (1 + |t| ^ 7) ≤ 1 / 4 := by
+    have ht7 : |t| ^ 7 ≤ (w8 q) ^ 7 := pow_le_pow_left₀ (abs_nonneg _) ht_abs 7
+    have hw7 : (1 : ℝ) ≤ (w8 q) ^ 7 := by
+      have : (10 : ℝ) ^ 7 ≤ (w8 q) ^ 7 := pow_le_pow_left₀ (by norm_num) hw10 7
+      norm_num at this; linarith
+    have h1t7 : 1 + |t| ^ 7 ≤ 2 * (w8 q) ^ 7 := by linarith
+    rw [hε_eq, one_div_pow]
+    have hstep : 600 * (1 / ((w8 q) ^ 4) ^ 5) * (1 + |t| ^ 7) ≤ 1200 / (w8 q) ^ 13 := by
+      have hm := mul_le_mul_of_nonneg_left h1t7 (by positivity : 0 ≤ 600 * (1 / ((w8 q) ^ 4) ^ 5))
+      have heq : 600 * (1 / ((w8 q) ^ 4) ^ 5) * (2 * (w8 q) ^ 7) = 1200 / (w8 q) ^ 13 := by
+        have h20 : ((w8 q) ^ 4) ^ 5 = (w8 q) ^ 13 * (w8 q) ^ 7 := by ring
+        rw [h20]; field_simp; ring
+      linarith
+    have h1200 : 1200 / (w8 q) ^ 13 ≤ 1 / 4 := by
+      rw [div_le_div_iff₀ (by positivity) (by norm_num)]
+      have hw13 : (10 : ℝ) ^ 13 ≤ (w8 q) ^ 13 := pow_le_pow_left₀ (by norm_num) hw10 13
+      norm_num at hw13; linarith
+    linarith
+  exact ⟨hsm.1, hr4_approx, herr5, by linarith [hsm.2.1], by linarith⟩
+
+private lemma local_diff_term_approx_order5 {q k : ℕ} (hq : 10 ^ 8 ≤ q) (hk : k ≤ K_cut q) :
+    let ε := 1 / Real.sqrt (q : ℝ)
+    let t := (k : ℝ) * ε
+    |(p3q q (q + k) - p3q q (q - k)) / p3q q q -
+      Real.exp (-3 * t ^ 2) *
+        (-2 * ε * t ^ 3 + ε ^ 3 * (-(1 / 3 : ℝ) * t ^ 9 + 3 * t ^ 7 - 6 * t ^ 5 + 2 * t ^ 3))| ≤
+      8028000 * ε ^ 5 * (1 + t ^ 30) * Real.exp (-3 * t ^ 2) := by
+  intro ε t
+  have hK := K_cut_bounds hq
+  have hq1 : 1 ≤ q := le_trans (by norm_num) hq
+  have hqpos : (0 : ℝ) < (q : ℝ) := by positivity
+  have hsqq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hqpos
+  have hε_pos : 0 < ε := by dsimp only [ε]; positivity
+  have hε_le1 : ε ≤ 1 := by
+    dsimp only [ε]; rw [div_le_one hsqq]
+    have : (1 : ℝ) ≤ (q : ℝ) := by exact_mod_cast hq1
+    simpa using Real.sqrt_le_sqrt this
+  have ht_nn : 0 ≤ t := by dsimp only [t]; positivity
+  have hpos_sm := local_smallness_order5 hq hk 1 (by norm_num)
+  have hneg_sm := local_smallness_order5 hq hk (-1) (by norm_num)
+  have ht_pos : (1 * (k : ℝ) / (q : ℝ)) / ε = t := by
+    dsimp only [t, ε]
+    rw [one_mul, div_div_eq_mul_div, div_one, mul_one_div]
+    field_simp
+    rw [Real.sq_sqrt (le_of_lt hqpos)]
+  have ht_neg : (-1 * (k : ℝ) / (q : ℝ)) / ε = -t := by
+    rw [show -1 * (k : ℝ) / (q : ℝ) = -(1 * (k : ℝ) / (q : ℝ)) by ring, neg_div, ht_pos]
+  have hm1_pos : ((q + k : ℕ) : ℝ) = (q : ℝ) * (1 + 1 * (k : ℝ) / (q : ℝ)) := by
+    push_cast; field_simp
+  have hm2_pos : ((q - 2 * k : ℕ) : ℝ) = (q : ℝ) * (1 - 2 * (1 * (k : ℝ) / (q : ℝ))) := by
+    rw [Nat.cast_sub (by omega)]; push_cast; field_simp
+  have hm1_neg : ((q - k : ℕ) : ℝ) = (q : ℝ) * (1 + (-1) * (k : ℝ) / (q : ℝ)) := by
+    rw [Nat.cast_sub (by omega)]; field_simp; ring
+  have hm2_neg : ((q + 2 * k : ℕ) : ℝ) = (q : ℝ) * (1 - 2 * ((-1) * (k : ℝ) / (q : ℝ))) := by
+    push_cast; field_simp; ring
+  have happrox_pos := exp_ratio_approx_order5 hq1 hpos_sm.1 hm1_pos hm2_pos hpos_sm.2.1 hpos_sm.2.2.1
+  have happrox_neg := exp_ratio_approx_order5 hq1 hneg_sm.1 hm1_neg hm2_neg hneg_sm.2.1 hneg_sm.2.2.1
+  dsimp only at happrox_pos happrox_neg
+  change |((q.factorial : ℝ) ^ 3) / (((q + k).factorial : ℝ) ^ 2 * ((q - 2 * k).factorial : ℝ)) -
+      Real.exp (-3 * ((1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) * T4 (rApprox4 ((1 * (k : ℝ) / (q : ℝ)) / ε) ε)| ≤
+      4010000 * ε ^ 5 * (1 + |((1 * (k : ℝ) / (q : ℝ)) / ε)| ^ 30) *
+        Real.exp (-3 * ((1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) at happrox_pos
+  change |((q.factorial : ℝ) ^ 3) / (((q - k).factorial : ℝ) ^ 2 * ((q + 2 * k).factorial : ℝ)) -
+      Real.exp (-3 * ((-1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) * T4 (rApprox4 ((-1 * (k : ℝ) / (q : ℝ)) / ε) ε)| ≤
+      4010000 * ε ^ 5 * (1 + |((-1 * (k : ℝ) / (q : ℝ)) / ε)| ^ 30) *
+        Real.exp (-3 * ((-1 * (k : ℝ) / (q : ℝ)) / ε) ^ 2) at happrox_neg
+  rw [ht_pos, abs_of_nonneg ht_nn, ← p3q_ratio_pos_eq (by omega)] at happrox_pos
+  rw [ht_neg, neg_sq, abs_neg, abs_of_nonneg ht_nn, ← p3q_ratio_neg_eq (by omega)] at happrox_neg
+  have hx1 : |R_approx t ε| ≤ 1 := by rw [← ht_pos]; exact hpos_sm.2.2.2.1
+  have hy1 : |R_approx (-t) ε| ≤ 1 := by rw [← ht_neg]; exact hneg_sm.2.2.2.1
+  have he1 : |r4Term t ε| ≤ 1 := by rw [← ht_pos]; exact hpos_sm.2.2.2.2
+  have hT4 := t4_diff_bound ht_nn hε_pos hε_le1 hx1 hy1 he1
+  set D1 := p3q q (q + k) / p3q q q - Real.exp (-3 * t ^ 2) * T4 (rApprox4 t ε)
+  set D2 := p3q q (q - k) / p3q q q - Real.exp (-3 * t ^ 2) * T4 (rApprox4 (-t) ε)
+  set D3 := Real.exp (-3 * t ^ 2) *
+      ((T4 (rApprox4 t ε) - T4 (rApprox4 (-t) ε)) -
+        (-2 * ε * t ^ 3 + ε ^ 3 * (-(1 / 3 : ℝ) * t ^ 9 + 3 * t ^ 7 - 6 * t ^ 5 + 2 * t ^ 3)))
+  have hsplit : (p3q q (q + k) - p3q q (q - k)) / p3q q q -
+      Real.exp (-3 * t ^ 2) *
+        (-2 * ε * t ^ 3 + ε ^ 3 * (-(1 / 3 : ℝ) * t ^ 9 + 3 * t ^ 7 - 6 * t ^ 5 + 2 * t ^ 3)) =
+      D1 - D2 + D3 := by
+    dsimp only [D1, D2, D3]; ring
+  rw [hsplit]
+  have htri : |D1 - D2 + D3| ≤ |D1| + |D2| + |D3| := by
+    linarith [abs_add_le (D1 - D2) D3, abs_sub D1 D2]
+  have hD3 : |D3| ≤ 8000 * ε ^ 5 * (1 + t ^ 30) * Real.exp (-3 * t ^ 2) := by
+    dsimp only [D3]
+    rw [abs_mul, abs_of_pos (Real.exp_pos _)]
+    have ht20 : 1 + t ^ 20 ≤ 2 * (1 + t ^ 30) := by
+      have := abs_pow_le_one_add (x := t) (m := 20) (n := 30) (by omega)
+      rw [abs_of_nonneg ht_nn] at this
+      linarith [pow_nonneg ht_nn 30]
+    have hm1 := mul_le_mul_of_nonneg_left hT4 (le_of_lt (Real.exp_pos (-3 * t ^ 2)))
+    have hm2 := mul_le_mul_of_nonneg_left ht20 (by positivity : 0 ≤ 4000 * ε ^ 5)
+    have hm3 := mul_le_mul_of_nonneg_left hm2 (le_of_lt (Real.exp_pos (-3 * t ^ 2)))
+    linarith
+  have hnn : 0 ≤ ε ^ 5 * (1 + t ^ 30) * Real.exp (-3 * t ^ 2) := by positivity
+  linarith
+
+/-- Quantitative `O(q^{-2})` remainder bound for `sumA`:
+`|sumA q - (-1/9 - 4/(243 q))| ≤ C / q^2` for all `q ≥ 1`. -/
+theorem sumA_O_inv_sq :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ q : ℕ, 1 ≤ q →
+      |sumA q - (-(1 / 9 : ℝ) - 4 / (243 * (q : ℝ)))| ≤ C / (q : ℝ) ^ 2 := by
+  obtain ⟨C1, hC1, hG1⟩ := gsum_err_O_inv_sq 1
+  obtain ⟨C2, hC2, hG2⟩ := gsum_err_O_inv_sq 2
+  obtain ⟨C3, hC3, hG3⟩ := gsum_err_O_inv_sq 3
+  obtain ⟨C4, hC4, hG4⟩ := gsum_err_O_inv_sq 4
+  let mainA : ℕ → ℝ := fun q =>
+    -2 * Gsum 1 q + (1 / (q : ℝ)) * (-(1 / 3 : ℝ) * Gsum 4 q + 3 * Gsum 3 q - 6 * Gsum 2 q + 2 * Gsum 1 q)
+  set C_body : ℝ := 8028000 * (3 * Real.exp 1 * (1 + (Nat.factorial 0 : ℝ)) +
+      3 * Real.exp 1 * (1 + (Nat.factorial 30 : ℝ)))
+  set C_tail : ℝ := 2 * ((Nat.factorial 12 : ℝ) * 3 ^ 12)
+  set C_main : ℝ := 2 * C1 + (1 / 3 : ℝ) * C4 + 3 * C3 + 6 * C2 + 2 * C1
+  set C₀ : ℝ := C_body + C_tail + C_main
+  have hC₀ : 0 ≤ C₀ := by dsimp only [C₀, C_body, C_tail, C_main]; positivity
+  have hge : ∀ q : ℕ, 10 ^ 8 ≤ q →
+      (q : ℝ) ^ 2 * |sumA q - (-(1 / 9 : ℝ) - 4 / (243 * (q : ℝ)))| ≤ C₀ := by
+    intro q hq
+    have hK := K_cut_bounds hq
+    have hq1 : 1 ≤ q := le_trans (by norm_num) hq
+    have hqR : (1 : ℝ) ≤ (q : ℝ) := by exact_mod_cast hq1
+    have hqpos : (0 : ℝ) < (q : ℝ) := by positivity
+    have hsqq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hqpos
+    set ε := 1 / Real.sqrt (q : ℝ)
+    have hε_pos : 0 < ε := by dsimp only [ε]; positivity
+    have hε_le1 : ε ≤ 1 := by
+      dsimp only [ε]; rw [div_le_one hsqq]
+      simpa using Real.sqrt_le_sqrt hqR
+    have hε2 : ε ^ 2 = 1 / (q : ℝ) := by
+      dsimp only [ε]; rw [div_pow, one_pow, Real.sq_sqrt (le_of_lt hqpos)]
+    have hε4 : ε ^ 4 = 1 / (q : ℝ) ^ 2 := by
+      rw [show ε ^ 4 = (ε ^ 2) ^ 2 by ring, hε2]; ring
+    have hmain_eq : mainA q = ∑ k ∈ Finset.Icc 1 (K_cut q),
+        Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+          (-2 * ε * ((k : ℝ) * ε) ^ 3 +
+            ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
+              6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3)) := by
+      dsimp only [mainA]; unfold Gsum
+      simp only [Finset.mul_sum, ← Finset.sum_add_distrib, ← Finset.sum_sub_distrib]
+      refine Finset.sum_congr rfl fun k _ => ?_
+      rw [← hε2]; dsimp only [ε]; ring
+    have hsumA_split : sumA q =
+        (∑ k ∈ Finset.Icc 1 (K_cut q), (p3q q (q + k) - p3q q (q - k)) / p3q q q) +
+        (∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q) := by
+      unfold sumA; rw [Finset.sum_div, sum_Icc_split (K := K_cut q) (by omega)]
+    have hbody : |∑ k ∈ Finset.Icc 1 (K_cut q),
+        ((p3q q (q + k) - p3q q (q - k)) / p3q q q -
+          Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+            (-2 * ε * ((k : ℝ) * ε) ^ 3 +
+              ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
+                6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3)))| ≤ C_body / (q : ℝ) ^ 2 := by
+      refine le_trans (Finset.abs_sum_le_sum_abs _ _) ?_
+      have h1 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+          |(p3q q (q + k) - p3q q (q - k)) / p3q q q -
+            Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+              (-2 * ε * ((k : ℝ) * ε) ^ 3 +
+                ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
+                  6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3))| ≤
+          ∑ k ∈ Finset.Icc 1 (K_cut q),
+            8028000 * ε ^ 5 * (1 + ((k : ℝ) * ε) ^ 30) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) :=
+        Finset.sum_le_sum fun k hk => local_diff_term_approx_order5 hq (mem_Icc.mp hk).2
+      have h2 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+            8028000 * ε ^ 5 * (1 + ((k : ℝ) * ε) ^ 30) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) =
+          8028000 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 0 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
+            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 30 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
+        rw [← Finset.sum_add_distrib, Finset.mul_sum]
+        refine Finset.sum_congr rfl fun k _ => by simp [pow_zero]; ring
+      have h3 := sum_pow_exp_neg_three_sq_le 0 hε_pos hε_le1 (K_cut q)
+      have h4 := sum_pow_exp_neg_three_sq_le 30 hε_pos hε_le1 (K_cut q)
+      rw [h2] at h1
+      have h5 := mul_le_mul_of_nonneg_left (add_le_add h3 h4) (by positivity : 0 ≤ 8028000 * ε ^ 5)
+      have h6 : 8028000 * ε ^ 5 *
+          ((3 * Real.exp 1 * (1 + (Nat.factorial 0 : ℝ))) / ε +
+           (3 * Real.exp 1 * (1 + (Nat.factorial 30 : ℝ))) / ε) = C_body / (q : ℝ) ^ 2 := by
+        dsimp only [C_body]
+        have : ε ^ 5 * ((3 * Real.exp 1 * (1 + (Nat.factorial 0 : ℝ))) / ε +
+            (3 * Real.exp 1 * (1 + (Nat.factorial 30 : ℝ))) / ε) =
+            (3 * Real.exp 1 * (1 + (Nat.factorial 0 : ℝ)) +
+            3 * Real.exp 1 * (1 + (Nat.factorial 30 : ℝ))) * ε ^ 4 := by field_simp
+        rw [mul_assoc, this, hε4]; ring
+      linarith
+    have htail : |∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q| ≤
+        C_tail / (q : ℝ) ^ 2 := by
+      have h := abs_p3q_tail_sum_le_order2 hq (fun _ => 1) (fun _ _ => by norm_num) (-1) (by norm_num)
+      refine le_trans (le_of_eq ?_) h
+      congr 1; refine Finset.sum_congr rfl fun k _ => by ring
+    have hrem : |sumA q - mainA q| ≤ (C_body + C_tail) / (q : ℝ) ^ 2 := by
+      have hsp : sumA q - mainA q =
+          (∑ k ∈ Finset.Icc 1 (K_cut q),
+            ((p3q q (q + k) - p3q q (q - k)) / p3q q q -
+              Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+                (-2 * ε * ((k : ℝ) * ε) ^ 3 +
+                  ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
+                    6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3)))) +
+          (∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q) := by
+        rw [hsumA_split, hmain_eq, Finset.sum_sub_distrib]; ring
+      rw [hsp]
+      linarith [abs_add_le
+        (∑ k ∈ Finset.Icc 1 (K_cut q),
+          ((p3q q (q + k) - p3q q (q - k)) / p3q q q -
+            Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+              (-2 * ε * ((k : ℝ) * ε) ^ 3 +
+                ε ^ 3 * (-(1 / 3 : ℝ) * ((k : ℝ) * ε) ^ 9 + 3 * ((k : ℝ) * ε) ^ 7 -
+                  6 * ((k : ℝ) * ε) ^ 5 + 2 * ((k : ℝ) * ε) ^ 3))))
+        (∑ k ∈ Finset.Icc (K_cut q + 1) q, (p3q q (q + k) - p3q q (q - k)) / p3q q q),
+        show (C_body + C_tail) / (q : ℝ) ^ 2 = C_body / (q : ℝ) ^ 2 + C_tail / (q : ℝ) ^ 2 by ring]
+    have hmain_err : |mainA q - (-(1 / 9 : ℝ) - 4 / (243 * (q : ℝ)))| ≤ C_main / (q : ℝ) ^ 2 := by
+      have e1 := hG1 q hq; norm_num [Nat.factorial] at e1
+      have e2 := hG2 q hq; norm_num [Nat.factorial] at e2
+      have e3 := hG3 q hq; norm_num [Nat.factorial] at e3
+      have e4 := hG4 q hq; norm_num [Nat.factorial] at e4
+      have hqinv : 1 / (q : ℝ) ≤ 1 := (div_le_one hqpos).mpr hqR
+      have hid : mainA q - (-(1 / 9 : ℝ) - 4 / (243 * (q : ℝ))) =
+          -2 * (Gsum 1 q - 1 / 18) +
+          (1 / (q : ℝ)) * (-(1 / 3 : ℝ) * (Gsum 4 q - 4 / 81) + 3 * (Gsum 3 q - 1 / 27) -
+            6 * (Gsum 2 q - 1 / 27) + 2 * (Gsum 1 q - 1 / 18)) := by
+        dsimp only [mainA]; field_simp; ring
+      rw [hid]
+      have h1 : |-2 * (Gsum 1 q - 1 / 18)| ≤ 2 * C1 / (q : ℝ) ^ 2 := by
+        rw [abs_mul, abs_neg, abs_of_pos (by norm_num : (0 : ℝ) < 2)]
+        linarith [show 2 * (C1 / (q : ℝ) ^ 2) = 2 * C1 / (q : ℝ) ^ 2 by ring]
+      have hbr : |-(1 / 3 : ℝ) * (Gsum 4 q - 4 / 81) + 3 * (Gsum 3 q - 1 / 27) -
+          6 * (Gsum 2 q - 1 / 27) + 2 * (Gsum 1 q - 1 / 18)| ≤
+          ((1 / 3 : ℝ) * C4 + 3 * C3 + 6 * C2 + 2 * C1) / (q : ℝ) ^ 2 := by
+        set A := -(1 / 3 : ℝ) * (Gsum 4 q - 4 / 81)
+        set B := 3 * (Gsum 3 q - 1 / 27)
+        set D := -(6 * (Gsum 2 q - 1 / 27))
+        set E := 2 * (Gsum 1 q - 1 / 18)
+        have hrew : -(1 / 3 : ℝ) * (Gsum 4 q - 4 / 81) + 3 * (Gsum 3 q - 1 / 27) -
+            6 * (Gsum 2 q - 1 / 27) + 2 * (Gsum 1 q - 1 / 18) = A + B + D + E := by
+          dsimp only [A, B, D, E]; ring
+        rw [hrew]
+        have htri : |A + B + D + E| ≤ |A| + |B| + |D| + |E| := by
+          linarith [abs_add_le (A + B + D) E, abs_add_le (A + B) D, abs_add_le A B]
+        have hA : |A| ≤ (1 / 3 : ℝ) * C4 / (q : ℝ) ^ 2 := by
+          dsimp only [A]; rw [abs_mul, abs_neg, abs_of_pos (by norm_num : (0 : ℝ) < 1 / 3)]
+          linarith [show (1 / 3 : ℝ) * (C4 / (q : ℝ) ^ 2) = (1 / 3 : ℝ) * C4 / (q : ℝ) ^ 2 by ring]
+        have hB : |B| ≤ 3 * C3 / (q : ℝ) ^ 2 := by
+          dsimp only [B]; rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 3)]
+          linarith [show 3 * (C3 / (q : ℝ) ^ 2) = 3 * C3 / (q : ℝ) ^ 2 by ring]
+        have hD : |D| ≤ 6 * C2 / (q : ℝ) ^ 2 := by
+          dsimp only [D]; rw [abs_neg, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 6)]
+          linarith [show 6 * (C2 / (q : ℝ) ^ 2) = 6 * C2 / (q : ℝ) ^ 2 by ring]
+        have hE : |E| ≤ 2 * C1 / (q : ℝ) ^ 2 := by
+          dsimp only [E]; rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 2)]
+          linarith [show 2 * (C1 / (q : ℝ) ^ 2) = 2 * C1 / (q : ℝ) ^ 2 by ring]
+        linarith [show ((1 / 3 : ℝ) * C4 + 3 * C3 + 6 * C2 + 2 * C1) / (q : ℝ) ^ 2 =
+          (1 / 3 : ℝ) * C4 / (q : ℝ) ^ 2 + 3 * C3 / (q : ℝ) ^ 2 + 6 * C2 / (q : ℝ) ^ 2 +
+          2 * C1 / (q : ℝ) ^ 2 by ring]
+      have h2 : |(1 / (q : ℝ)) * (-(1 / 3 : ℝ) * (Gsum 4 q - 4 / 81) + 3 * (Gsum 3 q - 1 / 27) -
+          6 * (Gsum 2 q - 1 / 27) + 2 * (Gsum 1 q - 1 / 18))| ≤
+          ((1 / 3 : ℝ) * C4 + 3 * C3 + 6 * C2 + 2 * C1) / (q : ℝ) ^ 2 := by
+        rw [abs_mul, abs_of_pos (by positivity : 0 < 1 / (q : ℝ))]
+        exact le_trans (mul_le_of_le_one_left (abs_nonneg _) hqinv) hbr
+      refine le_trans (abs_add_le _ _) ?_
+      dsimp only [C_main]
+      linarith [show (2 * C1 + (1 / 3 : ℝ) * C4 + 3 * C3 + 6 * C2 + 2 * C1) / (q : ℝ) ^ 2 =
+        2 * C1 / (q : ℝ) ^ 2 + ((1 / 3 : ℝ) * C4 + 3 * C3 + 6 * C2 + 2 * C1) / (q : ℝ) ^ 2 by ring]
+    have htot : |sumA q - (-(1 / 9 : ℝ) - 4 / (243 * (q : ℝ)))| ≤ C₀ / (q : ℝ) ^ 2 := by
+      have hsp : sumA q - (-(1 / 9 : ℝ) - 4 / (243 * (q : ℝ))) =
+          (sumA q - mainA q) + (mainA q - (-(1 / 9 : ℝ) - 4 / (243 * (q : ℝ)))) := by ring
+      rw [hsp]
+      dsimp only [C₀]
+      linarith [abs_add_le (sumA q - mainA q) (mainA q - (-(1 / 9 : ℝ) - 4 / (243 * (q : ℝ)))),
+        show (C_body + C_tail + C_main) / (q : ℝ) ^ 2 =
+          (C_body + C_tail) / (q : ℝ) ^ 2 + C_main / (q : ℝ) ^ 2 by ring]
+    have hmul := mul_le_mul_of_nonneg_left htot (by positivity : 0 ≤ (q : ℝ) ^ 2)
+    have hq2 : (q : ℝ) ^ 2 * (C₀ / (q : ℝ) ^ 2) = C₀ := by field_simp
+    linarith
+  obtain ⟨C, hC, hC_all⟩ := exists_bound_all_pos
+    (fun q => (q : ℝ) ^ 2 * |sumA q - (-(1 / 9 : ℝ) - 4 / (243 * (q : ℝ)))|) (10 ^ 8) C₀ hC₀ hge
+  refine ⟨C, hC, fun q hq => ?_⟩
+  have hq2pos : (0 : ℝ) < (q : ℝ) ^ 2 := by positivity
+  rw [le_div_iff₀ hq2pos, mul_comm]
+  exact hC_all q hq
+
+/-- Quantitative `O(q^{-2})` remainder bound for `sumB`:
+`|sumB q - (1/3 - 2/(27 q))| ≤ C / q^2` for all `q ≥ 1`. -/
+theorem sumB_O_inv_sq :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ q : ℕ, 1 ≤ q →
+      |sumB q - (1 / 3 - 2 / (27 * (q : ℝ)))| ≤ C / (q : ℝ) ^ 2 := by
+  obtain ⟨C0, hC0, hG0⟩ := gsum_err_O_inv_sq 0
+  obtain ⟨C1, hC1, hG1⟩ := gsum_err_O_inv_sq 1
+  obtain ⟨C2, hC2, hG2⟩ := gsum_err_O_inv_sq 2
+  obtain ⟨C3, hC3, hG3⟩ := gsum_err_O_inv_sq 3
+  let mainB : ℕ → ℝ := fun q =>
+    2 * Gsum 0 q + (1 / (q : ℝ)) * (Gsum 3 q - 3 * Gsum 2 q + 3 * Gsum 1 q)
+  set C_body : ℝ := 85000 * (3 * Real.exp 1 * (1 + (Nat.factorial 1 : ℝ)) +
+      3 * Real.exp 1 * (1 + (Nat.factorial 21 : ℝ)))
+  set C_tail : ℝ := 2 * ((Nat.factorial 12 : ℝ) * 3 ^ 12)
+  set C_main : ℝ := 2 * C0 + C3 + 3 * C2 + 3 * C1
+  set C₀ : ℝ := C_body + C_tail + C_main
+  have hC₀ : 0 ≤ C₀ := by dsimp only [C₀, C_body, C_tail, C_main]; positivity
+  have hge : ∀ q : ℕ, 10 ^ 8 ≤ q →
+      (q : ℝ) ^ 2 * |sumB q - (1 / 3 - 2 / (27 * (q : ℝ)))| ≤ C₀ := by
+    intro q hq
+    have hK := K_cut_bounds hq
+    have hq1 : 1 ≤ q := le_trans (by norm_num) hq
+    have hqR : (1 : ℝ) ≤ (q : ℝ) := by exact_mod_cast hq1
+    have hqpos : (0 : ℝ) < (q : ℝ) := by positivity
+    have hsqq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hqpos
+    set ε := 1 / Real.sqrt (q : ℝ)
+    have hε_pos : 0 < ε := by dsimp only [ε]; positivity
+    have hε_le1 : ε ≤ 1 := by
+      dsimp only [ε]; rw [div_le_one hsqq]
+      simpa using Real.sqrt_le_sqrt hqR
+    have hε2 : ε ^ 2 = 1 / (q : ℝ) := by
+      dsimp only [ε]; rw [div_pow, one_pow, Real.sq_sqrt (le_of_lt hqpos)]
+    have hε4 : ε ^ 4 = 1 / (q : ℝ) ^ 2 := by
+      rw [show ε ^ 4 = (ε ^ 2) ^ 2 by ring, hε2]; ring
+    have hkq_eq : ∀ k : ℕ, (k : ℝ) / (q : ℝ) = ε * ((k : ℝ) * ε) := by
+      intro k; rw [show ε * ((k : ℝ) * ε) = (k : ℝ) * ε ^ 2 by ring, hε2]; ring
+    have hmain_eq : mainB q = ∑ k ∈ Finset.Icc 1 (K_cut q),
+        ((k : ℝ) / (q : ℝ)) * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+          (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2))) := by
+      dsimp only [mainB]; unfold Gsum
+      simp only [Finset.mul_sum, ← Finset.sum_add_distrib, ← Finset.sum_sub_distrib]
+      refine Finset.sum_congr rfl fun k _ => ?_
+      rw [hkq_eq k, ← hε2]; dsimp only [ε]; ring
+    have hsumB_split : sumB q =
+        (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) +
+        (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) := by
+      unfold sumB; rw [Finset.sum_div, sum_Icc_split (K := K_cut q) (by omega)]
+      congr 1 <;> (refine Finset.sum_congr rfl fun k _ => by ring)
+    have hbody : |∑ k ∈ Finset.Icc 1 (K_cut q),
+        ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
+          Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+            (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))| ≤
+        C_body / (q : ℝ) ^ 2 := by
+      refine le_trans (Finset.abs_sum_le_sum_abs _ _) ?_
+      have h1 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+          |((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
+            Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+              (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))| ≤
+          ∑ k ∈ Finset.Icc 1 (K_cut q),
+            85000 * ε ^ 5 * (((k : ℝ) * ε) ^ 1 + ((k : ℝ) * ε) ^ 21) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) := by
+        refine Finset.sum_le_sum fun k hk => ?_
+        rw [abs_mul, abs_of_nonneg (by positivity : 0 ≤ (k : ℝ) / (q : ℝ)), hkq_eq k]
+        have hloc := local_sum_term_approx hq (mem_Icc.mp hk).2
+        have hm := mul_le_mul_of_nonneg_left hloc (by positivity : 0 ≤ ε * ((k : ℝ) * ε))
+        linarith [show ε * ((k : ℝ) * ε) * (85000 * ε ^ 4 * (1 + ((k : ℝ) * ε) ^ 20) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) =
+          85000 * ε ^ 5 * (((k : ℝ) * ε) ^ 1 + ((k : ℝ) * ε) ^ 21) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) by ring]
+      have h2 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+            85000 * ε ^ 5 * (((k : ℝ) * ε) ^ 1 + ((k : ℝ) * ε) ^ 21) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) =
+          85000 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 1 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
+            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 21 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
+        rw [← Finset.sum_add_distrib, Finset.mul_sum]
+        refine Finset.sum_congr rfl fun k _ => by ring
+      have h3 := sum_pow_exp_neg_three_sq_le 1 hε_pos hε_le1 (K_cut q)
+      have h4 := sum_pow_exp_neg_three_sq_le 21 hε_pos hε_le1 (K_cut q)
+      rw [h2] at h1
+      have h5 := mul_le_mul_of_nonneg_left (add_le_add h3 h4) (by positivity : 0 ≤ 85000 * ε ^ 5)
+      have h6 : 85000 * ε ^ 5 *
+          ((3 * Real.exp 1 * (1 + (Nat.factorial 1 : ℝ))) / ε +
+           (3 * Real.exp 1 * (1 + (Nat.factorial 21 : ℝ))) / ε) = C_body / (q : ℝ) ^ 2 := by
+        dsimp only [C_body]
+        have : ε ^ 5 * ((3 * Real.exp 1 * (1 + (Nat.factorial 1 : ℝ))) / ε +
+            (3 * Real.exp 1 * (1 + (Nat.factorial 21 : ℝ))) / ε) =
+            (3 * Real.exp 1 * (1 + (Nat.factorial 1 : ℝ)) +
+            3 * Real.exp 1 * (1 + (Nat.factorial 21 : ℝ))) * ε ^ 4 := by field_simp
+        rw [mul_assoc, this, hε4]; ring
+      linarith
+    have htail : |∑ k ∈ Finset.Icc (K_cut q + 1) q,
+        ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)| ≤ C_tail / (q : ℝ) ^ 2 := by
+      have hw : ∀ k ∈ Finset.Icc (K_cut q + 1) q, |(k : ℝ) / (q : ℝ)| ≤ 1 := by
+        intro k hk; rw [mem_Icc] at hk
+        rw [abs_of_nonneg (by positivity), div_le_one hqpos]; exact_mod_cast hk.2
+      have h := abs_p3q_tail_sum_le_order2 hq (fun k => (k : ℝ) / (q : ℝ)) hw 1 (by norm_num)
+      refine le_trans (le_of_eq ?_) h
+      congr 1; refine Finset.sum_congr rfl fun k _ => by ring
+    have hrem : |sumB q - mainB q| ≤ (C_body + C_tail) / (q : ℝ) ^ 2 := by
+      have hsp : sumB q - mainB q =
+          (∑ k ∈ Finset.Icc 1 (K_cut q),
+            ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
+              Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+                (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))) +
+          (∑ k ∈ Finset.Icc (K_cut q + 1) q,
+            ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) := by
+        rw [hsumB_split, hmain_eq]
+        have hsub : (∑ k ∈ Finset.Icc 1 (K_cut q),
+            ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
+              Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+                (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))) =
+            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)) -
+            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+              (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2)))) := by
+          rw [← Finset.sum_sub_distrib]
+          refine Finset.sum_congr rfl fun k _ => by ring
+        linarith
+      rw [hsp]
+      linarith [abs_add_le
+        (∑ k ∈ Finset.Icc 1 (K_cut q),
+          ((k : ℝ) / (q : ℝ)) * (((p3q q (q + k) + p3q q (q - k)) / p3q q q) -
+            Real.exp (-3 * ((k : ℝ) * ε) ^ 2) *
+              (2 + ε ^ 2 * (((k : ℝ) * ε) ^ 6 - 3 * ((k : ℝ) * ε) ^ 4 + 3 * ((k : ℝ) * ε) ^ 2))))
+        (∑ k ∈ Finset.Icc (K_cut q + 1) q,
+          ((k : ℝ) / (q : ℝ)) * ((p3q q (q + k) + p3q q (q - k)) / p3q q q)),
+        show (C_body + C_tail) / (q : ℝ) ^ 2 = C_body / (q : ℝ) ^ 2 + C_tail / (q : ℝ) ^ 2 by ring]
+    have hmain_err : |mainB q - (1 / 3 - 2 / (27 * (q : ℝ)))| ≤ C_main / (q : ℝ) ^ 2 := by
+      have e0 := hG0 q hq; norm_num [Nat.factorial] at e0
+      have e1 := hG1 q hq; norm_num [Nat.factorial] at e1
+      have e2 := hG2 q hq; norm_num [Nat.factorial] at e2
+      have e3 := hG3 q hq; norm_num [Nat.factorial] at e3
+      have hqinv : 1 / (q : ℝ) ≤ 1 := (div_le_one hqpos).mpr hqR
+      have hid : mainB q - (1 / 3 - 2 / (27 * (q : ℝ))) =
+          2 * (Gsum 0 q - (1 / 6 - 1 / (12 * (q : ℝ)))) +
+          (1 / (q : ℝ)) * ((Gsum 3 q - 1 / 27) - 3 * (Gsum 2 q - 1 / 27) + 3 * (Gsum 1 q - 1 / 18)) := by
+        dsimp only [mainB]; field_simp; ring
+      rw [hid]
+      have h1 : |2 * (Gsum 0 q - (1 / 6 - 1 / (12 * (q : ℝ))))| ≤ 2 * C0 / (q : ℝ) ^ 2 := by
+        rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 2)]
+        have he0' : |Gsum 0 q - (1 / 6 - 1 / (12 * (q : ℝ)))| ≤ C0 / (q : ℝ) ^ 2 := by
+          convert e0 using 2; ring
+        linarith [show 2 * (C0 / (q : ℝ) ^ 2) = 2 * C0 / (q : ℝ) ^ 2 by ring]
+      have hbr : |(Gsum 3 q - 1 / 27) - 3 * (Gsum 2 q - 1 / 27) + 3 * (Gsum 1 q - 1 / 18)| ≤
+          (C3 + 3 * C2 + 3 * C1) / (q : ℝ) ^ 2 := by
+        set A := Gsum 3 q - 1 / 27
+        set B := -(3 * (Gsum 2 q - 1 / 27))
+        set D := 3 * (Gsum 1 q - 1 / 18)
+        have hrew : (Gsum 3 q - 1 / 27) - 3 * (Gsum 2 q - 1 / 27) + 3 * (Gsum 1 q - 1 / 18) =
+            A + B + D := by dsimp only [A, B, D]; ring
+        rw [hrew]
+        have htri : |A + B + D| ≤ |A| + |B| + |D| := by linarith [abs_add_le (A + B) D, abs_add_le A B]
+        have hB : |B| ≤ 3 * C2 / (q : ℝ) ^ 2 := by
+          dsimp only [B]; rw [abs_neg, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 3)]
+          linarith [show 3 * (C2 / (q : ℝ) ^ 2) = 3 * C2 / (q : ℝ) ^ 2 by ring]
+        have hD : |D| ≤ 3 * C1 / (q : ℝ) ^ 2 := by
+          dsimp only [D]; rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 3)]
+          linarith [show 3 * (C1 / (q : ℝ) ^ 2) = 3 * C1 / (q : ℝ) ^ 2 by ring]
+        linarith [show (C3 + 3 * C2 + 3 * C1) / (q : ℝ) ^ 2 =
+          C3 / (q : ℝ) ^ 2 + 3 * C2 / (q : ℝ) ^ 2 + 3 * C1 / (q : ℝ) ^ 2 by ring]
+      have h2 : |(1 / (q : ℝ)) * ((Gsum 3 q - 1 / 27) - 3 * (Gsum 2 q - 1 / 27) + 3 * (Gsum 1 q - 1 / 18))| ≤
+          (C3 + 3 * C2 + 3 * C1) / (q : ℝ) ^ 2 := by
+        rw [abs_mul, abs_of_pos (by positivity : 0 < 1 / (q : ℝ))]
+        exact le_trans (mul_le_of_le_one_left (abs_nonneg _) hqinv) hbr
+      refine le_trans (abs_add_le _ _) ?_
+      dsimp only [C_main]
+      linarith [show (2 * C0 + C3 + 3 * C2 + 3 * C1) / (q : ℝ) ^ 2 =
+        2 * C0 / (q : ℝ) ^ 2 + (C3 + 3 * C2 + 3 * C1) / (q : ℝ) ^ 2 by ring]
+    have htot : |sumB q - (1 / 3 - 2 / (27 * (q : ℝ)))| ≤ C₀ / (q : ℝ) ^ 2 := by
+      have hsp : sumB q - (1 / 3 - 2 / (27 * (q : ℝ))) =
+          (sumB q - mainB q) + (mainB q - (1 / 3 - 2 / (27 * (q : ℝ)))) := by ring
+      rw [hsp]
+      dsimp only [C₀]
+      linarith [abs_add_le (sumB q - mainB q) (mainB q - (1 / 3 - 2 / (27 * (q : ℝ)))),
+        show (C_body + C_tail + C_main) / (q : ℝ) ^ 2 =
+          (C_body + C_tail) / (q : ℝ) ^ 2 + C_main / (q : ℝ) ^ 2 by ring]
+    have hmul := mul_le_mul_of_nonneg_left htot (by positivity : 0 ≤ (q : ℝ) ^ 2)
+    have hq2 : (q : ℝ) ^ 2 * (C₀ / (q : ℝ) ^ 2) = C₀ := by field_simp
+    linarith
+  obtain ⟨C, hC, hC_all⟩ := exists_bound_all_pos
+    (fun q => (q : ℝ) ^ 2 * |sumB q - (1 / 3 - 2 / (27 * (q : ℝ)))|) (10 ^ 8) C₀ hC₀ hge
+  refine ⟨C, hC, fun q hq => ?_⟩
+  have hq2pos : (0 : ℝ) < (q : ℝ) ^ 2 := by positivity
+  rw [le_div_iff₀ hq2pos, mul_comm]
+  exact hC_all q hq
+
+/-- Quantitative `O(q^{-2})` remainder bound for `sumC`:
+`|sumC q - (-2/(27 q))| ≤ C / q^2` for all `q ≥ 1`. -/
+theorem sumC_O_inv_sq :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ q : ℕ, 1 ≤ q →
+      |sumC q - (-(2 / (27 * (q : ℝ))))| ≤ C / (q : ℝ) ^ 2 := by
+  obtain ⟨C2, hC2, hG2⟩ := gsum_err_O_inv_sq 2
+  let mainC : ℕ → ℝ := fun q => (1 / (q : ℝ)) * (-2 * Gsum 2 q)
+  set C_body : ℝ := 85020 * (3 * Real.exp 1 * (1 + (Nat.factorial 2 : ℝ)) +
+      3 * Real.exp 1 * (1 + (Nat.factorial 22 : ℝ)))
+  set C_tail : ℝ := 2 * ((Nat.factorial 12 : ℝ) * 3 ^ 12)
+  set C_main : ℝ := 2 * C2
+  set C₀ : ℝ := C_body + C_tail + C_main
+  have hC₀ : 0 ≤ C₀ := by dsimp only [C₀, C_body, C_tail, C_main]; positivity
+  have hge : ∀ q : ℕ, 10 ^ 8 ≤ q →
+      (q : ℝ) ^ 2 * |sumC q - (-(2 / (27 * (q : ℝ))))| ≤ C₀ := by
+    intro q hq
+    have hK := K_cut_bounds hq
+    have hq1 : 1 ≤ q := le_trans (by norm_num) hq
+    have hqR : (1 : ℝ) ≤ (q : ℝ) := by exact_mod_cast hq1
+    have hqpos : (0 : ℝ) < (q : ℝ) := by positivity
+    have hsqq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hqpos
+    set ε := 1 / Real.sqrt (q : ℝ)
+    have hε_pos : 0 < ε := by dsimp only [ε]; positivity
+    have hε_le1 : ε ≤ 1 := by
+      dsimp only [ε]; rw [div_le_one hsqq]
+      simpa using Real.sqrt_le_sqrt hqR
+    have hε2 : ε ^ 2 = 1 / (q : ℝ) := by
+      dsimp only [ε]; rw [div_pow, one_pow, Real.sq_sqrt (le_of_lt hqpos)]
+    have hε4 : ε ^ 4 = 1 / (q : ℝ) ^ 2 := by
+      rw [show ε ^ 4 = (ε ^ 2) ^ 2 by ring, hε2]; ring
+    have hkq2_eq : ∀ k : ℕ, ((k : ℝ) / (q : ℝ)) ^ 2 = ε ^ 2 * ((k : ℝ) * ε) ^ 2 := by
+      intro k
+      rw [show ε ^ 2 * ((k : ℝ) * ε) ^ 2 = (k : ℝ) ^ 2 * (ε ^ 2) ^ 2 by ring, hε2]; ring
+    have hmain_eq : mainC q = ∑ k ∈ Finset.Icc 1 (K_cut q),
+        ((k : ℝ) / (q : ℝ)) ^ 2 * (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3)) := by
+      dsimp only [mainC]; unfold Gsum
+      simp only [Finset.mul_sum]
+      refine Finset.sum_congr rfl fun k _ => ?_
+      rw [hkq2_eq k, ← hε2]; dsimp only [ε]; ring
+    have hsumC_split : sumC q =
+        (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) +
+        (∑ k ∈ Finset.Icc (K_cut q + 1) q, ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) := by
+      unfold sumC; rw [Finset.sum_div, sum_Icc_split (K := K_cut q) (by omega)]
+      congr 1 <;> (refine Finset.sum_congr rfl fun k _ => by ring)
+    have hbody : |∑ k ∈ Finset.Icc 1 (K_cut q),
+        ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
+          Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))| ≤ C_body / (q : ℝ) ^ 2 := by
+      refine le_trans (Finset.abs_sum_le_sum_abs _ _) ?_
+      have h1 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+          |((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
+            Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))| ≤
+          ∑ k ∈ Finset.Icc 1 (K_cut q),
+            85020 * ε ^ 5 * (((k : ℝ) * ε) ^ 2 + ((k : ℝ) * ε) ^ 22) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) := by
+        refine Finset.sum_le_sum fun k hk => ?_
+        rw [abs_mul, abs_of_nonneg (by positivity : 0 ≤ ((k : ℝ) / (q : ℝ)) ^ 2), hkq2_eq k]
+        have hloc := local_diff_leading_approx hq (mem_Icc.mp hk).2
+        have hm := mul_le_mul_of_nonneg_left hloc (by positivity : 0 ≤ ε ^ 2 * ((k : ℝ) * ε) ^ 2)
+        linarith [show ε ^ 2 * ((k : ℝ) * ε) ^ 2 * (85020 * ε ^ 3 * (1 + ((k : ℝ) * ε) ^ 20) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) =
+          85020 * ε ^ 5 * (((k : ℝ) * ε) ^ 2 + ((k : ℝ) * ε) ^ 22) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) by ring]
+      have h2 : ∑ k ∈ Finset.Icc 1 (K_cut q),
+            85020 * ε ^ 5 * (((k : ℝ) * ε) ^ 2 + ((k : ℝ) * ε) ^ 22) * Real.exp (-3 * ((k : ℝ) * ε) ^ 2) =
+          85020 * ε ^ 5 * ((∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 2 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2)) +
+            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) * ε) ^ 22 * Real.exp (-3 * ((k : ℝ) * ε) ^ 2))) := by
+        rw [← Finset.sum_add_distrib, Finset.mul_sum]
+        refine Finset.sum_congr rfl fun k _ => by ring
+      have h3 := sum_pow_exp_neg_three_sq_le 2 hε_pos hε_le1 (K_cut q)
+      have h4 := sum_pow_exp_neg_three_sq_le 22 hε_pos hε_le1 (K_cut q)
+      rw [h2] at h1
+      have h5 := mul_le_mul_of_nonneg_left (add_le_add h3 h4) (by positivity : 0 ≤ 85020 * ε ^ 5)
+      have h6 : 85020 * ε ^ 5 *
+          ((3 * Real.exp 1 * (1 + (Nat.factorial 2 : ℝ))) / ε +
+           (3 * Real.exp 1 * (1 + (Nat.factorial 22 : ℝ))) / ε) = C_body / (q : ℝ) ^ 2 := by
+        dsimp only [C_body]
+        have : ε ^ 5 * ((3 * Real.exp 1 * (1 + (Nat.factorial 2 : ℝ))) / ε +
+            (3 * Real.exp 1 * (1 + (Nat.factorial 22 : ℝ))) / ε) =
+            (3 * Real.exp 1 * (1 + (Nat.factorial 2 : ℝ)) +
+            3 * Real.exp 1 * (1 + (Nat.factorial 22 : ℝ))) * ε ^ 4 := by field_simp
+        rw [mul_assoc, this, hε4]; ring
+      linarith
+    have htail : |∑ k ∈ Finset.Icc (K_cut q + 1) q,
+        ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)| ≤ C_tail / (q : ℝ) ^ 2 := by
+      have hw : ∀ k ∈ Finset.Icc (K_cut q + 1) q, |((k : ℝ) / (q : ℝ)) ^ 2| ≤ 1 := by
+        intro k hk; rw [mem_Icc] at hk
+        have h1 : (k : ℝ) / (q : ℝ) ≤ 1 := (div_le_one hqpos).mpr (by exact_mod_cast hk.2)
+        rw [abs_of_nonneg (by positivity)]
+        exact pow_le_one₀ (by positivity) h1
+      have h := abs_p3q_tail_sum_le_order2 hq (fun k => ((k : ℝ) / (q : ℝ)) ^ 2) hw (-1) (by norm_num)
+      refine le_trans (le_of_eq ?_) h
+      congr 1; refine Finset.sum_congr rfl fun k _ => by ring
+    have hrem : |sumC q - mainC q| ≤ (C_body + C_tail) / (q : ℝ) ^ 2 := by
+      have hsp : sumC q - mainC q =
+          (∑ k ∈ Finset.Icc 1 (K_cut q),
+            ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
+              Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))) +
+          (∑ k ∈ Finset.Icc (K_cut q + 1) q,
+            ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) := by
+        rw [hsumC_split, hmain_eq]
+        have hsub : (∑ k ∈ Finset.Icc 1 (K_cut q),
+            ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
+              Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))) =
+            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)) -
+            (∑ k ∈ Finset.Icc 1 (K_cut q), ((k : ℝ) / (q : ℝ)) ^ 2 *
+              (Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3))) := by
+          rw [← Finset.sum_sub_distrib]
+          refine Finset.sum_congr rfl fun k _ => by ring
+        linarith
+      rw [hsp]
+      linarith [abs_add_le
+        (∑ k ∈ Finset.Icc 1 (K_cut q),
+          ((k : ℝ) / (q : ℝ)) ^ 2 * (((p3q q (q + k) - p3q q (q - k)) / p3q q q) -
+            Real.exp (-3 * ((k : ℝ) * ε) ^ 2) * (-2 * ε * ((k : ℝ) * ε) ^ 3)))
+        (∑ k ∈ Finset.Icc (K_cut q + 1) q,
+          ((k : ℝ) / (q : ℝ)) ^ 2 * ((p3q q (q + k) - p3q q (q - k)) / p3q q q)),
+        show (C_body + C_tail) / (q : ℝ) ^ 2 = C_body / (q : ℝ) ^ 2 + C_tail / (q : ℝ) ^ 2 by ring]
+    have hmain_err : |mainC q - (-(2 / (27 * (q : ℝ))))| ≤ C_main / (q : ℝ) ^ 2 := by
+      have e2 := hG2 q hq; norm_num [Nat.factorial] at e2
+      have hqinv : 1 / (q : ℝ) ≤ 1 := (div_le_one hqpos).mpr hqR
+      have hid : mainC q - (-(2 / (27 * (q : ℝ)))) = (1 / (q : ℝ)) * (-2 * (Gsum 2 q - 1 / 27)) := by
+        dsimp only [mainC]; field_simp; ring
+      rw [hid, abs_mul, abs_of_pos (by positivity : 0 < 1 / (q : ℝ)),
+          abs_mul, abs_neg, abs_of_pos (by norm_num : (0 : ℝ) < 2)]
+      have hle : 2 * |Gsum 2 q - 1 / 27| ≤ C_main / (q : ℝ) ^ 2 := by
+        dsimp only [C_main]
+        linarith [show 2 * (C2 / (q : ℝ) ^ 2) = 2 * C2 / (q : ℝ) ^ 2 by ring]
+      exact le_trans (mul_le_of_le_one_left (by positivity) hqinv) hle
+    have htot : |sumC q - (-(2 / (27 * (q : ℝ))))| ≤ C₀ / (q : ℝ) ^ 2 := by
+      have hsp : sumC q - (-(2 / (27 * (q : ℝ)))) =
+          (sumC q - mainC q) + (mainC q - (-(2 / (27 * (q : ℝ))))) := by ring
+      rw [hsp]
+      dsimp only [C₀]
+      linarith [abs_add_le (sumC q - mainC q) (mainC q - (-(2 / (27 * (q : ℝ))))),
+        show (C_body + C_tail + C_main) / (q : ℝ) ^ 2 =
+          (C_body + C_tail) / (q : ℝ) ^ 2 + C_main / (q : ℝ) ^ 2 by ring]
+    have hmul := mul_le_mul_of_nonneg_left htot (by positivity : 0 ≤ (q : ℝ) ^ 2)
+    have hq2 : (q : ℝ) ^ 2 * (C₀ / (q : ℝ) ^ 2) = C₀ := by field_simp
+    linarith
+  obtain ⟨C, hC, hC_all⟩ := exists_bound_all_pos
+    (fun q => (q : ℝ) ^ 2 * |sumC q - (-(2 / (27 * (q : ℝ))))|) (10 ^ 8) C₀ hC₀ hge
+  refine ⟨C, hC, fun q hq => ?_⟩
+  have hq2pos : (0 : ℝ) < (q : ℝ) ^ 2 := by positivity
+  rw [le_div_iff₀ hq2pos, mul_comm]
+  exact hC_all q hq
+
 end MultinomialTV
 
 end

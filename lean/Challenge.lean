@@ -22,7 +22,7 @@ This file imports ONLY Mathlib (ZERO imports from our proof library). It defines
 multinomial expectation `h_adj(L) = E[|X_2 - X_1| |X_3 - X_2|]` under `Mult(L; 1/3, 1/3, 1/3)`,
 the linear/constant terms `c_L`, `a_*`, the residue limits `b_r`, and the derived constants
 `d_0`, `a_△`, `γ_2` verbatim from Banić & Elezović (arXiv:2610.17046v1, Sec. 7.2 / Conjecture 7.7;
-arXiv:2611.14735v1, Thm. 5.2).
+arXiv:2611.14735v1, Thm. 3.10).
 
 NOTE: Every `sorry` in this file is intentional — `Challenge.lean` is the isolated statement
 specification checked against sorry-free `Solution.lean` by
@@ -108,7 +108,7 @@ theorem target_gamma_closed_form (n : ℝ) (hn : n ≠ 0) :
         (n - 1) / (8 * Real.pi * n) := by
   sorry
 
-/-- Target 6: Unconditional cyclic second-order variance coefficient `γ_c(n)` (Part 5, Thm. 5.2). -/
+/-- Target 6: Unconditional cyclic second-order variance coefficient `γ_c(n)` (Part 5, Thm. 3.10). -/
 theorem target_gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
     let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
@@ -136,6 +136,12 @@ theorem target_gamma4_closed_form (N : ℕ) :
     3 * p1 + 4 * q1 + 2 * r1 + (-1 : ℝ) ^ N / (2 * Real.pi) =
       -(17 / (32 * Real.pi)) - 64 * Real.sqrt 3 / (243 * Real.pi) +
         (-1 : ℝ) ^ N / (2 * Real.pi) := by
+  sorry
+
+/-- Target 9: Quantitative `O(L^{-2})` remainder bound of Lemma 7.3 (Part 2, §7.2). -/
+theorem target_lemma_7_3_O_inv_sq :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ L : ℕ, 1 ≤ L →
+      |hAdj L - cL * (L : ℝ) - aStar - bRes (L % 3) / (L : ℝ)| ≤ C / (L : ℝ) ^ 2 := by
   sorry
 
 end MultinomialTV.ComparatorTarget

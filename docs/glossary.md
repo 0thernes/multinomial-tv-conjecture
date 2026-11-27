@@ -7,12 +7,12 @@
 - **Residue Constants ($b_0, b_1, b_2$):** The mod-3 sub-sequence limits $b_r = \lim_{q\to\infty} (3q+r)(h_{\mathrm{adj}}(3q+r) - c_L(3q+r) - a_*)$ for $r \in \{0,1,2\}$.
 - **Mean Residue Constant ($d_0$):** The average $d_0 = \frac{1}{3}(b_0 + b_1 + b_2) = -\frac{4\sqrt{3}}{81\pi}$.
 - **Adjacent Triangular-Lattice Constant ($a_\triangle$):** $a_\triangle = \frac{1}{32} + \frac{\pi}{9}(b_0 + b_1 + b_2) = \frac{1}{32} - \frac{4\sqrt{3}}{243}$.
-- **Second-Order Variance Coefficients ($\gamma(n), \gamma_c(n), \gamma_2$):** The $O(1)$ coefficients in the large-$N$ asymptotic expansions of $\mathrm{Var}(D_n)$ and $\mathrm{Var}(D_n^{(c)})$, with quadratic leading coefficient $\gamma_2 = \frac{64 a_\triangle - 3}{32\pi} = -\frac{1}{32\pi} - \frac{8\sqrt{3}}{243\pi}$.
+- **Second-Order Variance Coefficients ($\gamma(n), \gamma_c(n), \gamma_2$):** The $O(N^{-2})$ coefficients in the large-$N$ asymptotic expansions of the normalized variances $\mathrm{Var}(d)/N$ and $\mathrm{Var}(d^c)/N$ (equivalently the $O(N^{-1})$ coefficients of $\mathrm{Var}(d)$ and $\mathrm{Var}(d^c)$, one order beyond the $O(1)$ constant $-\beta(n)$), with quadratic leading coefficient $\gamma_2 = \frac{64 a_\triangle - 3}{32\pi} = -\frac{1}{32\pi} - \frac{8\sqrt{3}}{243\pi}$.
 
 ## Formal Verification Terms
 
 - **Six-Kernel Verification (`lake comparator --paranoid`):** Checking a single proof export independently across six distinct type checkers (`Lean 4.35.0`, `leanchecker-paranoid`, `lean4lean`, `nanoda`, `con-leche`, `con-ron`).
-- **Palomar Isolation (`Challenge.lean` / `Solution.lean`):** Separating minimal Mathlib-only target specifications from proof internals so auditors only inspect 108 lines of definitions.
+- **Palomar Isolation (`Challenge.lean` / `Solution.lean`):** Separating minimal Mathlib-only target specifications from proof internals so auditors only inspect the concise `Challenge.lean` statement file (under Palomar's 1,000-line / 100 KiB limit).
 - **Statement Fidelity:** Exact mathematical correspondence between an informal literature statement and its formal Lean 4 type.
 - **Non-Vacuity Witness:** A formal theorem proving that hypotheses are concretely inhabited and that definitions evaluate to known exact values and refute deliberately false variants.
 - **Standard Lean Axioms:** `[propext, Classical.choice, Quot.sound]` — the three foundational axioms of classical mathematics in Lean 4 / Mathlib4.

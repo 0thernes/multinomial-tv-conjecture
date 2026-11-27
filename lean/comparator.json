@@ -9,7 +9,8 @@
     "MultinomialTV.ComparatorTarget.target_gamma_closed_form",
     "MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form",
     "MultinomialTV.ComparatorTarget.target_gamma3_closed_form",
-    "MultinomialTV.ComparatorTarget.target_gamma4_closed_form"
+    "MultinomialTV.ComparatorTarget.target_gamma4_closed_form",
+    "MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq"
   ],
   "permitted_axioms": [
     "propext",

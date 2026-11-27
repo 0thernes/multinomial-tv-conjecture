@@ -43,6 +43,7 @@ TRACKED_ARTIFACTS = [
     "results/comparator-paranoid.log",
     "results/lean-linter.log",
     "results/citation-audit.json",
+    "results/mutation-report.json",
 ]
 
 

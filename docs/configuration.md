@@ -6,9 +6,9 @@ This project uses **no runtime environment variables, secrets, API keys, or exte
 
 | File | Purpose | Notes |
 |---|---|---|
-| `VERSION` | Single source of truth for semantic version (`2.2.0`) | Must match `CHANGELOG.md`, `CITATION.cff`, `formalization.yaml`, `lean/lakefile.toml`. |
+| `VERSION` | Single source of truth for semantic version (read dynamically by scripts & tests) | Must match `CHANGELOG.md`, `CITATION.cff`, `formalization.yaml`, `lean/lakefile.toml`, `llms.txt`, and `docs/media/social-preview.svg`. |
 | `lean/lean-toolchain` | Pinned Lean 4 release (`leanprover/lean4:v4.35.0`) | Automatically respected by `elan` and `lake`. |
-| `lean/lakefile.toml` | Lean package targets, `autoImplicit = false`, Batteries `lintDriver` | Defines `MultinomialTVConjecture`, `Challenge`, `Solution`, `VerifyAxioms`. |
+| `lean/lakefile.toml` | Lean package targets, `autoImplicit = false`, `weak.linter.mathlibStandardSet = true`, Batteries `lintDriver` | Defines `MultinomialTVConjecture`, `Challenge`, `Solution`, `VerifyAxioms`. |
 | `lean/lake-manifest.json` | Exact Git commit lockfile for `mathlib`, `batteries`, `Qq`, `aesop`, etc. | Never edit by hand; update only intentionally with full 6-kernel re-verification. |
 | `lean/comparator.json` | Target theorems & permitted axioms for `lake comparator --paranoid` | Maps `Challenge` -> `Solution` with `[propext, Quot.sound, Classical.choice]`. |
 | `requirements.txt` | Pinned Python dependencies for verification, pytest, schema validation, linting | Install via `python3 -m pip install -r requirements.txt`. |

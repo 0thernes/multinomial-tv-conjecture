@@ -42,37 +42,37 @@ Collapses $h_{\mathrm{adj}}(3q-1)$ identically into an exact rational combinatio
 Establishes the quantitative $O(q^{-3})$ asymptotic expansion $p_{3q}(q) = \frac{\sqrt{3}}{2\pi q}\bigl(1 - \frac{2}{9q} + \frac{2}{81q^2} + O(q^{-3})\bigr)$ for all $q \ge 2$.
 \end{theorem}
 
-\begin{theorem}[Odd-Lattice Gaussian Euler--Maclaurin Bound]
+\begin{theorem}[Odd-Lattice Gaussian Euler--Maclaurin Bounds ($O(h^3)$ and $O(h^4)$)]
 \label{thm:gauss-em}
-\lean{MultinomialTV.oddGauss_sum_approx}
+\lean{MultinomialTV.oddGauss_sum_approx, MultinomialTV.oddGauss_sum_approx_order4}
 \leanok
-Proves quantitative Euler--Maclaurin summation accuracy for the odd-shifted Gaussian lattice sum driving the 1D local asymptotics.
+Proves quantitative third-order $O(h^3)$ and fourth-order $O(h^4)$ Euler--Maclaurin summation accuracy for the odd-shifted Gaussian lattice sum driving the 1D local asymptotics and the quantitative $O(L^{-2})$ Lemma 7.3 remainder.
 \end{theorem}
 
 \section{Stage 3: Local Asymptotics of 1D Residual Sums}
 
-\begin{theorem}[Asymptotic Limit of $\mathrm{sumA}(q)$]
+\begin{theorem}[Asymptotic Limit \& $O(q^{-2})$ Bound of $\mathrm{sumA}(q)$]
 \label{thm:sumA}
-\lean{MultinomialTV.tendsto_sumA}
+\lean{MultinomialTV.tendsto_sumA, MultinomialTV.sumA_O_inv_sq}
 \uses{thm:stirling, thm:gauss-em}
 \leanok
-Proves $q\bigl(\mathrm{sumA}(q) + \frac{1}{9} + \frac{4}{243q}\bigr) \to 0$ as $q \to \infty$.
+Proves $q\bigl(\mathrm{sumA}(q) + \frac{1}{9} + \frac{4}{243q}\bigr) \to 0$ and the quantitative remainder bound $|\mathrm{sumA}(q) - (-\frac{1}{9} - \frac{4}{243q})| \le C/q^2$ for all $q \ge 1$.
 \end{theorem}
 
-\begin{theorem}[Asymptotic Limit of $\mathrm{sumB}(q)$]
+\begin{theorem}[Asymptotic Limit \& $O(q^{-2})$ Bound of $\mathrm{sumB}(q)$]
 \label{thm:sumB}
-\lean{MultinomialTV.tendsto_sumB}
+\lean{MultinomialTV.tendsto_sumB, MultinomialTV.sumB_O_inv_sq}
 \uses{thm:stirling, thm:gauss-em}
 \leanok
-Proves $q\bigl(\mathrm{sumB}(q) - \frac{1}{3} + \frac{2}{27q}\bigr) \to 0$ as $q \to \infty$.
+Proves $q\bigl(\mathrm{sumB}(q) - \frac{1}{3} + \frac{2}{27q}\bigr) \to 0$ and the quantitative remainder bound $|\mathrm{sumB}(q) - (\frac{1}{3} - \frac{2}{27q})| \le C/q^2$ for all $q \ge 1$.
 \end{theorem}
 
-\begin{theorem}[Asymptotic Limit of $\mathrm{sumC}(q)$]
+\begin{theorem}[Asymptotic Limit \& $O(q^{-2})$ Bound of $\mathrm{sumC}(q)$]
 \label{thm:sumC}
-\lean{MultinomialTV.tendsto_sumC}
+\lean{MultinomialTV.tendsto_sumC, MultinomialTV.sumC_O_inv_sq}
 \uses{thm:stirling, thm:gauss-em}
 \leanok
-Proves $q\bigl(\mathrm{sumC}(q) + \frac{2}{27q}\bigr) \to 0$ as $q \to \infty$.
+Proves $q\bigl(\mathrm{sumC}(q) + \frac{2}{27q}\bigr) \to 0$ and the quantitative remainder bound $|\mathrm{sumC}(q) + \frac{2}{27q}| \le C/q^2$ for all $q \ge 1$.
 \end{theorem}
 
 \section{Stage 4: Residue Limits, Conjecture 7.7 \& Variance Closed Forms}
@@ -109,12 +109,20 @@ Proves $\lim_{q\to\infty} (3q+2)(h_{\mathrm{adj}}(3q+2) - c_L(3q+2) - a_*) = -\f
 Proves $d_0 = -\frac{4\sqrt{3}}{81\pi}$, $a_\triangle = \frac{1}{32} - \frac{4\sqrt{3}}{243}$, $\gamma_2 = -\frac{1}{32\pi} - \frac{8\sqrt{3}}{243\pi}$, and $b_r = d_0 + \frac{4\sqrt{3}}{9\pi}\cos(\frac{2\pi r}{3})$ for $r \in \{0,1,2\}$.
 \end{theorem}
 
+\begin{theorem}[Quantitative $O(L^{-2})$ Remainder Bound of Lemma 7.3]
+\label{thm:lemma73-rem}
+\lean{MultinomialTV.lemma_7_3_O_inv_sq}
+\uses{thm:hadj-mod0, thm:hadj-mod1, thm:hadj-mod2, thm:stirling, thm:sumA, thm:sumB, thm:sumC, thm:mod0, thm:mod1, thm:mod2}
+\leanok
+Proves $\exists C \ge 0,\;\forall L \ge 1,\;|h_{\mathrm{adj}}(L) - c_L L - a_* - b_{L\bmod 3}/L| \le C/L^2$, establishing the complete quantitative $O(L^{-2})$ remainder of Lemma 7.3 (Part 2, \S7.2).
+\end{theorem}
+
 \begin{corollary}[Linear, Cyclic, and Small-Bin Variance Closed Forms $\gamma(n)$, $\gamma_c(n)$, $\gamma(3;N)$, $\gamma(4;N)$]
 \label{cor:gamma}
 \lean{MultinomialTV.gamma_closed_form, MultinomialTV.gamma_cyclic_closed_form, MultinomialTV.gamma3_closed_form, MultinomialTV.gamma4_closed_form}
 \uses{thm:conj77}
 \leanok
-Algebraic closed forms for $\gamma(n)$ (Part 2 Thm 7.6), $\gamma_c(n)$ (Part 5 Thm 5.2), and degenerate small-bin regimes $\gamma(3;N)$ and $\gamma(4;N)$ (Part 2 \S7.2, \S8).
+Algebraic recombination closed forms for $\gamma(n)$ (Part 2 Thm 7.6), $\gamma_c(n)$ (Part 5 Thm 3.10), and degenerate small-bin regimes $\gamma(3;N)$ and $\gamma(4;N)$ (Part 2 \S7.2, \S8).
 \end{corollary}
 
 \section{Stage 5: Non-Vacuity Witnesses \& 6-Kernel Comparator Bridge}
@@ -129,8 +137,8 @@ Algebraic closed forms for $\gamma(n)$ (Part 2 Thm 7.6), $\gamma_c(n)$ (Part 5 T
 
 \begin{theorem}[Isolated 6-Kernel Comparator Targets]
 \label{thm:comparator}
-\lean{MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2, MultinomialTV.ComparatorTarget.target_conjecture_7_7, MultinomialTV.ComparatorTarget.target_gamma_closed_form, MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form, MultinomialTV.ComparatorTarget.target_gamma3_closed_form, MultinomialTV.ComparatorTarget.target_gamma4_closed_form}
-\uses{thm:mod0, thm:mod1, thm:mod2, thm:conj77, cor:gamma}
+\lean{MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2, MultinomialTV.ComparatorTarget.target_conjecture_7_7, MultinomialTV.ComparatorTarget.target_gamma_closed_form, MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form, MultinomialTV.ComparatorTarget.target_gamma3_closed_form, MultinomialTV.ComparatorTarget.target_gamma4_closed_form, MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq}
+\uses{thm:mod0, thm:mod1, thm:mod2, thm:conj77, thm:lemma73-rem, cor:gamma}
 \leanok
-Mathlib-only isolated specification (\texttt{Challenge.lean}, 143 lines, Lean 4.35.0 \texttt{module} header) matched against sorry-free \texttt{Solution.lean} across 8 targets by 6 independent kernels via \texttt{lake comparator --config comparator.json --paranoid}.
+Mathlib-only isolated specification (\texttt{Challenge.lean}, 149 lines, Lean 4.35.0 \texttt{module} header) matched against sorry-free \texttt{Solution.lean} across 9 targets by 6 independent kernels via \texttt{lake comparator --config comparator.json --paranoid}.
 \end{theorem}

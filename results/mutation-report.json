@@ -1,0 +1,170 @@
+{
+  "generated_utc": "2026-11-27T04:37:31Z",
+  "tool": "scripts/run_mutation_audit.py (isolated AST-validated source mutation)",
+  "total_mutants": 20,
+  "killed": 20,
+  "survived": 0,
+  "kill_rate_percent": 100.0,
+  "mutants": [
+    {
+      "id": "M01_direct_abs_drop",
+      "file": "scripts/verify_conjecture.py",
+      "description": "Drop abs() on (x2 - x1) in h_adj_direct_exact",
+      "pytest_target": "tests/test_exact_and_properties.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_exact_and_properties.py::test_golden_exact_hadj_matches_nonvacuity[2-expected2]"
+    },
+    {
+      "id": "M02_direct_denom_off",
+      "file": "scripts/verify_conjecture.py",
+      "description": "Mutate 3**L denominator to 3**(L + 1) in h_adj_direct_exact",
+      "pytest_target": "tests/test_exact_and_properties.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_exact_and_properties.py::test_golden_exact_hadj_matches_nonvacuity[1-expected1]"
+    },
+    {
+      "id": "M03_p3q_support_bound",
+      "file": "scripts/verify_conjecture.py",
+      "description": "Weaken out-of-support boundary 2 * x > 3 * q to 2 * x > 3 * q + 2 in p3q_exact",
+      "pytest_target": "tests/test_exact_and_properties.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_exact_and_properties.py::test_golden_exact_hadj_matches_nonvacuity[3-expected3]"
+    },
+    {
+      "id": "M04_mod0_sign_flip",
+      "file": "scripts/verify_conjecture.py",
+      "description": "Flip -2*B to +2*B in h_adj_1d_exact (mod 0)",
+      "pytest_target": "tests/test_exact_and_properties.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_exact_and_properties.py::test_golden_exact_hadj_matches_nonvacuity[3-expected3]"
+    },
+    {
+      "id": "M05_mod1_coeff_shift",
+      "file": "scripts/verify_conjecture.py",
+      "description": "Perturb 6*q + 1 to 6*q + 2 in h_adj_1d_exact (mod 1)",
+      "pytest_target": "tests/test_exact_and_properties.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_exact_and_properties.py::test_golden_exact_hadj_matches_nonvacuity[4-expected4]"
+    },
+    {
+      "id": "M06_mod2_C_sign_flip",
+      "file": "scripts/verify_conjecture.py",
+      "description": "Flip +4*C to -4*C in h_adj_1d_exact (mod 2)",
+      "pytest_target": "tests/test_exact_and_properties.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_exact_and_properties.py::test_golden_exact_hadj_matches_nonvacuity[5-expected5]"
+    },
+    {
+      "id": "M07_domain_guard_L_neg",
+      "file": "scripts/verify_conjecture.py",
+      "description": "Disable L < 0 guard in h_adj_direct_exact",
+      "pytest_target": "tests/test_exact_and_properties.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_exact_and_properties.py::test_negative_invalid_inputs_rejected"
+    },
+    {
+      "id": "M08_domain_guard_1d_L3",
+      "file": "scripts/verify_conjecture.py",
+      "description": "Weaken L < 3 guard to L < 2 in h_adj_1d_exact",
+      "pytest_target": "tests/test_exact_and_properties.py",
+      "status": "killed",
+      "evidence": "E   Failed: DID NOT RAISE <class 'ValueError'>"
+    },
+    {
+      "id": "M09_tail_tol_hardcoded_85",
+      "file": "scripts/verify_conjecture.py",
+      "description": "Reintroduce E-2026-009 hardcoded 1e-85 tail cutoff in sums_abc_mp",
+      "pytest_target": "tests/test_exact_and_properties.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_exact_and_properties.py::test_regression_e2026_009_high_precision_120dps_no_85digit_truncation"
+    },
+    {
+      "id": "M10_mp_mod0_B_sign",
+      "file": "scripts/verify_conjecture.py",
+      "description": "Flip -2*B to -3*B in h_adj_1d_mp (mod 0)",
+      "pytest_target": "tests/test_exact_and_properties.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_exact_and_properties.py::test_empirical_lemma_7_3_O_inv_sq_boundedness"
+    },
+    {
+      "id": "M11_richardson_formula_flip",
+      "file": "scripts/verify_conjecture.py",
+      "description": "Corrupt Neville-Richardson numerator sign in richardson_extrapolate",
+      "pytest_target": "tests/test_exact_and_properties.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_exact_and_properties.py::test_mutation_killing_constant_and_sign_mutants"
+    },
+    {
+      "id": "M12_axioms_allow_sorry",
+      "file": "scripts/check_readme_axioms.py",
+      "description": "Permit sorryAx in ALLOWED axiom set",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_regression_e2026_004_axiom_log_and_readme_sync"
+    },
+    {
+      "id": "M13_axioms_skip_exhaustive",
+      "file": "scripts/check_readme_axioms.py",
+      "description": "Disable exhaustive sentinel requirement check",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_regression_e2026_004_axiom_log_and_readme_sync"
+    },
+    {
+      "id": "M14_citations_drop_bad_arxiv",
+      "file": "scripts/check_citations.py",
+      "description": "Clear KNOWN_BAD_ARXIV regression guard (E-2026-001)",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_regression_e2026_001_citations_and_no_truncated_arxiv"
+    },
+    {
+      "id": "M15_citations_skip_parity",
+      "file": "scripts/check_citations.py",
+      "description": "Return empty parity lists in check_bib_cite_parity",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_regression_e2026_001_citations_and_no_truncated_arxiv"
+    },
+    {
+      "id": "M16_arxiv_drop_00readme",
+      "file": "scripts/build_arxiv_bundle.py",
+      "description": "Omit 00README.XXX from arXiv submission bundle (E-2026-003)",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_regression_e2026_003_and_005_deterministic_arxiv_bundle"
+    },
+    {
+      "id": "M17_arxiv_nonzero_mtime",
+      "file": "scripts/build_arxiv_bundle.py",
+      "description": "Set non-zero tar member mtime breaking determinism (B03)",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_regression_e2026_003_and_005_deterministic_arxiv_bundle"
+    },
+    {
+      "id": "M18_tsa_skip_digest_check",
+      "file": "scripts/stamp_timestamps.py",
+      "description": "Disable 32-byte SHA-256 imprint check on RFC 3161 .tsr token",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_negative_timestamp_and_manifest_tamper_detection"
+    },
+    {
+      "id": "M19_ots_skip_digest_check",
+      "file": "scripts/stamp_timestamps.py",
+      "description": "Disable 32-byte SHA-256 imprint check on OpenTimestamps .ots proof",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_negative_timestamp_and_manifest_tamper_detection"
+    },
+    {
+      "id": "M20_manifest_skip_mismatch",
+      "file": "scripts/generate_manifest.py",
+      "description": "Ignore SHA-256 mismatch in verify_manifest",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_negative_timestamp_and_manifest_tamper_detection"
+    }
+  ]
+}

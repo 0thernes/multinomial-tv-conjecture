@@ -2,7 +2,7 @@
 # Honest AI/human provenance record (NOT a claim of Palomar registration or peer review)
 title: "Proof of Conjecture 7.7 on the Second-Order Variance Constant of Multinomial Discrete Total Variation"
 repository: "https://github.com/0thernes/multinomial-tv-conjecture"
-version: "2.3.0"
+version: "2.4.0"
 date: "2026-11-26"
 license:
   code: "Apache-2.0"
@@ -24,7 +24,7 @@ batteries_rev: "66e469188fe0"
 lake_package_dir: "lean"
 libraries:
   - name: "MultinomialTVConjecture"
-    summary: "Complete Lean 4.35.0 (module-header Palomar spec across all 10 files, weak.linter.mathlibStandardSet = true) proof of Conjecture 7.7 of Banić & Elezović (arXiv:2610.17046v1, 2026): exact combinatorial 2D->1D reduction, refined Stirling asymptotics, Gaussian Euler-Maclaurin summation, residue-class 1/L limits b_0, b_1, b_2, exact constants a_triangle = 1/32 - 4*sqrt(3)/243, gamma_2, d_0, linear gamma(n), cyclic gamma_c(n), degenerate small-bin gamma(3;N) and gamma(4;N), 8 isolated 6-kernel comparator targets, 730 exhaustively audited theorems, and 20 non-vacuity / adversarial refutation witnesses."
+    summary: "Complete Lean 4.35.0 (module-header Palomar spec across all 10 files, weak.linter.mathlibStandardSet = true) proof of Conjecture 7.7 and the quantitative O(L^{-2}) remainder of Lemma 7.3 of Banić & Elezović (arXiv:2610.17046v1, 2026): exact combinatorial 2D->1D reduction, refined Stirling asymptotics, 3rd- and 4th-order Gaussian Euler-Maclaurin summation, residue-class 1/L limits b_0, b_1, b_2 and O(L^{-2}) remainder lemma_7_3_O_inv_sq, exact constants a_triangle = 1/32 - 4*sqrt(3)/243, gamma_2, d_0, algebraic recombination formulas for linear gamma(n), cyclic gamma_c(n), degenerate small-bin gamma(3;N) and gamma(4;N), 9 isolated 6-kernel comparator targets, 892 exhaustively audited theorems, and 20 non-vacuity / adversarial refutation witnesses."
 challenge_module: "Challenge"
 solution_module: "Solution"
 comparator_config: "lean/comparator.json"
@@ -47,4 +47,4 @@ automation:
   human_line_by_line_review_recorded: false
   statement_fidelity_table: "docs/statement-fidelity.md"
 review_status: "Research preprint; NOT externally peer reviewed; NOT yet submitted to arXiv, Zenodo, or the Palomar Registry."
-limitations: "See LIMITATIONS.md and CLAIMS.md. In particular, the Lean 4 kernel formally verifies Conjecture 7.7 (b_0, b_1, b_2, d_0, a_triangle, gamma_2) and the exact algebraic consequences for gamma(n) and gamma_c(n) given Theorem 7.6 of Banić & Elezović Part 2 (arXiv:2610.17046v1) and Theorem 5.2 of Part 5 (arXiv:2611.14735v1); those upstream variance decompositions themselves are cited from Banić & Elezović (2026) and lie outside the Lean 4 proof boundary."
+limitations: "See LIMITATIONS.md and CLAIMS.md. In particular, the Lean 4 kernel formally verifies Conjecture 7.7 (b_0, b_1, b_2, d_0, a_triangle, gamma_2), the complete quantitative O(L^{-2}) remainder bound of Lemma 7.3 (lemma_7_3_O_inv_sq), and the exact algebraic recombination identities for gamma(n), gamma_c(n), gamma(3;N), and gamma(4;N) given Theorem 7.6 and §7.2/§8 of Banić & Elezović Part 2 (arXiv:2610.17046v1) and Theorem 3.10 of Part 5 (arXiv:2611.14735v1); those upstream variance decompositions themselves are cited from Banić & Elezović (2026) and lie outside the Lean 4 proof boundary."

@@ -626,6 +626,351 @@ theorem oddGauss_sum_approx (j : ℕ) :
     linarith
   linarith
 
+/-! ### Part 5: Fourth-order Euler-Maclaurin refinement (`O(h^4)` remainder for Lemma 7.3) -/
+
+/-- Fourth shifted Bernoulli-type kernel `P4(u) = u^4/24 - h u^3/12 + h^2 u^2/24` on `[0, h]`,
+satisfying `P4' = emP3`, `P4(0) = P4(h) = 0`, and `0 ≤ P4(u) ≤ h^4` on `[0, h]`. -/
+noncomputable def emP4 (h u : ℝ) : ℝ := u ^ 4 / 24 - h * u ^ 3 / 12 + h ^ 2 * u ^ 2 / 24
+
+lemma emP4_abs_le {h u : ℝ} (hu0 : 0 ≤ u) (huh : u ≤ h) : |emP4 h u| ≤ h ^ 4 := by
+  have hfac : emP4 h u = u ^ 2 * (u - h) ^ 2 / 24 := by unfold emP4; ring
+  rw [hfac, abs_of_nonneg (by positivity)]
+  have hh : 0 ≤ h := le_trans hu0 huh
+  have hu2 : u ^ 2 ≤ h ^ 2 := by nlinarith
+  have huh2 : (u - h) ^ 2 ≤ h ^ 2 := by nlinarith
+  have hprod : u ^ 2 * (u - h) ^ 2 ≤ h ^ 2 * h ^ 2 :=
+    mul_le_mul hu2 huh2 (by positivity) (by positivity)
+  have h4 : h ^ 2 * h ^ 2 = h ^ 4 := by ring
+  linarith [show (0 : ℝ) ≤ h ^ 4 by positivity]
+
+/-- One-step fourth-order Euler-Maclaurin identity on `[a, a + h]`.
+Because `emP4 h 0 = emP4 h h = 0`, no `g'''` boundary term appears and the remainder is `O(h^4)`. -/
+lemma euler_maclaurin_step_order4 {g g1 g2 g3 g4 : ℝ → ℝ} {a h : ℝ}
+    (hg : ∀ t, HasDerivAt g (g1 t) t)
+    (hg1 : ∀ t, HasDerivAt g1 (g2 t) t)
+    (hg2 : ∀ t, HasDerivAt g2 (g3 t) t)
+    (hg3 : ∀ t, HasDerivAt g3 (g4 t) t)
+    (hg4 : Continuous g4) :
+    (∫ t in a..(a + h), g t) - (∫ t in a..(a + h), emP4 h (t - a) * g4 t) =
+      (h / 2) * (g a + g (a + h)) - (h ^ 2 / 12) * (g1 (a + h) - g1 a) := by
+  let Ψ : ℝ → ℝ := fun t =>
+    emP1 h (t - a) * g t - emP2 h (t - a) * g1 t + emP3 h (t - a) * g2 t - emP4 h (t - a) * g3 t
+  have hΨ : ∀ t, HasDerivAt Ψ (g t - emP4 h (t - a) * g4 t) t := by
+    intro t
+    have hta : HasDerivAt (fun u => u - a) 1 t := (hasDerivAt_id t).sub_const a
+    have hP1 : HasDerivAt (fun u => emP1 h (u - a)) 1 t := by
+      unfold emP1; simpa using hta.sub_const (h / 2)
+    have hP2 : HasDerivAt (fun u => emP2 h (u - a)) (emP1 h (t - a)) t := by
+      unfold emP2 emP1
+      have hsq := ((hta.pow 2).div_const 2).sub (hta.const_mul (h / 2))
+      have hadd := hsq.add_const (h ^ 2 / 12)
+      convert hadd using 1
+      · ext u; simp only [Pi.sub_apply, Pi.pow_apply]; ring
+      · ring
+    have hP3 : HasDerivAt (fun u => emP3 h (u - a)) (emP2 h (t - a)) t := by
+      unfold emP3 emP2
+      have hcb := ((hta.pow 3).div_const 6).sub ((hta.pow 2).const_mul (h / 4))
+      have hadd := hcb.add (hta.const_mul (h ^ 2 / 12))
+      convert hadd using 1
+      · ext u; simp only [Pi.add_apply, Pi.sub_apply, Pi.pow_apply]; ring
+      · ring
+    have hP4 : HasDerivAt (fun u => emP4 h (u - a)) (emP3 h (t - a)) t := by
+      unfold emP4 emP3
+      have hq4 := ((hta.pow 4).div_const 24).sub ((hta.pow 3).const_mul (h / 12))
+      have hadd := hq4.add ((hta.pow 2).const_mul (h ^ 2 / 24))
+      convert hadd using 1
+      · ext u; simp only [Pi.add_apply, Pi.sub_apply, Pi.pow_apply]; ring
+      · ring
+    have hd := (((hP1.mul (hg t)).sub (hP2.mul (hg1 t))).add (hP3.mul (hg2 t))).sub (hP4.mul (hg3 t))
+    convert hd using 1; ring
+  have hcont_g : Continuous g := continuous_iff_continuousAt.mpr fun t => (hg t).continuousAt
+  have hcont_rem : Continuous (fun t => emP4 h (t - a) * g4 t) := by
+    unfold emP4; fun_prop
+  have hint := intervalIntegral.integral_eq_sub_of_hasDerivAt (a := a) (b := a + h)
+    (fun t _ => hΨ t) ((hcont_g.sub hcont_rem).intervalIntegrable a (a + h))
+  rw [intervalIntegral.integral_sub (hcont_g.intervalIntegrable a (a + h))
+      (hcont_rem.intervalIntegrable a (a + h))] at hint
+  rw [hint]
+  dsimp only [Ψ, emP1, emP2, emP3, emP4]
+  simp only [add_sub_cancel_left, sub_self]
+  ring
+
+/-- Multi-step fourth-order Euler-Maclaurin bound on `[0, K * h]` for any `C^4` function `g` with `g 0 = 0`. -/
+lemma euler_maclaurin_sum_bound_order4 {g g1 g2 g3 g4 : ℝ → ℝ} {h : ℝ} (hh : 0 < h) (K : ℕ)
+    (hg0 : g 0 = 0)
+    (hg : ∀ t, HasDerivAt g (g1 t) t)
+    (hg1 : ∀ t, HasDerivAt g1 (g2 t) t)
+    (hg2 : ∀ t, HasDerivAt g2 (g3 t) t)
+    (hg3 : ∀ t, HasDerivAt g3 (g4 t) t)
+    (hg4 : Continuous g4) :
+    |h * (∑ k ∈ Finset.Icc 1 K, g ((k : ℝ) * h)) -
+      (∫ t in (0 : ℝ)..((K : ℝ) * h), g t) +
+      (h ^ 2 / 12) * g1 0 -
+      (h / 2) * g ((K : ℝ) * h) -
+      (h ^ 2 / 12) * g1 ((K : ℝ) * h)| ≤
+      h ^ 4 * ∫ t in (0 : ℝ)..((K : ℝ) * h), |g4 t| := by
+  have hcont_g : Continuous g := continuous_iff_continuousAt.mpr fun t => (hg t).continuousAt
+  have hsum_step :
+      (∑ k ∈ Finset.range K, ∫ t in ((k : ℝ) * h)..(((k + 1 : ℕ) : ℝ) * h), g t) -
+      (∑ k ∈ Finset.range K, ∫ t in ((k : ℝ) * h)..(((k + 1 : ℕ) : ℝ) * h), emP4 h (t - (k : ℝ) * h) * g4 t) =
+      (∑ k ∈ Finset.range K, (h / 2) * (g ((k : ℝ) * h) + g (((k + 1 : ℕ) : ℝ) * h))) -
+      (∑ k ∈ Finset.range K, (h ^ 2 / 12) * (g1 (((k + 1 : ℕ) : ℝ) * h) - g1 ((k : ℝ) * h))) := by
+    rw [← Finset.sum_sub_distrib, ← Finset.sum_sub_distrib]
+    refine Finset.sum_congr rfl fun k _ => ?_
+    have heq : ((k + 1 : ℕ) : ℝ) * h = (k : ℝ) * h + h := by push_cast; ring
+    rw [heq]
+    exact euler_maclaurin_step_order4 hg hg1 hg2 hg3 hg4
+  have hint_g := sum_adjacent_integrals hcont_g h K
+  have htel_g1 : ∑ k ∈ Finset.range K, (h ^ 2 / 12) * (g1 (((k + 1 : ℕ) : ℝ) * h) - g1 ((k : ℝ) * h)) =
+      (h ^ 2 / 12) * (g1 ((K : ℝ) * h) - g1 0) := by
+    rw [← Finset.mul_sum, Finset.sum_range_sub (fun k => g1 ((k : ℝ) * h)) K]
+    simp
+  have htrap_g := sum_trapezoidal_zero hg0 h K
+  rw [hint_g, htel_g1, htrap_g] at hsum_step
+  have hrem_eq :
+      h * (∑ k ∈ Finset.Icc 1 K, g ((k : ℝ) * h)) -
+        (∫ t in (0 : ℝ)..((K : ℝ) * h), g t) +
+        (h ^ 2 / 12) * g1 0 -
+        (h / 2) * g ((K : ℝ) * h) -
+        (h ^ 2 / 12) * g1 ((K : ℝ) * h) =
+      -(∑ k ∈ Finset.range K, ∫ t in ((k : ℝ) * h)..(((k + 1 : ℕ) : ℝ) * h),
+        emP4 h (t - (k : ℝ) * h) * g4 t) := by
+    linarith
+  rw [hrem_eq, abs_neg]
+  have hint_abs := sum_adjacent_integrals hg4.abs h K
+  rw [← hint_abs, Finset.mul_sum]
+  refine le_trans (Finset.abs_sum_le_sum_abs _ _) ?_
+  refine Finset.sum_le_sum fun k _ => ?_
+  have hle : (k : ℝ) * h ≤ ((k + 1 : ℕ) : ℝ) * h := by
+    have : (k : ℝ) ≤ ((k + 1 : ℕ) : ℝ) := by push_cast; linarith
+    exact mul_le_mul_of_nonneg_right this (le_of_lt hh)
+  have hcont_p4 : Continuous (fun t => emP4 h (t - (k : ℝ) * h) * g4 t) := by
+    unfold emP4; fun_prop
+  calc |∫ t in ((k : ℝ) * h)..(((k + 1 : ℕ) : ℝ) * h), emP4 h (t - (k : ℝ) * h) * g4 t|
+      ≤ ∫ t in ((k : ℝ) * h)..(((k + 1 : ℕ) : ℝ) * h), |emP4 h (t - (k : ℝ) * h) * g4 t| :=
+        intervalIntegral.abs_integral_le_integral_abs hle
+    _ ≤ ∫ t in ((k : ℝ) * h)..(((k + 1 : ℕ) : ℝ) * h), h ^ 4 * |g4 t| := by
+        refine intervalIntegral.integral_mono_on hle (hcont_p4.abs.intervalIntegrable _ _)
+          ((hg4.abs.const_mul (h ^ 4)).intervalIntegrable _ _) fun t ht => ?_
+        rw [abs_mul]
+        refine mul_le_mul_of_nonneg_right ?_ (abs_nonneg _)
+        have ht1 : 0 ≤ t - (k : ℝ) * h := by linarith [ht.1]
+        have ht2 : t - (k : ℝ) * h ≤ h := by
+          have : ((k + 1 : ℕ) : ℝ) * h = (k : ℝ) * h + h := by push_cast; ring
+          linarith [ht.2]
+        exact emP4_abs_le ht1 ht2
+    _ = h ^ 4 * ∫ t in ((k : ℝ) * h)..(((k + 1 : ℕ) : ℝ) * h), |g4 t| :=
+        intervalIntegral.integral_const_mul _ _
+
+/-- Elementary linear combination derivative helper for polynomial-times-Gaussian sums. -/
+private lemma hasDerivAt_poly_exp_step (a : ℝ) (k : ℕ) (t : ℝ) :
+    HasDerivAt (fun u => a * (u ^ k * Real.exp (-3 * u ^ 2)))
+      ((a * (k : ℝ)) * (t ^ (k - 1) * Real.exp (-3 * t ^ 2)) -
+       (a * 6) * (t ^ (k + 1) * Real.exp (-3 * t ^ 2))) t := by
+  have hd := (hasDerivAt_poly_exp k t).const_mul a
+  convert hd using 1; ring
+
+/-- Fourth-order uniform Euler-Maclaurin bound (`O(h^4)`) for `t^(2j+1) * exp(-3 t^2)` on `k = 1..K`. -/
+theorem oddGauss_sum_approx_order4 (j : ℕ) :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ {h : ℝ}, 0 < h → ∀ K : ℕ,
+      |h * (∑ k ∈ Finset.Icc 1 K, ((k : ℝ) * h) ^ (2 * j + 1) * Real.exp (-3 * ((k : ℝ) * h) ^ 2)) -
+        ((j.factorial : ℝ) / (2 * (3 : ℝ) ^ (j + 1)) - if j = 0 then h ^ 2 / 12 else 0)| ≤
+        C * (h ^ 4 + (1 + h + h ^ 2) * Real.exp (-((K : ℝ) * h))) := by
+  set m := 2 * j + 1
+  -- Represent g_r(t) = (∑ c_i * t^{k_i}) * exp(-3 t^2) directly via a finite list of (coeff, deg) pairs
+  let evalPolyExp (terms : List (ℝ × ℕ)) (t : ℝ) : ℝ :=
+    (terms.map fun p => p.1 * (t ^ p.2 * Real.exp (-3 * t ^ 2))).sum
+  let diffTerms (terms : List (ℝ × ℕ)) : List (ℝ × ℕ) :=
+    terms.flatMap fun p => [(p.1 * (p.2 : ℝ), p.2 - 1), (-(p.1 * 6), p.2 + 1)]
+  have hderiv_list : ∀ (terms : List (ℝ × ℕ)) (t : ℝ),
+      HasDerivAt (evalPolyExp terms) (evalPolyExp (diffTerms terms) t) t := by
+    intro terms t
+    induction terms with
+    | nil => simpa [evalPolyExp, diffTerms] using hasDerivAt_const t (0 : ℝ)
+    | cons hd tl ih =>
+      simp only [evalPolyExp, diffTerms, List.map_cons, List.sum_cons, List.flatMap_cons,
+        List.map_append, List.sum_append, List.map_nil, List.sum_nil, add_zero]
+      have h1 := hasDerivAt_poly_exp_step hd.1 hd.2 t
+      have h2 := h1.add ih
+      convert h2 using 1
+      ring
+  let L0 : List (ℝ × ℕ) := [(1, m)]
+  let L1 := diffTerms L0
+  let L2 := diffTerms L1
+  let L3 := diffTerms L2
+  let L4 := diffTerms L3
+  let g := evalPolyExp L0
+  let g1 := evalPolyExp L1
+  let g2 := evalPolyExp L2
+  let g3 := evalPolyExp L3
+  let g4 := evalPolyExp L4
+  have hg : ∀ t, HasDerivAt g (g1 t) t := hderiv_list L0
+  have hg1 : ∀ t, HasDerivAt g1 (g2 t) t := hderiv_list L1
+  have hg2 : ∀ t, HasDerivAt g2 (g3 t) t := hderiv_list L2
+  have hg3 : ∀ t, HasDerivAt g3 (g4 t) t := hderiv_list L3
+  have hcont_list : ∀ terms : List (ℝ × ℕ), Continuous (evalPolyExp terms) := by
+    intro terms
+    induction terms with
+    | nil => simpa [evalPolyExp] using continuous_const
+    | cons hd tl ih =>
+      have h1 : Continuous (fun t : ℝ => hd.1 * (t ^ hd.2 * Real.exp (-3 * t ^ 2))) := by fun_prop
+      have hadd : Continuous (fun t : ℝ => hd.1 * (t ^ hd.2 * Real.exp (-3 * t ^ 2)) + evalPolyExp tl t) :=
+        h1.add ih
+      simpa [evalPolyExp] using hadd
+  have hg4_cont : Continuous g4 := hcont_list L4
+  have hg_eq : ∀ t, g t = t ^ m * Real.exp (-3 * t ^ 2) := by
+    intro t; simp [g, L0, evalPolyExp]
+  have hg0 : g 0 = 0 := by
+    rw [hg_eq, zero_pow (by omega : m ≠ 0), zero_mul]
+  have hg1_0 : g1 0 = if j = 0 then 1 else 0 := by
+    simp only [g1, L1, L0, diffTerms, evalPolyExp, List.flatMap_cons, List.flatMap_nil, List.append_nil,
+      List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, add_zero, one_mul,
+      sq, mul_zero, Real.exp_zero, mul_one]
+    cases j with
+    | zero => simp [m]
+    | succ j' =>
+      have hm1 : m - 1 ≠ 0 := by dsimp only [m]; omega
+      have hm2 : m + 1 ≠ 0 := by dsimp only [m]; omega
+      simp [zero_pow hm1, zero_pow hm2]
+  let E : ℕ → ℝ := fun k => Real.exp 1 * (1 + (k.factorial : ℝ))
+  let listBound (terms : List (ℝ × ℕ)) : ℝ := (terms.map fun p => |p.1| * E p.2).sum
+  have hlistBound_nn : ∀ terms : List (ℝ × ℕ), 0 ≤ listBound terms := by
+    intro terms
+    induction terms with
+    | nil => simp [listBound]
+    | cons hd tl ih =>
+      simp only [listBound, List.map_cons, List.sum_cons]
+      have : 0 ≤ |hd.1| * E hd.2 := by dsimp only [E]; positivity
+      linarith
+  have hlist_dom : ∀ (terms : List (ℝ × ℕ)) {t : ℝ}, 0 ≤ t →
+      |evalPolyExp terms t| ≤ listBound terms * Real.exp (-t) := by
+    intro terms t ht
+    induction terms with
+    | nil => simp [evalPolyExp, listBound]
+    | cons hd tl ih =>
+      simp only [evalPolyExp, listBound, List.map_cons, List.sum_cons]
+      have hhead : |hd.1 * (t ^ hd.2 * Real.exp (-3 * t ^ 2))| ≤ |hd.1| * E hd.2 * Real.exp (-t) := by
+        rw [abs_mul, abs_of_nonneg (mul_nonneg (pow_nonneg ht _) (le_of_lt (Real.exp_pos _))), mul_assoc]
+        exact mul_le_mul_of_nonneg_left (pow_mul_exp_neg_three_sq_le hd.2 ht) (abs_nonneg _)
+      have htri := abs_add_le (hd.1 * (t ^ hd.2 * Real.exp (-3 * t ^ 2))) (evalPolyExp tl t)
+      have htl : |evalPolyExp tl t| ≤ listBound tl * Real.exp (-t) := ih
+      simp only [evalPolyExp, listBound] at htri htl ⊢
+      linarith
+  set B0 := listBound L0
+  set B1 := listBound L1
+  set B4 := listBound L4
+  have hB0_nn : 0 ≤ B0 := hlistBound_nn L0
+  have hB1_nn : 0 ≤ B1 := hlistBound_nn L1
+  have hB4_nn : 0 ≤ B4 := hlistBound_nn L4
+  set Bint : ℝ := ((j.factorial : ℝ) / (2 * (3 : ℝ) ^ (j + 1))) *
+      ∑ i ∈ Finset.range (j + 1), (3 : ℝ) ^ i * E (2 * i) / (i.factorial : ℝ)
+  have hBint_nn : 0 ≤ Bint := by dsimp only [Bint, E]; positivity
+  have hint_tail : ∀ {M : ℝ}, 0 ≤ M →
+      |(∫ t in (0 : ℝ)..M, g t) - (j.factorial : ℝ) / (2 * (3 : ℝ) ^ (j + 1))| ≤
+        Bint * Real.exp (-M) := by
+    intro M hM
+    have heq_int : ∫ t in (0 : ℝ)..M, g t = ∫ t in (0 : ℝ)..M, t ^ (2 * j + 1) * Real.exp (-3 * t ^ 2) :=
+      intervalIntegral.integral_congr fun t _ => hg_eq t
+    rw [heq_int, integral_oddGauss j M]
+    set c := (j.factorial : ℝ) / (2 * (3 : ℝ) ^ (j + 1))
+    have hc : 0 ≤ c := by positivity
+    have hdiff : c * (1 - Real.exp (-3 * M ^ 2) * ∑ i ∈ Finset.range (j + 1), (3 * M ^ 2) ^ i / (i.factorial : ℝ)) - c =
+        -(c * ∑ i ∈ Finset.range (j + 1), ((3 : ℝ) ^ i / (i.factorial : ℝ)) * (M ^ (2 * i) * Real.exp (-3 * M ^ 2))) := by
+      have hsum_eq : Real.exp (-3 * M ^ 2) * ∑ i ∈ Finset.range (j + 1), (3 * M ^ 2) ^ i / (i.factorial : ℝ) =
+          ∑ i ∈ Finset.range (j + 1), ((3 : ℝ) ^ i / (i.factorial : ℝ)) * (M ^ (2 * i) * Real.exp (-3 * M ^ 2)) := by
+        rw [Finset.mul_sum]
+        refine Finset.sum_congr rfl fun i _ => ?_
+        rw [mul_pow, ← pow_mul]; ring
+      rw [hsum_eq]; ring
+    rw [hdiff, abs_neg, abs_of_nonneg (by positivity)]
+    dsimp only [Bint]
+    rw [mul_assoc, Finset.sum_mul]
+    refine mul_le_mul_of_nonneg_left ?_ hc
+    refine Finset.sum_le_sum fun i _ => ?_
+    have hle := pow_mul_exp_neg_three_sq_le (2 * i) hM
+    have hfac : 0 ≤ (3 : ℝ) ^ i / (i.factorial : ℝ) := by positivity
+    calc ((3 : ℝ) ^ i / (i.factorial : ℝ)) * (M ^ (2 * i) * Real.exp (-3 * M ^ 2))
+        ≤ ((3 : ℝ) ^ i / (i.factorial : ℝ)) * (E (2 * i) * Real.exp (-M)) :=
+          mul_le_mul_of_nonneg_left hle hfac
+      _ = (3 : ℝ) ^ i * E (2 * i) / (i.factorial : ℝ) * Real.exp (-M) := by ring
+  refine ⟨B4 + Bint + B0 + B1, by positivity, ?_⟩
+  intro h hh K
+  set M : ℝ := (K : ℝ) * h
+  have hM : 0 ≤ M := by positivity
+  have hem := euler_maclaurin_sum_bound_order4 hh K hg0 hg hg1 hg2 hg3 hg4_cont
+  have hint_g4 : ∫ t in (0 : ℝ)..M, |g4 t| ≤ B4 := by
+    have hle1 : ∫ t in (0 : ℝ)..M, |g4 t| ≤ ∫ t in (0 : ℝ)..M, B4 * Real.exp (-t) := by
+      refine intervalIntegral.integral_mono_on hM (hg4_cont.abs.intervalIntegrable 0 M)
+        ((by fun_prop : Continuous fun t => B4 * Real.exp (-t)).intervalIntegrable 0 M) fun t ht =>
+          hlist_dom L4 ht.1
+    have hderiv_exp : ∀ t, HasDerivAt (fun u => -B4 * Real.exp (-u)) (B4 * Real.exp (-t)) t := by
+      intro t
+      have h1 : HasDerivAt (fun u => -u) (-1) t := (hasDerivAt_id t).neg
+      have h2 := h1.exp.const_mul (-B4)
+      convert h2 using 1; ring
+    have heval : ∫ t in (0 : ℝ)..M, B4 * Real.exp (-t) = B4 * (1 - Real.exp (-M)) := by
+      rw [intervalIntegral.integral_eq_sub_of_hasDerivAt (fun t _ => hderiv_exp t)
+          ((by fun_prop : Continuous fun t => B4 * Real.exp (-t)).intervalIntegrable 0 M)]
+      simp; ring
+    rw [heval] at hle1
+    have hexp_pos : 0 ≤ Real.exp (-M) := le_of_lt (Real.exp_pos _)
+    nlinarith
+  have hem_val : |h * (∑ k ∈ Finset.Icc 1 K, g ((k : ℝ) * h)) - (∫ t in (0 : ℝ)..M, g t) +
+      (if j = 0 then h ^ 2 / 12 else 0) - (h / 2) * g M - (h ^ 2 / 12) * g1 M| ≤ h ^ 4 * B4 := by
+    have hrew : (h ^ 2 / 12) * g1 0 = if j = 0 then h ^ 2 / 12 else 0 := by
+      rw [hg1_0]; split_ifs <;> ring
+    rw [hrew] at hem
+    exact le_trans hem (mul_le_mul_of_nonneg_left hint_g4 (by positivity))
+  have hsum_eq : ∑ k ∈ Finset.Icc 1 K, ((k : ℝ) * h) ^ (2 * j + 1) * Real.exp (-3 * ((k : ℝ) * h) ^ 2) =
+      ∑ k ∈ Finset.Icc 1 K, g ((k : ℝ) * h) :=
+    Finset.sum_congr rfl fun k _ => (hg_eq ((k : ℝ) * h)).symm
+  rw [hsum_eq]
+  set A1 := h * (∑ k ∈ Finset.Icc 1 K, g ((k : ℝ) * h)) - (∫ t in (0 : ℝ)..M, g t) +
+      (if j = 0 then h ^ 2 / 12 else 0) - (h / 2) * g M - (h ^ 2 / 12) * g1 M
+  set A2 := (∫ t in (0 : ℝ)..M, g t) - (j.factorial : ℝ) / (2 * (3 : ℝ) ^ (j + 1))
+  set A3 := (h / 2) * g M
+  set A4 := (h ^ 2 / 12) * g1 M
+  have hdecomp :
+      h * (∑ k ∈ Finset.Icc 1 K, g ((k : ℝ) * h)) -
+        ((j.factorial : ℝ) / (2 * (3 : ℝ) ^ (j + 1)) - if j = 0 then h ^ 2 / 12 else 0) =
+      A1 + A2 + A3 + A4 := by
+    dsimp only [A1, A2, A3, A4]; ring
+  rw [hdecomp]
+  have h1 : |A1| ≤ h ^ 4 * B4 := hem_val
+  have h2 : |A2| ≤ Bint * Real.exp (-M) := hint_tail hM
+  have h3 : |A3| ≤ h * B0 * Real.exp (-M) := by
+    dsimp only [A3]
+    rw [abs_mul, abs_of_pos (by positivity)]
+    have hgM := hlist_dom L0 hM
+    have hmul := mul_le_mul_of_nonneg_left hgM (by positivity : 0 ≤ h / 2)
+    have hstep : h / 2 * (B0 * Real.exp (-M)) ≤ h * B0 * Real.exp (-M) := by
+      have : 0 ≤ h * B0 * Real.exp (-M) := by positivity
+      linarith [show h / 2 * (B0 * Real.exp (-M)) = (1 / 2 : ℝ) * (h * B0 * Real.exp (-M)) by ring]
+    exact le_trans hmul hstep
+  have h4 : |A4| ≤ h ^ 2 * B1 * Real.exp (-M) := by
+    dsimp only [A4]
+    rw [abs_mul, abs_of_pos (by positivity)]
+    have hg1M := hlist_dom L1 hM
+    have hmul := mul_le_mul_of_nonneg_left hg1M (by positivity : 0 ≤ h ^ 2 / 12)
+    have hstep : h ^ 2 / 12 * (B1 * Real.exp (-M)) ≤ h ^ 2 * B1 * Real.exp (-M) := by
+      have : 0 ≤ h ^ 2 * B1 * Real.exp (-M) := by positivity
+      linarith [show h ^ 2 / 12 * (B1 * Real.exp (-M)) = (1 / 12 : ℝ) * (h ^ 2 * B1 * Real.exp (-M)) by ring]
+    exact le_trans hmul hstep
+  have htri : |A1 + A2 + A3 + A4| ≤ |A1| + |A2| + |A3| + |A4| := by
+    linarith [abs_add_le (A1 + A2 + A3) A4, abs_add_le (A1 + A2) A3, abs_add_le A1 A2]
+  have hexp_nn : 0 ≤ Real.exp (-M) := le_of_lt (Real.exp_pos _)
+  have hh4_nn : 0 ≤ h ^ 4 := by positivity
+  have hh2_nn : 0 ≤ h ^ 2 := by positivity
+  have hterm1 : h ^ 4 * B4 ≤ (B4 + Bint + B0 + B1) * h ^ 4 := by
+    have : 0 ≤ (Bint + B0 + B1) * h ^ 4 := by positivity
+    linarith
+  have hterm2 : Bint * Real.exp (-M) + h * B0 * Real.exp (-M) + h ^ 2 * B1 * Real.exp (-M) ≤
+      (B4 + Bint + B0 + B1) * ((1 + h + h ^ 2) * Real.exp (-M)) := by
+    have hdiff_nn : 0 ≤ (B4 * (1 + h + h ^ 2) + Bint * (h + h ^ 2) +
+        B0 * (1 + h ^ 2) + B1 * (1 + h)) * Real.exp (-M) := by positivity
+    linarith
+  linarith
+
 end MultinomialTV
 
 end
