@@ -3,6 +3,16 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and Semantic Versioning (`VERSION` is the single source of truth).
 
+> **Correction (2026-11-26):** Historical entries (`v2.0.0`–`v2.4.0`) below are kept as dated records. Where earlier entries say `"6-kernel"` or `"6 independent kernels"`, read six checker runs of `lake comparator --paranoid` (two of which are the Lean kernel in paranoid and default mode). Where earlier entries cite a `"live negative Lean kernel rejection check"` in CI, note that the actual mathematical refutation of `aTriangle = 1/32` is the proved theorem `adversarial_aTriangle_ne_one_div_32` in `NonVacuity.lean` (upgraded in `v2.5.0` to a mutated-constant elaboration smoke test requiring `unsolved goals`). See [ERRATA.md](ERRATA.md).
+
+## [2.5.0] - 2026-11-26
+
+### Fixed
+- **100% closure of the 2026-11-26 statement audit (`E-2026-018`, `F-63`):** Merged the `2026-11-26` documentation corrections from `origin/main` with `v2.4.0`'s quantitative $O(\ell^{-2})$ Lemma 7.3 formalization and closed every remaining manuscript, metadata, Lean docstring, Blueprint, and CI item originally deferred after `0a69443`:
+  - **`paper/main.tex` & frozen PDF:** Updated abstract, Corollary 1.2, Section 7, Tables 1–2, and Section 8 to separate the **187 author-written theorems and lemmas** from **892 audited theorem constants**, report exact **8,089** Lean lines (`7,601` library + `488` root/bridge/audit; `Challenge.lean` `153` lines), narrow Corollary 1.2(i)–(iii) to **algebraic identities** removing the sole conjectural input while citing upstream Part 2/5 preprints as unformalized, replace `"six independent kernels"` with **six checker runs** of `lake comparator --paranoid`, note the 9 intentional `sorry` warnings of statement-only `Challenge.lean`, split `NonVacuity.lean` into **6 direct `hAdj 0..5` definition checks + 14 closed-form corollaries/refutations**, and cite `adversarial_aTriangle_ne_one_div_32` rather than the CI smoke test.
+  - **Lean docstrings (`Main.lean`, `Challenge.lean`, `Solution.lean`, `MultinomialTVConjecture.lean`):** Fixed `p. 35` → `pp. 59–60`, `18` → `20` non-vacuity witnesses, and reworded Targets 5–8 docstrings from `"Unconditional ... variance coefficient"` to `"Algebraic identity behind ..."`, documenting Target 7's equal rearrangement and Target 8's `(-1)^N/(2\pi)` passthrough.
+  - **Metadata, portal, Blueprint, CI & regression guards (`formalization.yaml`, `CITATION.cff`, `blueprint/`, `ROADMAP.md`, `REPLICATION.md`, `AGENTS.md`, `llms.txt`, `SUPPORT.md`, `justfile`, `repo.yaml`, `scripts/{build_site,generate_social_preview}.py`, `scripts/dev.sh`, `.github/workflows/lean-verify.yml`, `tests/test_repo_integrity.py`):** Standardized `"six checker runs"` and unrefereed arXiv v1 source disclosure everywhere, upgraded the CI smoke test to assert `unsolved goals` on a mutated constant, and added permanent regression test `test_regression_e2026_018_statement_audit_honesty_and_zero_conflict_markers`.
+
 ## [2.4.0] - 2026-11-26
 
 ### Added

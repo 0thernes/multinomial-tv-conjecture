@@ -23,7 +23,7 @@ lint:
     python3 -m mypy --ignore-missing-imports scripts/ tests/ || true
     bash scripts/dev.sh lint
 
-# Build Lean libraries, scan forbidden tokens, run VerifyAxioms, sync README, and run 6-kernel lake comparator --paranoid
+# Build Lean libraries, scan forbidden tokens, run VerifyAxioms, sync README, and run lake comparator --paranoid (six checker runs)
 verify-lean:
     bash scripts/dev.sh verify-lean
 

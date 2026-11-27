@@ -11,8 +11,8 @@
 
 ## Formal Verification Terms
 
-- **Six-Kernel Verification (`lake comparator --paranoid`):** Checking a single proof export independently across six distinct type checkers (`Lean 4.35.0`, `leanchecker-paranoid`, `lean4lean`, `nanoda`, `con-leche`, `con-ron`).
-- **Palomar Isolation (`Challenge.lean` / `Solution.lean`):** Separating minimal Mathlib-only target specifications from proof internals so auditors only inspect the concise `Challenge.lean` statement file (under Palomar's 1,000-line / 100 KiB limit).
+- **Six checker runs (`lake comparator --paranoid`):** Replaying a single proof export in six checker passes: the Lean 4.35.0 kernel in paranoid and default mode, `lean4lean`, `nanoda`, `con-leche`, and `con-ron`. Two of the six are the Lean kernel.
+- **Palomar Isolation (`Challenge.lean` / `Solution.lean`):** Separating minimal Mathlib-only target specifications from proof internals so auditors only inspect the concise `Challenge.lean` statement file (153 lines, well under Palomar's 1,000-line / 100 KiB limit).
 - **Statement Fidelity:** Exact mathematical correspondence between an informal literature statement and its formal Lean 4 type.
 - **Non-Vacuity Witness:** A formal theorem proving that hypotheses are concretely inhabited and that definitions evaluate to known exact values and refute deliberately false variants.
 - **Standard Lean Axioms:** `[propext, Classical.choice, Quot.sound]` — the three foundational axioms of classical mathematics in Lean 4 / Mathlib4.

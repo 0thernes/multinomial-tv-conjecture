@@ -6,7 +6,7 @@ This file is the **single canonical instruction file** for all AI coding agents 
 
 - **Repository:** `https://github.com/0thernes/multinomial-tv-conjecture`
 - **Author:** Alexander Stephen Donahue (`Independent Researcher, Spokane, WA, USA`, ORCID `0009-0006-8168-9648`, email `0_0@0thernes.art`). **NEVER** reintroduce `0thernes LLC` (unformed legal entity).
-- **Subject:** Complete Lean 4.35.0 formal proof (6-kernel verified via `lake comparator --paranoid`), independent exact/80-digit Python verification, interactive Blueprint, and AMS-LaTeX preprint proving **Conjecture 7.7** (`conj:atriangle`) of Banić & Elezović (`arXiv:2610.17046v1`, 2026) and its cyclic corollary (`arXiv:2611.14735v1`, 2026).
+- **Subject:** Complete Lean 4.35.0 formal proof (replayed in six checker runs via `lake comparator --paranoid`), independent exact/80-digit Python verification, interactive Blueprint, and AMS-LaTeX preprint proving **Conjecture 7.7** (`conj:atriangle`) and the quantitative $O(L^{-2})$ Lemma 7.3 remainder of Banić & Elezović (`arXiv:2610.17046v1`, 2026) together with the algebraic identities behind its cyclic corollary (`arXiv:2611.14735v1`, Theorem 3.10).
 - **Licenses:** Code (`lean/`, `scripts/`, `tests/`, `.github/`) is **Apache-2.0** (`LICENSE`); manuscript and docs (`paper/`, `docs/`, `blueprint/`, `*.md`) are **CC-BY-4.0** (`LICENSE-DOCS`).
 
 ## Hard Rules (Build Standard v1.2.0 `R1`–`R8` & Verification Playbook v1.3)
@@ -22,7 +22,7 @@ This file is the **single canonical instruction file** for all AI coding agents 
 ## Repository Map
 
 - `lean/MultinomialTVConjecture/` — Modular Lean 4.35.0 proof (`Combinatorial`, `StirlingRefined`, `GaussianEulerMaclaurin`, `LocalAsymptotics`, `Main`, `NonVacuity`).
-- `lean/Challenge.lean`, `lean/Solution.lean`, `lean/comparator.json` — Isolated Mathlib-only target statements & 6-kernel comparator bridge.
+- `lean/Challenge.lean`, `lean/Solution.lean`, `lean/comparator.json` — Isolated Mathlib-only target statements (9 targets) & comparator bridge (six checker runs).
 - `lean/VerifyAxioms.lean` — Exhaustive `Lean.collectAxioms` metaprogram + explicit `#print axioms` audit.
 - `paper/main.tex`, `paper/refs.bib` — AMS-LaTeX manuscript compiled via Tectonic to `dist/Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf`.
 - `blueprint/src/content.tex` — Dependency blueprint validated against `lean/` by `scripts/build_blueprint.py`.
@@ -34,7 +34,7 @@ This file is the **single canonical instruction file** for all AI coding agents 
 
 ```bash
 just reproduce       # Clean end-to-end verification (numeric, pytest, citations, axioms, blueprint, site)
-just verify-lean     # Lean build, forbidden scan, VerifyAxioms, README sync, 6-kernel comparator
+just verify-lean     # Lean build, forbidden scan, VerifyAxioms, README sync, comparator (six checker runs)
 just test            # Full pytest suite
 just paper           # Compile LaTeX manuscript & byte-reproducible arXiv tarball
 just audit           # Score repo against Build Standard v1.2.0 (90 items)

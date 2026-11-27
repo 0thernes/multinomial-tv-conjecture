@@ -117,28 +117,28 @@ Proves $d_0 = -\frac{4\sqrt{3}}{81\pi}$, $a_\triangle = \frac{1}{32} - \frac{4\s
 Proves $\exists C \ge 0,\;\forall L \ge 1,\;|h_{\mathrm{adj}}(L) - c_L L - a_* - b_{L\bmod 3}/L| \le C/L^2$, establishing the complete quantitative $O(L^{-2})$ remainder of Lemma 7.3 (Part 2, \S7.2).
 \end{theorem}
 
-\begin{corollary}[Linear, Cyclic, and Small-Bin Variance Closed Forms $\gamma(n)$, $\gamma_c(n)$, $\gamma(3;N)$, $\gamma(4;N)$]
+\begin{corollary}[Algebraic Identities Behind $\gamma(n)$, $\gamma_c(n)$, $\gamma(3;N)$, $\gamma(4;N)$]
 \label{cor:gamma}
 \lean{MultinomialTV.gamma_closed_form, MultinomialTV.gamma_cyclic_closed_form, MultinomialTV.gamma3_closed_form, MultinomialTV.gamma4_closed_form}
 \uses{thm:conj77}
 \leanok
-Algebraic recombination closed forms for $\gamma(n)$ (Part 2 Thm 7.6), $\gamma_c(n)$ (Part 5 Thm 3.10), and degenerate small-bin regimes $\gamma(3;N)$ and $\gamma(4;N)$ (Part 2 \S7.2, \S8).
+Algebraic identities substituting $a_\triangle$ and $b_r$ into the $(p_1,q_1,r_1)$ combinations of Part 2 Thm 7.6 ($\gamma(n)$), Part 5 Thm 3.10 ($\gamma_c(n)$), and Part 2 \S7.2, \S8 ($\gamma(3;N)$, $\gamma(4;N)$). Upstream variance decompositions are cited externally and not formalized in Lean.
 \end{corollary}
 
-\section{Stage 5: Non-Vacuity Witnesses \& 6-Kernel Comparator Bridge}
+\section{Stage 5: Non-Vacuity Witnesses \& Comparator Bridge}
 
 \begin{proposition}[Non-Vacuity \& Adversarial Refutation Witnesses]
 \label{prop:nonvac}
 \lean{MultinomialTV.NonVacuity.hAdj_zero, MultinomialTV.NonVacuity.hAdj_one, MultinomialTV.NonVacuity.hAdj_two, MultinomialTV.NonVacuity.hAdj_three, MultinomialTV.NonVacuity.hAdj_four, MultinomialTV.NonVacuity.hAdj_five, MultinomialTV.NonVacuity.bRes_zero_pos, MultinomialTV.NonVacuity.bRes_one_neg, MultinomialTV.NonVacuity.bRes_zero_ne_one, MultinomialTV.NonVacuity.d0_neg, MultinomialTV.NonVacuity.aTriangle_lt_one_div_32, MultinomialTV.NonVacuity.aTriangle_pos, MultinomialTV.NonVacuity.gamma2_neg, MultinomialTV.NonVacuity.adversarial_aTriangle_ne_one_div_32, MultinomialTV.NonVacuity.adversarial_d0_ne_zero, MultinomialTV.NonVacuity.adversarial_residue_limits_not_constant, MultinomialTV.NonVacuity.gamma_closed_form_witness_n5, MultinomialTV.NonVacuity.gamma_cyclic_closed_form_witness_n5, MultinomialTV.NonVacuity.gamma3_closed_form_witness_N0, MultinomialTV.NonVacuity.gamma4_closed_form_witness_N0}
 \uses{def:hadj, thm:conj77, cor:gamma}
 \leanok
-20 concrete small-$L$, strict-inequality, adversarial false-constant refutation, and $n \in \{3,4,5\}$ inhabitation theorems ruling out vacuous definitions.
+20 concrete theorems: 6 direct definition checks (\texttt{hAdj 0..5}) and 14 strict-inequality, adversarial false-constant refutation, and $n \in \{3,4,5\}$ witness corollaries of the proved closed forms.
 \end{proposition}
 
-\begin{theorem}[Isolated 6-Kernel Comparator Targets]
+\begin{theorem}[Isolated Comparator Targets (Six Checker Runs)]
 \label{thm:comparator}
 \lean{MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1, MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2, MultinomialTV.ComparatorTarget.target_conjecture_7_7, MultinomialTV.ComparatorTarget.target_gamma_closed_form, MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form, MultinomialTV.ComparatorTarget.target_gamma3_closed_form, MultinomialTV.ComparatorTarget.target_gamma4_closed_form, MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq}
 \uses{thm:mod0, thm:mod1, thm:mod2, thm:conj77, thm:lemma73-rem, cor:gamma}
 \leanok
-Mathlib-only isolated specification (\texttt{Challenge.lean}, 149 lines, Lean 4.35.0 \texttt{module} header) matched against sorry-free \texttt{Solution.lean} across 9 targets by 6 independent kernels via \texttt{lake comparator --config comparator.json --paranoid}.
+Mathlib-only isolated specification (\texttt{Challenge.lean}, 153 lines, Lean 4.35.0 \texttt{module} header) matched against sorry-free \texttt{Solution.lean} across 9 targets in six checker runs via \texttt{lake comparator --config comparator.json --paranoid} (Lean paranoid and default kernel, \texttt{lean4lean}, \texttt{nanoda}, \texttt{con-leche}, \texttt{con-ron}).
 \end{theorem}

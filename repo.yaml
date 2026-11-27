@@ -2,7 +2,7 @@
 # Project manifest for Build Standard for LLMs v1.2.0.
 standard: "1.2.0"
 name: "multinomial-tv-conjecture"
-description: "Complete Lean 4.35.0 formal proof (6-kernel verified), independent exact/80-digit computation, Blueprint, and AMS-LaTeX preprint proving Conjecture 7.7 of Banić & Elezović (2026) on the second-order variance constant of multinomial discrete total variation."
+description: "Complete Lean 4.35.0 formal proof (replayed in six checker runs of lake comparator --paranoid), independent exact/80-digit computation, Blueprint, and AMS-LaTeX preprint proving Conjecture 7.7 and quantitative O(L^-2) Lemma 7.3 of Banić & Elezović (2026) on the second-order variance constant of multinomial discrete total variation."
 owner: "Alexander S. Donahue (0thernes)"
 year: "2026"
 project_type: research
@@ -32,7 +32,7 @@ items:
   A05: {status: done, evidence: "README.md embeds docs/media/social-preview.svg generated dynamically from current code via scripts/generate_social_preview.py; publication figures in paper/figures/*.pdf and interactive Blueprint"}
   A06: {status: done, evidence: "LICENSE (Apache-2.0) and LICENSE-DOCS (CC-BY-4.0) with REUSE/SPDX headers across all code and TeX files"}
   A07: {status: done, evidence: "CHANGELOG.md"}
-  A08: {status: done, evidence: "VERSION (2.4.0) matched with CHANGELOG.md, CITATION.cff, formalization.yaml, lean/lakefile.toml, llms.txt, social-preview.svg"}
+  A08: {status: done, evidence: "VERSION (2.5.0) matched with CHANGELOG.md, CITATION.cff, formalization.yaml, lean/lakefile.toml, llms.txt, social-preview.svg"}
   A09: {status: done, evidence: "tests/test_exact_and_properties.py and tests/test_repo_integrity.py"}
   A10: {status: done, evidence: ".github/workflows/ci.yml and .github/workflows/lean-verify.yml"}
   A11: {status: done, evidence: ".github/workflows/release.yml"}
@@ -76,7 +76,7 @@ items:
   B04: {status: done, evidence: "CLAIMS.md"}
   B05: {status: done, evidence: "Each claim C1-C6 mapped to executable Lean/pytest falsification checks"}
   B06: {status: done, evidence: "NonVacuity.lean adversarial refutations + negative tests in tests/test_exact_and_properties.py"}
-  B07: {status: done, evidence: "Regression tests in tests/test_repo_integrity.py and tests/test_exact_and_properties.py for E-2026-001..017"}
+  B07: {status: done, evidence: "Regression tests in tests/test_repo_integrity.py and tests/test_exact_and_properties.py for E-2026-001..018"}
   B08: {status: done, evidence: "Golden rational table and axiom-log snapshot tests in tests/"}
   B09: {status: n/a, note: "No network API or external wire protocol exposed"}
   B10: {status: done, evidence: "Hypothesis property-based tests running >=3,000 cases (3 suites x 1,000 examples) in tests/test_exact_and_properties.py"}
@@ -91,7 +91,7 @@ items:
   B19: {status: n/a, note: "Deterministic single-threaded mathematical verification"}
   B20: {status: done, evidence: "Multi-precision 50/80/120-dps stability and catastrophic-cancellation tests in tests/test_exact_and_properties.py"}
   B21: {status: n/a, note: "No networked service or external runtime dependency"}
-  B22: {status: done, evidence: "lean/ formalization verified by 6 independent kernels via lake comparator --paranoid"}
+  B22: {status: done, evidence: "lean/ formalization (9 targets) replayed in six checker runs of lake comparator --paranoid"}
   B23: {status: n/a, note: "Deductive Lean 4 real-analysis theorem proving rather than state-machine model checking"}
   B24: {status: done, evidence: "Proofs written directly in Lean 4.35.0 dependent type theory"}
   B25: {status: n/a, note: "No unsafe systems code; verification scripts cross-checked against exact rational arithmetic and Lean 4"}

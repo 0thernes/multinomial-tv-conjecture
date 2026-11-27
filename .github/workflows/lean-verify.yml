@@ -1,4 +1,4 @@
-name: Lean 4.35.0 Formal Verification & 6-Kernel Audit
+name: Lean 4.35.0 Formal Verification & Comparator Audit
 
 on:
   push:
@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   lean-verify:
-    name: Build, Axiom Audit, Batteries Linter & 6-Kernel Comparator
+    name: Build, Axiom Audit, Batteries Linter & Comparator (6 Checker Runs)
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -107,30 +107,36 @@ jobs:
         working-directory: lean
         continue-on-error: true
         run: lake exe runLinter MultinomialTVConjecture
-      - name: Live negative Lean kernel rejection check (false conjecture must fail)
+      - name: Elaboration smoke test (mutated constant aTriangle = 1/32 fails with type error)
         working-directory: lean
         shell: bash
         run: |
-          cat <<'EOF' > /tmp/neg_false_conjecture.lean
+          # Note: the actual kernel-checked refutation of aTriangle = 1/32 is the proved theorem
+          # `MultinomialTV.NonVacuity.adversarial_aTriangle_ne_one_div_32`; this CI step is an
+          # elaboration smoke test verifying that a mutated goal fails with a tactic/type mismatch.
+          cat <<'EOF' > /tmp/neg_smoke_test.lean
           import MultinomialTVConjecture.Main
-          theorem false_conjecture_7_7_must_fail : MultinomialTV.aTriangle = 1 / 32 := by
-            exact MultinomialTV.conjecture_7_7_aTriangle
+          theorem mutated_aTriangle_must_fail : MultinomialTV.aTriangle = 1 / 32 := by
+            rw [MultinomialTV.conjecture_7_7_aTriangle]
+            norm_num
           EOF
-          if lake env lean /tmp/neg_false_conjecture.lean; then
-            echo "ERROR: Lean kernel unexpectedly accepted false statement aTriangle = 1/32!" >&2
-            exit 1
+          OUT=$(lake env lean /tmp/neg_smoke_test.lean 2>&1 || true)
+          echo "$OUT"
+          if echo "$OUT" | grep -q "unsolved goals"; then
+            echo "PASS: Elaboration smoke test failed with expected 'unsolved goals' on mutated constant."
           else
-            echo "PASS: Lean 4.35.0 kernel cleanly rejected false statement aTriangle = 1/32."
+            echo "ERROR: Expected 'unsolved goals' on mutated constant smoke test!" >&2
+            exit 1
           fi
-          rm -f /tmp/neg_false_conjecture.lean
-      - name: Run sandboxed 6-kernel lake comparator --paranoid
+          rm -f /tmp/neg_smoke_test.lean
+      - name: Run sandboxed lake comparator --paranoid (six checker runs)
         working-directory: lean
         shell: bash
         run: |
           set -o pipefail
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
           lake comparator --config comparator.json --paranoid | tee ../results/comparator-paranoid-ci.log
-      - name: Attest Lean axiom & 6-kernel comparator reports (SLSA / Sigstore)
+      - name: Attest Lean axiom & comparator reports (SLSA / Sigstore)
         uses: actions/attest-build-provenance@v2
         continue-on-error: true
         with:

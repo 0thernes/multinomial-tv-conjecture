@@ -22,7 +22,7 @@
   pdftitle={Resolution and Lean 4 Formal Verification of Conjecture 7.7 on the Second-Order Variance of Multinomial Discrete Total Variation},
   pdfauthor={Alexander Stephen Donahue},
   pdfsubject={Mathematical Statistics; Probability Theory; Lean 4 Formal Verification (Conjecture 7.7, arXiv:2610.17046v1)},
-  pdfkeywords={discrete total variation, multinomial distribution, asymptotic variance, Euler-Maclaurin summation, Stirling expansion, Lean 4, six-kernel verification}
+  pdfkeywords={discrete total variation, multinomial distribution, asymptotic variance, Euler-Maclaurin summation, Stirling expansion, Lean 4, lake comparator}
 }
 
 \numberwithin{equation}{section}
@@ -59,14 +59,14 @@
   \normalsize Independent Researcher, Spokane, WA, USA
 }
 
-\date{November 26, 2026 (v2.4.0)}
+\date{November 26, 2026 (v2.5.0)}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-We prove Conjecture~7.7 (\texttt{conj:atriangle}) and the complete quantitative $O(\ell^{-2})$ remainder of Lemma~7.3 of Bani\'c and Elezovi\'c (arXiv:2610.17046v1, \emph{Part~2}; confirmed open in arXiv:2611.14735v1, \emph{Part~5}), establishing the exact closed form of the second-order adjacent triangular-lattice constant governing the variance of discrete total variation under the uniform multinomial law. For $(X_1,X_2,X_3)\sim\Mult(\ell;\tfrac{1}{3},\tfrac{1}{3},\tfrac{1}{3})$, let $\hadj(\ell):=\E[|X_2-X_1|\,|X_3-X_2|]$, $c_L:=\frac{2\sqrt{3}}{3\pi}+\frac{1}{9}$, and $a_*:=-\frac{2\sqrt{3}}{9\pi}$. We prove that for each residue class $r\in\{0,1,2\}$, the $1/\ell$-order limit
+We prove Conjecture~7.7 (\texttt{conj:atriangle}) and the complete quantitative $O(\ell^{-2})$ remainder of Lemma~7.3 of Bani\'c and Elezovi\'c (arXiv:2610.17046v1, \emph{Part~2}; confirmed open in arXiv:2611.14735v1, \emph{Part~5}; both unrefereed arXiv v1 preprints), establishing the exact closed form of the second-order adjacent triangular-lattice constant governing the variance of discrete total variation under the uniform multinomial law. For $(X_1,X_2,X_3)\sim\Mult(\ell;\tfrac{1}{3},\tfrac{1}{3},\tfrac{1}{3})$, let $\hadj(\ell):=\E[|X_2-X_1|\,|X_3-X_2|]$, $c_L:=\frac{2\sqrt{3}}{3\pi}+\frac{1}{9}$, and $a_*:=-\frac{2\sqrt{3}}{9\pi}$. We prove that for each residue class $r\in\{0,1,2\}$, the $1/\ell$-order limit
 \[
   b_r := \lim_{\substack{\ell\to\infty\\\ell\equiv r\pmod 3}} \ell\bigl(\hadj(\ell)-c_L\ell-a_*\bigr)
 \]
@@ -81,9 +81,9 @@ exists, satisfies the uniform bound $|\hadj(\ell)-c_L\ell-a_*-b_{\ell\bmod 3}/\e
   \tri = \frac{1}{32} - \frac{4\sqrt{3}}{243}, \qquad
   \gamma_2 = -\frac{1}{32\pi} - \frac{8\sqrt{3}}{243\pi}.
 \]
-This renders unconditional the closed-form $O(N^{-2})$ variance coefficients $\gamma(n)$ (Part~2, Theorem~7.6), $\gamma(3;N)$, $\gamma(4;N)$, and the cyclic coefficient $\gamma_c(n)$ (Part~5, Theorem~3.10), as well as the algebraic value of $\gamma_2$ entering the sub-leading ridge-mode constant $C_{1/2}$ (Part~5, Proposition~4.2).
+This removes the sole conjectural input from the Bani\'c--Elezovi\'c $O(N^{-2})$ variance formulas $\gamma(n)$ (Part~2, Theorem~7.6), $\gamma(3;N)$, $\gamma(4;N)$, and $\gamma_c(n)$ (Part~5, Theorem~3.10), as well as the algebraic value of $\gamma_2$ entering the sub-leading ridge-mode constant $C_{1/2}$ (Part~5, Proposition~4.2); those variance formulas still rest on the cited upstream theorems of Parts~2 and~5, which are not formalized here.
 
-Rather than evaluating two-dimensional Hadamard finite-part distributions at order $\ell^{-5/2}$, our proof introduces an exact combinatorial $2\mathrm{D}$-to-$1\mathrm{D}$ reduction: $S_3$-symmetrization onto the strict simplex wedge $a<b<c$, two-step finite-difference telescoping, and a six-way orbit partition collapse $\hadj(\ell)$ identically into three one-dimensional central trinomial sums $A(q),B(q),C(q)$. These sums are then evaluated asymptotically through sharp non-asymptotic Stirling bounds, consecutive-ratio Gaussian tail bounds beyond cutoff $K_q=\lfloor q^{5/8}\rfloor$, and self-contained third- and fourth-order Euler--Maclaurin formulas for odd-Gaussian moments whose $-\frac{h^2}{12}$ Bernoulli shift at the origin plays a decisive role. The entire proof is formally verified from first principles in Lean~4 (\texttt{v4.35.0}) with Mathlib across $7{,}599$ lines of library proof code ($8{,}082$ lines total across $10$ Palomar-compliant \texttt{module}-header files including the root export, Mathlib-only \texttt{Challenge.lean} and \texttt{Solution.lean} isolation bridge, and exhaustive axiom audit). All $892$ named and module-private theorems are exhaustively audited with $20$ non-vacuity and adversarial false-constant refutation witnesses, zero \texttt{sorry}, \texttt{admit}, custom \texttt{axiom}, or \texttt{native\_decide}, zero compiler, Batteries, or Mathlib style-linter warnings, and strictly standard axioms (\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}), verified across six independent proof kernels (\texttt{lake comparator {-}{-}paranoid}) on all nine headline targets plus a live negative kernel-rejection check, and cross-checked in Python to over $54$ decimal digits.
+Rather than evaluating two-dimensional Hadamard finite-part distributions at order $\ell^{-5/2}$, our proof introduces an exact combinatorial $2\mathrm{D}$-to-$1\mathrm{D}$ reduction: $S_3$-symmetrization onto the strict simplex wedge $a<b<c$, two-step finite-difference telescoping, and a six-way orbit partition collapse $\hadj(\ell)$ identically into three one-dimensional central trinomial sums $A(q),B(q),C(q)$. These sums are then evaluated asymptotically through sharp non-asymptotic Stirling bounds, consecutive-ratio Gaussian tail bounds beyond cutoff $K_q=\lfloor q^{5/8}\rfloor$, and self-contained third- and fourth-order Euler--Maclaurin formulas for odd-Gaussian moments whose $-\frac{h^2}{12}$ Bernoulli shift at the origin plays a decisive role. The entire proof of Theorem~1.1 and the four algebraic identities behind Corollary~1.2(i)--(iii) are formally verified in Lean~4 (\texttt{v4.35.0}) with Mathlib across $7{,}601$ lines of library proof code ($8{,}089$ lines total across $10$ Palomar-compliant \texttt{module}-header files including the root export, Mathlib-only \texttt{Challenge.lean} and \texttt{Solution.lean} isolation bridge, and exhaustive axiom audit). All $187$ author-written theorems and lemmas ($892$ compiler-emitted theorem constants) are exhaustively audited with $20$ non-vacuity and adversarial theorems ($6$ direct definition checks and $14$ corollaries/refutations, including a kernel-checked refutation of $\tri = \tfrac{1}{32}$), zero \texttt{sorry}, \texttt{admit}, custom \texttt{axiom}, or \texttt{native\_decide} in proof modules, no compiler, Batteries, or Mathlib style-linter warnings except the $9$ intentional \texttt{sorry} warnings of statement-only \texttt{Challenge.lean}, and strictly standard axioms (\texttt{\small propext}, \texttt{\small Classical.choice}, \texttt{\small Quot.sound}). All nine headline targets are replayed in CI via \texttt{lake comparator {-}{-}paranoid} across six checker runs (two of which are the Lean kernel), and cross-checked in Python to over $54$ decimal digits.
 \end{abstract}
 
 \medskip
@@ -143,7 +143,7 @@ exists and decomposes as $b_r = d_0 + \frac{4\sqrt{3}}{9\pi}\cos(\frac{2\pi r}{3
 \end{equation}
 However, evaluating the origin-saddle constant $d_0$ by their Fourier method required computing two-dimensional Hadamard finite-part distributional pairings \cite{estrada_kanwal} of the form $\langle \operatorname{f.p.}(u_1^{-2})\otimes\operatorname{f.p.}(u_2^{-2}), e^{-\frac{1}{2}u^\top C u} P_4(u)\rangle$ alongside mixed singular and smooth lattice corrections up to order $\ell^{-5/2}$. They therefore left the closed form of $\tri$ (equivalently $d_0$, $\gamma_2$, and $b_r$) as \cite[Conjecture~7.7]{banic_elezovic_p2}, verified numerically to more than $40$ significant digits via Richardson extrapolation. In Part~5 \cite[Remarks~3.11, 3.13, and 4.3]{banic_elezovic_p5}, the conjecture remained open and left the cyclic second-order coefficient $\gamma_c(n)$ and the sub-leading continuous ridge-mode constant $C_{1/2}$ conditional upon it.
 
-\subsection{Main Theorem and Unconditional Consequences}
+\subsection{Main Theorem and Variance Formula Consequences}
 
 The main result of this paper is a complete, elementary, and machine-checked proof of Conjecture~7.7 together with the full quantitative $O(\ell^{-2})$ remainder of Lemma~7.3.
 
@@ -171,13 +171,13 @@ Moreover, there exists a constant $C\ge 0$ such that for every integer $\ell\ge 
 \end{equation}
 \end{theorem}
 
-Combining \cref{thm:main} with the recombination theorems already proved unconditionally in \cite{banic_elezovic_p2,banic_elezovic_p5} immediately removes the sole conjectural input across both papers.
+Combining \cref{thm:main} with the cited upstream recombination theorems of the unrefereed preprints \cite{banic_elezovic_p2,banic_elezovic_p5} removes the sole conjectural input across both papers; those upstream variance decompositions remain cited external results and are not formalized in Lean.
 
-\begin{corollary}[Unconditional second-order variance coefficients]
+\begin{corollary}[Closed-form second-order variance coefficients]
 \label{cor:unconditional}
-Let $p_1(n)$, $q_1(n)$, and $r_1(n)$ denote the $1/N$ block coefficients of \cite[Theorem~7.6]{banic_elezovic_p2}, given by $p_1(n)=\frac{n^2-4n-4}{32\pi n}$, $q_1(n)=\frac{\tri n}{\pi}-\frac{n+1}{8\pi n}$, and $r_1(n)=-\frac{n+1}{8\pi n}$. Then:
+Let $p_1(n)$, $q_1(n)$, and $r_1(n)$ denote the $1/N$ block expressions of \cite[Theorem~7.6]{banic_elezovic_p2}, given by $p_1(n)=\frac{n^2-4n-4}{32\pi n}$, $q_1(n)=\frac{\tri n}{\pi}-\frac{n+1}{8\pi n}$, and $r_1(n)=-\frac{n+1}{8\pi n}$. Substituting \cref{thm:main} yields the following closed forms (conditional on the cited upstream variance theorems of \cite{banic_elezovic_p2,banic_elezovic_p5}; Lean verifies only the algebraic substitutions below):
 \begin{enumerate}[label=(\roman*)]
-  \item \textbf{Linear total variation ($n\ge 5$).} By \cite[Theorem~7.6]{banic_elezovic_p2}, the $N^{-2}$ coefficient of $\Var(d)/N$ holds unconditionally:
+  \item \textbf{Linear total variation ($n\ge 5$).} Assuming \cite[Theorem~7.6]{banic_elezovic_p2}, the $N^{-2}$ coefficient of $\Var(d)/N$ equals:
   \begin{equation}\label{eq:gamma-linear}
   \begin{aligned}
     \gamma(n)
@@ -185,19 +185,19 @@ Let $p_1(n)$, $q_1(n)$, and $r_1(n)$ denote the $1/N$ block coefficients of \cit
     &= -\frac{n(n+1)}{32\pi} - \frac{8\sqrt{3}\,n(n-2)}{243\pi} + \frac{n-1}{8\pi n}.
   \end{aligned}
   \end{equation}
-  \item \textbf{Cyclic total variation ($n\ge 5$).} By \cite[Theorem~3.10]{banic_elezovic_p5}, the $N^{-2}$ coefficient of $\Var(d^c)/N$ holds unconditionally:
+  \item \textbf{Cyclic total variation ($n\ge 5$).} Assuming \cite[Theorem~3.10]{banic_elezovic_p5}, the $N^{-2}$ coefficient of $\Var(d^c)/N$ equals:
   \begin{equation}\label{eq:gamma-cyclic}
     \gamma_c(n)
     = n\,p_1(n) + 2n\,q_1(n) + n(n-3)r_1(n)
     = -\frac{n(n+4)}{32\pi} - \frac{8\sqrt{3}\,n^2}{243\pi}.
   \end{equation}
-  \item \textbf{Degenerate small-bin regimes ($n=3,4$).} Substituting \eqref{eq:main-br}--\eqref{eq:main-atri-gamma2} into the small-$n$ formulas of \cite[\S 7.2 and \S 8]{banic_elezovic_p2} unconditionally yields
+  \item \textbf{Degenerate small-bin regimes ($n=3,4$).} Assuming the small-$n$ decompositions of \cite[\S 7.2 and \S 8]{banic_elezovic_p2}, substituting \eqref{eq:main-br}--\eqref{eq:main-atri-gamma2} yields
   \[
     \gamma(3;N) = -\frac{7}{24\pi} - \frac{8\sqrt{3}}{81\pi} + \frac{8\sqrt{3}}{9\pi}\cos\!\left(\frac{2\pi N}{3}\right),
     \qquad
     \gamma(4;N) = -\frac{17}{32\pi} - \frac{64\sqrt{3}}{243\pi} + \frac{(-1)^N}{2\pi}.
   \]
-  \item \textbf{Continuous ridge-mode input.} In \cite[Proposition~4.2]{banic_elezovic_p5}, the algebraic input $\gamma_2=-\frac{1}{32\pi}-\frac{8\sqrt{3}}{243\pi}$ entering the sub-leading continuous-mode constant $C_{1/2}=2\gamma_2 K_0^{3/2}/\beta_1 = -42.047119\ldots$ is now proved unconditionally (leaving only the uniform $\gamma$-order ridge-profile hypothesis of that proposition).
+  \item \textbf{Continuous ridge-mode input.} In \cite[Proposition~4.2]{banic_elezovic_p5}, the algebraic value $\gamma_2=-\frac{1}{32\pi}-\frac{8\sqrt{3}}{243\pi}$ entering the sub-leading continuous-mode constant $C_{1/2}=2\gamma_2 K_0^{3/2}/\beta_1 = -42.047119\ldots$ is established by \cref{thm:main} (leaving the cited uniform $\gamma$-order ridge-profile hypothesis of that proposition).
 \end{enumerate}
 \end{corollary}
 
@@ -205,7 +205,7 @@ Let $p_1(n)$, $q_1(n)$, and $r_1(n)$ denote the $1/N$ block coefficients of \cit
 
 Why did the Fourier approach stall while our proof succeeds by completely elementary means? The kink in $|x_2-x_1|\,|x_3-x_2|$ occurs along two intersecting lines in the two-dimensional simplex $\Delta_\ell=\{(a,b,c)\in\N^3:a+b+c=\ell\}$. In frequency space, multiplying two singular kernels $-\frac{1}{2}\csc^2(\theta/2)$ produces intricate two-dimensional finite-part integrals. In physical space, however, $S_3$-symmetrization folds the simplex onto the single strict Weyl chamber $a<b<c$, where the absolute values vanish and the weight $(b-a)(c-b)/(a!\,b!\,c!)$ is a polynomial times a reciprocal factorial product. Two exact finite-difference telescopes then annihilate the interior of the chamber completely, reducing the entire two-dimensional expectation $\hadj(\ell)$ to \emph{one-dimensional sums} along the diagonal slice $x_1=x_2=x$, $x_3=3q-2x$ (\cref{fig:reduction}).
 
-The proof proceeds in four self-contained stages across five core Lean~4 proof modules (with \code{NonVacuity.lean}, \code{Challenge.lean}, \code{Solution.lean}, and \code{VerifyAxioms.lean} providing non-vacuity and multi-kernel audits):
+The proof proceeds in four self-contained stages across five core Lean~4 proof modules (with \code{NonVacuity.lean}, \code{Challenge.lean}, \code{Solution.lean}, and \code{VerifyAxioms.lean} providing non-vacuity checks, axiom auditing, and comparator replay):
 \begin{enumerate}[label=\textbf{Stage \arabic*.},leftmargin=*,align=left]
   \item \textbf{Exact $2\mathrm{D}$-to-$1\mathrm{D}$ combinatorial reduction} (\cref{sec:combinatorial}; \code{Combinatorial.lean}). Exact finite-$\ell$ identities express $\hadj(3q)$, $\hadj(3q+1)$, and $\hadj(3q-1)$ solely in terms of the central trinomial probability $p_{3q}(q)=(3q)!/(3^{3q}(q!)^3)$ and three normalized $1\mathrm{D}$ sums $A(q),B(q),C(q)$.
   \item \textbf{Sharp non-asymptotic Stirling expansion} (\cref{sec:stirling}; \code{StirlingRefined.lean}). An elementary two-sided bound $\frac{1}{12n}-\frac{1}{15n^3}\le R(n)\le\frac{1}{12n}$ yields $p_{3q}(q)=\frac{\sqrt{3}}{2\pi q}(1-\frac{2}{9q}+\frac{2}{81q^2}+O(q^{-3}))$ with explicit constants valid for every $q\ge 2$.
@@ -830,7 +830,7 @@ This proves \eqref{eq:main-br}--\eqref{eq:main-atri-gamma2}. For the quantitativ
 
 \subsection{Machine-Checked Verification in Lean~4}
 
-Asymptotic calculations involving third-order expansions, boundary Euler--Maclaurin shifts, and multi-term cancellations across three residue classes are notoriously sensitive to sign and constant errors. To eliminate any possibility of hidden gaps or algebraic slips, the entire proof of \cref{thm:main} and \cref{cor:unconditional}(i)--(iii) has been formally verified in Lean~4 (\code{v4.35.0}) \cite{moura_ullrich2021} using Mathlib (\code{v4.35.0}) \cite{mathlib2020}.
+Asymptotic calculations involving third-order expansions, boundary Euler--Maclaurin shifts, and multi-term cancellations across three residue classes are notoriously sensitive to sign and constant errors. To eliminate any possibility of hidden gaps or algebraic slips, the entire proof of \cref{thm:main} and the four algebraic identities behind \cref{cor:unconditional}(i)--(iii) have been formally verified in Lean~4 (\code{v4.35.0}) \cite{moura_ullrich2021} using Mathlib (\code{v4.35.0}) \cite{mathlib2020}.
 
 To guarantee that our formalized statement matches Bani\'c and Elezovi\'c's definition verbatim rather than an unverified proxy, we also prove the fidelity theorem \code{hAdj\_eq\_nested\_sum} (in namespace \code{MultinomialTV}):
 \[
@@ -853,23 +853,23 @@ Lean~4 Module & Lines & Principal Exported Theorems (Paper Reference) \\
 \code{StirlingRefined.lean} & 420 & \code{stirlingRem\_bounds} (\cref{prop:stirling-bounds}), \code{p3q\_center\_expansion} (\cref{prop:p3q-center}) \\
 \code{GaussianEulerMaclaurin.lean} & 976 & \code{integral\_oddGauss}, \code{oddGauss\_sum\_approx} (\cref{thm:em}), \code{oddGauss\_sum\_approx\_order4} (\cref{rem:em-order4}) \\
 \code{LocalAsymptotics.lean} & 3,574 & \code{p3q\_right/left\_ratio\_le}, \code{tendsto\_sumA/B/C} (\cref{thm:abc-limits}), \code{sumA/B/C\_O\_inv\_sq} (\cref{rem:abc-order2}) \\
-\code{Main.lean} & 823 & \code{hAdj\_eq\_nested\_sum}, \code{conjecture\_7\_7}, \code{lemma\_7\_3\_O\_inv\_sq} (\cref{thm:main}), \code{gamma*\_closed\_form} \\
-\code{NonVacuity.lean} & 167 & Exact \code{hAdj 0..5}, strict signs, $3$ false-constant refutations, $n\in\{3,4,5\}$ witnesses ($20$ theorems) \\
+\code{Main.lean} & 825 & \code{hAdj\_eq\_nested\_sum}, \code{conjecture\_7\_7}, \code{lemma\_7\_3\_O\_inv\_sq} (\cref{thm:main}), \code{gamma*\_closed\_form} \\
+\code{NonVacuity.lean} & 167 & $6$ direct \code{hAdj 0..5} checks + $14$ sign/refutation/witness corollaries ($20$ theorems) \\
 \code{MultinomialTVConjecture.lean} & 19 & Root library re-export (\code{Main}, \code{NonVacuity}) \\
 \midrule
-\code{Challenge.lean} / \code{Solution.lean} & 149 / 201 & Mathlib-only $9$-target Palomar isolation stub \& sorry-free proof bridge (\code{lake comparator}) \\
-\code{VerifyAxioms.lean} & 114 & $55$ explicit \code{\#print axioms} + exhaustive \code{Lean.collectAxioms} audit ($892$ theorems) \\
+\code{Challenge.lean} / \code{Solution.lean} & 153 / 202 & Mathlib-only $9$-target Palomar isolation stub \& sorry-free proof bridge (\code{lake comparator}) \\
+\code{VerifyAxioms.lean} & 114 & $55$ explicit \code{\#print axioms} + exhaustive \code{Lean.collectAxioms} ($187$ author; $892$ constants) \\
 \midrule
-\textbf{Total Lean~4 codebase} & \textbf{8,082} & \textbf{$7{,}599$ library + $483$ root/bridge/audit; $0$ \code{sorry}/\code{admit}/\code{axiom}/\code{native\_decide}; $0$ warnings} \\
+\textbf{Total Lean~4 codebase} & \textbf{8,089} & \textbf{$7{,}601$ library + $488$ root/bridge/audit; $0$ \code{sorry}/\code{admit}/\code{axiom}/\code{native\_decide} in proofs} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Running \code{lake build} across the targets \code{MultinomialTVConjecture}, \code{Challenge}, \code{Solution}, and \code{VerifyAxioms} compiles cleanly with exit code $0$ and zero compiler warnings under \code{autoImplicit = false} and \code{weak.linter.mathlibStandardSet = true} (with Lean~4.35.0 \code{module} headers on all $10$ source files), and passes \code{lake exe runLinter} on \code{MultinomialTVConjecture} with zero warnings across all $15$ Batteries/Mathlib linters. Executing \code{lake env lean VerifyAxioms.lean} inspects all $55$ exported declarations explicitly and runs an exhaustive \code{Lean.collectAxioms} metaprogram over every named and module-private theorem across all project modules ($892$ theorems total), confirming that every single theorem depends strictly on Lean's three foundational axioms:
+Running \code{lake build} across the targets \code{MultinomialTVConjecture}, \code{Challenge}, \code{Solution}, and \code{VerifyAxioms} compiles cleanly with exit code $0$ and no compiler or Mathlib style-linter warnings except the $9$ intentional \code{sorry} warnings of the statement-only \code{Challenge.lean}, under \code{autoImplicit = false} and \code{weak.linter.mathlibStandardSet = true} (with Lean~4.35.0 \code{module} headers on all $10$ source files), and passes \code{lake exe runLinter} on \code{MultinomialTVConjecture} with zero warnings across all $15$ Batteries and Mathlib linters. Auditing \code{VerifyAxioms.lean} (via \code{lake env lean}) inspects all $55$ exported declarations explicitly and runs an exhaustive \code{Lean.collectAxioms} metaprogram over all $187$ author-written theorems and lemmas together with their $705$ compiler-generated auxiliary theorem constants ($892$ audited theorem constants total), confirming that every single one depends strictly on Lean's three foundational axioms:
 \[
   \code{[propext, Classical.choice, Quot.sound]}.
 \]
-To defend against both kernel bugs and definition drift, \code{lean/Challenge.lean} ($149$ lines, under Palomar's $1{,}000$-line / $100$\,KiB threshold) imports \emph{only} Mathlib and states all nine headline theorems verbatim using the literal nested multinomial sum \eqref{eq:hadj-def}. The sorry-free bridge \code{lean/Solution.lean} is verified against \code{Challenge.lean} via \code{lake comparator} (\code{{-}{-}paranoid} mode using \code{comparator.json}), which replays exported proof terms independently across all six kernels bundled with Lean~4.35.0: the official C++ kernel, \code{leanchecker-paranoid}, \code{lean4lean} (Lean-in-Lean), \code{nanoda} (Rust, v0.4.19), \code{con-leche}, and \code{con-ron}. \Cref{tab:claims-fidelity} summarizes the explicit verification boundary and statement-fidelity mapping.
+To separate statement auditing from proof internals, \code{lean/Challenge.lean} ($153$ lines, under Palomar's $1{,}000$-line / $100$\,KiB threshold) imports \emph{only} Mathlib and states all nine headline targets using the literal nested multinomial sum \eqref{eq:hadj-def} (Targets~1--4 and~9 state the residue limits, Conjecture~7.7, and the quantitative Lemma~7.3 remainder; Targets~5--8 state the algebraic identities behind Corollary~1.2(i)--(iii), with Target~7 using an equal rearrangement of the Part~2 $n=3$ expression and Target~8 carrying $(-1)^N/(2\pi)$ unchanged on both sides). The sorry-free bridge \code{lean/Solution.lean} is verified against \code{Challenge.lean} via \code{lake comparator} (\code{{-}{-}paranoid} mode using \code{comparator.json}), which replays all nine targets and their dependencies in six checker runs: the Lean paranoid kernel, \code{lean4lean} (Lean-in-Lean), \code{nanoda} (Rust, v0.4.19), \code{con-leche}, \code{con-ron}, and the Lean default kernel (two of the six runs are the Lean kernel; \code{NonVacuity.lean} is not part of comparator replay). \Cref{tab:claims-fidelity} summarizes the explicit verification boundary and statement-fidelity mapping.
 
 \begin{table}[t]
 \centering
@@ -881,12 +881,12 @@ To defend against both kernel bugs and definition drift, \code{lean/Challenge.le
 \toprule
 Claim & Lean~4 Declaration / Artifact & Verification Tier & Boundary / Fidelity Note \\
 \midrule
-\textbf{C1} & \code{hAdj\_eq\_nested\_sum}, \code{hAdj\_mod0..2} & $6$-kernel + exact $\mathbb{Q}$ ($L=3..45$) & Exact values $h_{\mathrm{adj}}(0..5)$ proved in \code{NonVacuity.lean}. \\
-\textbf{C2} & \code{tendsto\_hAdj\_mod0..2}, \code{lemma\_7\_3\_O\_inv\_sq}, \code{bRes\_cosine\_formula} & $6$-kernel + $80$-digit \code{mpmath} & Full \cite[Lemma~7.3]{banic_elezovic_p2} incl.\ $O(\ell^{-2})$ remainder; strict signs proved. \\
-\textbf{C3} & \code{conjecture\_7\_7}, \code{conjecture\_7\_7\_aTriangle}, \code{\_gamma2}, \code{\_d0} & $6$-kernel + adversarial refutations & Refutes $a_\triangle=\frac{1}{32}$, $d_0=0$; human line-by-line review open. \\
-\textbf{C4} & \code{gamma\_closed\_form}, \code{gamma\_cyclic\_closed\_form}, \code{gamma3/4\_closed\_form} & Algebraic recombination $6$-kernel checked & Upstream \cite[Thm~7.6, \S7.2, \S8]{banic_elezovic_p2} \& \cite[Thm~3.10]{banic_elezovic_p5} cited outside Lean. \\
-\textbf{C5} & \code{VerifyAxioms.lean}, \code{Challenge.lean}, \code{Solution.lean} & Exhaustive CI lexer + $6$ kernels & $892/892$ theorems strictly in \code{[propext, Classical.choice, Quot.sound]}. \\
-\textbf{C6} & \code{paper/refs.bib}, \code{check\_citations.py}, \code{citation-audit.json} & Live Crossref/arXiv + \code{\textbackslash cite} parity & $16/16$ cited references; $16/16$ live HTTP~200; $0$ retractions. \\
+\textbf{C1} & \code{hAdj\_eq\_nested\_sum}, \code{hAdj\_mod0..2} & Lean kernel + exact $\mathbb{Q}$ ($L=3..45$) & $6$ direct \code{hAdj 0..5} checks proved in \code{NonVacuity.lean}. \\
+\textbf{C2} & \code{tendsto\_hAdj\_mod0..2}, \code{lemma\_7\_3\_O\_inv\_sq}, \code{bRes\_cosine\_formula} & Lean + 6 runs + $80$-digit \code{mpmath} & Full \cite[Lemma~7.3]{banic_elezovic_p2} incl.\ $O(\ell^{-2})$ remainder; strict signs proved. \\
+\textbf{C3} & \code{conjecture\_7\_7}, \code{conjecture\_7\_7\_aTriangle}, \code{\_gamma2}, \code{\_d0} & Lean + 6 runs + adversarial theorems & Proves $a_\triangle\ne\frac{1}{32}$, $d_0\ne 0$; human line-by-line review open. \\
+\textbf{C4} & \code{gamma\_closed\_form}, \code{gamma\_cyclic\_closed\_form}, \code{gamma3/4\_closed\_form} & Algebraic identities (6 runs) & Upstream \cite[Thm~7.6, \S7.2, \S8]{banic_elezovic_p2} \& \cite[Thm~3.10]{banic_elezovic_p5} cited outside Lean. \\
+\textbf{C5} & \code{VerifyAxioms.lean}, \code{Challenge.lean}, \code{Solution.lean} & Exhaustive CI lexer + 6 runs & $187$ author / $892$ constants strictly in \code{[propext, Classical.choice, Quot.sound]}. \\
+\textbf{C6} & \code{paper/refs.bib}, \code{check\_citations.py}, \code{citation-audit.json} & Live Crossref/arXiv + \code{\textbackslash cite} parity & $16$ identifiers ($15/16$ entries) HTTP~200; $0$ retractions; locators hand-checked. \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -947,19 +947,19 @@ $q$ & $e_A(q)$ & $e_B(q)$ & $e_C(q)$ & $b_0(3q)-b_0$ & $b_1(3q+1)-b_1$ & $b_2(3q
 % =====================================================================
 
 \paragraph{Applied statistical scope.}
-Discrete total variation goodness-of-fit testing (TVOR \cite{banic_elezovic_tvor} and the comb test \cite{banic_elezovic_ct}) targets ordered and circular histograms where alternating bin artifacts occur---including digital image forensics (quantization, contrast-stretching, and resampling comb patterns in $256$- to $65{,}536$-bin intensity histograms), analog-to-digital converter differential nonlinearity metrology, hardware random number generator verification, and periodic phase or circadian event histograms. In many such applications the bin-to-sample ratio $n/N$ is moderate rather than vanishingly small. Closing Conjecture~7.7 upgrades both the linear coefficient $\gamma(n)$ and the cyclic coefficient $\gamma_c(n)$ to unconditional closed-form theorems, enabling deterministic, simulation-free analytical moment calibration through $O(N^{-2})$ and supplying a rigorous quantitative diagnostic for when the fixed-$n$ expansion breaks down.
+Discrete total variation goodness-of-fit testing (TVOR \cite{banic_elezovic_tvor} and the comb test \cite{banic_elezovic_ct}) targets ordered and circular histograms where alternating bin artifacts occur---including digital image forensics (quantization, contrast-stretching, and resampling comb patterns in $256$- to $65{,}536$-bin intensity histograms), analog-to-digital converter differential nonlinearity metrology, hardware random number generator verification, and periodic phase or circadian event histograms. In many such applications the bin-to-sample ratio $n/N$ is moderate rather than vanishingly small. Closing Conjecture~7.7 removes the sole conjectural constant from both the linear coefficient $\gamma(n)$ and the cyclic coefficient $\gamma_c(n)$ (assuming the cited upstream expansions of Parts~2 and~5), enabling deterministic, simulation-free analytical moment calibration through $O(N^{-2})$ and supplying a quantitative diagnostic for when the fixed-$n$ expansion breaks down.
 
 \paragraph{Methodological implications.}
 From the viewpoint of asymptotic combinatorics and probability (cf.\ Diaconis and Zabell \cite{diaconis_zabell1991}, Bhattacharya and Rao \cite{bhattacharya_rao}), the principal lesson of the proof is that singular $\ell_1$ lattice functionals can sometimes be de-singularized \emph{before} taking asymptotics: by folding onto a Weyl chamber and telescoping exact factorial differences, a two-dimensional distributional problem at order $\ell^{-5/2}$ collapses into completely elementary one-dimensional Gaussian Euler--Maclaurin sums. Because the telescoping step \eqref{eq:inner-tel} relies only on linear weights and factorial absorption \eqref{eq:T-absorb}, analogous reductions are natural candidates for higher-order $1\mathrm{D}$ differences and non-uniform multinomial regimes in Parts~3--4 of \cite{banic_elezovic_p2}.
 
 \paragraph{Limitations and verification boundary.}
-We separate three epistemic layers explicitly. First, \cref{thm:main} (Conjecture~7.7: $b_0,b_1,b_2,d_0,\tri,\gamma_2$, the cosine decomposition, and the quantitative $O(\ell^{-2})$ remainder \eqref{eq:lemma73-rem} of Lemma~7.3) is proved unconditionally from Mathlib primitives inside Lean~4 and re-checked across six independent proof kernels. Second, \cref{cor:unconditional}(i)--(iii) formalizes the exact algebraic recombinations of $\gamma(n)$, $\gamma_c(n)$ (proved over real $n\ne 0$, specializing to integer $n\ge 5$), $\gamma(3;N)$, and $\gamma(4;N)$ (where the bipartite parity term $(-1)^N/(2\pi)$ appears identically on both sides as an algebraic import from Part~2~\S8), while the upstream variance decompositions of \cite[Theorem~7.6, \S7.2, \S8]{banic_elezovic_p2} and \cite[Theorem~3.10]{banic_elezovic_p5}---which already printed those closed forms conditionally on Conjecture~7.7---remain cited literature results outside our Lean kernel boundary, alongside the exact Python checks (\code{verify\_conjecture.py}). Third, this manuscript is an unreviewed independent preprint; although \code{Challenge.lean} ($149$ lines, Mathlib-only, Lean~4.35 \code{module} header, $9$ targets) and \code{NonVacuity.lean} ($20$ witnesses) are designed for rapid third-party inspection alongside a live negative Lean kernel rejection check in CI, both independent human line-by-line statement-fidelity sign-off and external human operator replication remain open (tracked in \code{docs/statement-fidelity.md}, \code{REPLICATION.md}, and \code{formalization.yaml}).
+We separate three epistemic layers explicitly. First, \cref{thm:main} (Conjecture~7.7: $b_0,b_1,b_2,d_0,\tri,\gamma_2$, the cosine decomposition, and the quantitative $O(\ell^{-2})$ remainder \eqref{eq:lemma73-rem} of Lemma~7.3) is proved from Mathlib primitives inside Lean~4 using only the three standard axioms and replayed in CI by six checker runs of \code{lake comparator {-}{-}paranoid} (two of which are the Lean kernel). Second, \cref{cor:unconditional}(i)--(iii) formalizes only the four algebraic identities for $\gamma(n)$, $\gamma_c(n)$ (proved over real $n\ne 0$, specializing to integer $n\ge 5$), $\gamma(3;N)$ (using an equal rearrangement of the Part~2 left side), and $\gamma(4;N)$ (where the bipartite parity term $(-1)^N/(2\pi)$ appears unchanged on both sides); Lean defines no random variable or variance, and the upstream variance decompositions of \cite[Theorem~7.6, \S7.2, \S8]{banic_elezovic_p2} and \cite[Theorem~3.10]{banic_elezovic_p5}---both unrefereed arXiv v1 preprints---remain cited external results outside our Lean kernel boundary, alongside the exact Python checks (\code{verify\_conjecture.py}). Third, this manuscript is an unreviewed independent preprint; although \code{Challenge.lean} ($153$ lines, Mathlib-only, Lean~4.35 \code{module} header, $9$ targets) and \code{NonVacuity.lean} ($6$ direct definition checks \code{hAdj 0..5} plus $14$ corollaries and refutations including \code{adversarial\_\allowbreak aTriangle\_\allowbreak ne\_\allowbreak one\_\allowbreak div\_\allowbreak 32}) are designed for rapid third-party inspection, both independent human line-by-line statement-fidelity sign-off and external human operator replication remain open (tracked in \nolinkurl{docs/statement-fidelity.md}, \code{REPLICATION.md}, and \code{formalization.yaml}).
 
 \paragraph{Data, code availability, provenance, and export-control self-screen.}
 All Lean~4 proofs, Python verification scripts, tests, figure generators, compiled PDFs, and byte-reproducible arXiv source bundles are publicly archived under dual open licenses (Apache-2.0 for code and Lean; CC-BY-4.0 for manuscript and documentation) at \href{https://github.com/0thernes/multinomial-tv-conjecture}{\nolinkurl{github.com/0thernes/multinomial-tv-conjecture}}; the interactive Lean~4 Blueprint is hosted at \href{https://0thernes.github.io/multinomial-tv-conjecture/blueprint/}{\nolinkurl{0thernes.github.io/multinomial-tv-conjecture/blueprint}}. Artifact integrity is anchored by \code{data/MANIFEST.sha256}, dual cryptographic timestamps (DigiCert RFC~3161 TSA \code{MANIFEST.sha256.tsr} and Bitcoin OpenTimestamps \code{MANIFEST.sha256.ots} under \code{data/}), and Sigstore SLSA build-provenance attestations emitted on public GitHub Actions CI. This work consists solely of published fundamental mathematical research in probability and statistics with zero cryptographic, military, or dual-use software (self-screened under EAR 15~CFR~734.8 and ITAR 22~CFR~120).
 
 \paragraph{AI assistance, CRediT authorship, conflicts of interest, and errata policy.}
-Alexander Stephen Donahue (Independent Researcher, Spokane, WA, USA; ORCID \code{0009-0006-8168-9648}) holds sole authorial responsibility (CRediT: Conceptualization, Methodology, Project Administration, Resources, Supervision, and Validation oversight). Interactive AI systems (Google Gemini / Antigravity) assisted with analytical exploration, Lean~4 formalization, Python test scaffolding, and manuscript preparation under human direction. Epistemic warrant rests solely on the reproducible six-kernel Lean~4 verification, independent exact/80-digit computation, and open-source artifacts. The author declares no competing financial or institutional interests and received no external funding. Version history, errata (including bibliographic fix \code{E-2026-001} restoring the five-digit suffix of \code{arXiv:2610.13366} and \code{E-2026-015} aligning Part~5 cross-references to Theorem~3.10 and Proposition~4.2), and our withdrawal commitment are recorded transparently in \code{CHANGELOG.md} and \code{ERRATA.md}.
+Alexander Stephen Donahue (Independent Researcher, Spokane, WA, USA; ORCID \code{0009-0006-8168-9648}) holds sole authorial responsibility (CRediT: Conceptualization, Methodology, Project Administration, Resources, Supervision, and Validation oversight). Interactive AI systems (Google Gemini / Antigravity) assisted with analytical exploration, Lean~4 formalization, Python test scaffolding, and manuscript preparation under human direction. Epistemic warrant rests solely on the reproducible Lean~4 kernel check, six-run comparator replay, independent exact/80-digit computation, and open-source artifacts. The author declares no competing financial or institutional interests and received no external funding. Version history, errata (including \code{E-2026-001} restoring \code{arXiv:2610.13366}, \code{E-2026-015} aligning Part~5 cross-references to Theorem~3.10 and Proposition~4.2, and \code{E-2026-018} resolving all 2026-11-26 statement-audit scope and wording findings), and our withdrawal commitment are recorded transparently in \code{CHANGELOG.md} and \code{ERRATA.md}.
 
 \bibliographystyle{plainurl}
 \bibliography{refs}

@@ -29,15 +29,18 @@ case "$cmd" in
     python3 scripts/check_readme_axioms.py --log results/lean-axioms-ci.log --require-exhaustive
     (
       cd lean
-      tmp_neg="$(mktemp /tmp/neg_false_conjecture.XXXXXX.lean)"
-      printf 'import MultinomialTVConjecture.Main\ntheorem false_conj : MultinomialTV.aTriangle = 1 / 32 := by exact MultinomialTV.conjecture_7_7_aTriangle\n' > "$tmp_neg"
-      if lake env lean "$tmp_neg" >/dev/null 2>&1; then
-        rm -f "$tmp_neg"
-        echo "ERROR: Lean kernel unexpectedly accepted false conjecture!" >&2
+      # Note: the actual kernel-checked refutation of aTriangle = 1/32 is the proved theorem
+      # `MultinomialTV.NonVacuity.adversarial_aTriangle_ne_one_div_32`; this step is an
+      # elaboration smoke test verifying that a mutated goal leaves unsolved goals.
+      tmp_neg="$(mktemp /tmp/neg_smoke_test.XXXXXX.lean)"
+      printf 'import MultinomialTVConjecture.Main\ntheorem mutated_aTriangle_must_fail : MultinomialTV.aTriangle = 1 / 32 := by\n  rw [MultinomialTV.conjecture_7_7_aTriangle]\n  norm_num\n' > "$tmp_neg"
+      OUT="$(lake env lean "$tmp_neg" 2>&1 || true)"
+      rm -f "$tmp_neg"
+      if ! printf '%s\n' "$OUT" | grep -q "unsolved goals"; then
+        echo "ERROR: Expected 'unsolved goals' on mutated constant smoke test!" >&2
         exit 1
       fi
-      rm -f "$tmp_neg"
-      echo "PASS: Lean kernel rejected false statement aTriangle = 1/32."
+      echo "PASS: Elaboration smoke test failed with expected 'unsolved goals' on mutated constant."
     )
     (cd lean && lake comparator --config comparator.json --paranoid) | tee results/comparator-paranoid-ci.log
     ;;

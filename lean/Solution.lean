@@ -13,8 +13,9 @@ public import MultinomialTVConjecture.Main
 # Sorry-Free Solution Bridge Matched Against `Challenge.lean`
 
 Every definition and theorem signature matches `Challenge.lean` verbatim, uses ZERO `sorry`,
-`admit`, `native_decide`, or custom axioms, and is checked across all six Lean 4.35.0 kernels
-by `lake comparator --config comparator.json --paranoid`.
+`admit`, `native_decide`, or custom axioms, and is replayed in six checker runs (Lean paranoid
+and default kernel modes, `lean4lean`, `nanoda`, `con-leche`, `con-ron`) by
+`lake comparator --config comparator.json --paranoid`.
 -/
 
 @[expose] public section
@@ -139,7 +140,7 @@ theorem target_conjecture_7_7 :
   simp only [bRes_eq_core]
   exact MultinomialTV.conjecture_7_7
 
-/-- Target 5: Unconditional linear second-order variance coefficient `γ(n)` (Part 2, Thm. 7.6). -/
+/-- Target 5: Algebraic identity behind linear `γ(n)` (Part 2, Thm. 7.6, pp. 59–60; variance cited). -/
 theorem target_gamma_closed_form (n : ℝ) (hn : n ≠ 0) :
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
     let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
@@ -151,7 +152,7 @@ theorem target_gamma_closed_form (n : ℝ) (hn : n ≠ 0) :
   rw [aTriangle_eq_core]
   exact MultinomialTV.gamma_closed_form n hn
 
-/-- Target 6: Unconditional cyclic second-order variance coefficient `γ_c(n)` (Part 5, Thm. 3.10). -/
+/-- Target 6: Algebraic identity behind cyclic `γ_c(n)` (Part 5, Thm. 3.10; variance cited). -/
 theorem target_gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
     let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
@@ -162,7 +163,7 @@ theorem target_gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
   rw [aTriangle_eq_core]
   exact MultinomialTV.gamma_cyclic_closed_form n hn
 
-/-- Target 7: Unconditional degenerate `n = 3` variance coefficient `γ(3; N)` (Part 2, §7.2). -/
+/-- Target 7: Algebraic identity behind degenerate `γ(3; N)` (Part 2, §7.2; equal rearrangement; variance cited). -/
 theorem target_gamma3_closed_form (N : ℕ) :
     let n : ℝ := 3
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
@@ -174,7 +175,7 @@ theorem target_gamma3_closed_form (N : ℕ) :
   rw [aTriangle_eq_core, bRes_eq_core, d0_eq_core]
   exact MultinomialTV.gamma3_closed_form N
 
-/-- Target 8: Unconditional degenerate `n = 4` variance coefficient `γ(4; N)` (Part 2, §8). -/
+/-- Target 8: Algebraic identity behind degenerate `γ(4; N)` (Part 2, §8; `(-1)^N/(2π)` carried on both sides). -/
 theorem target_gamma4_closed_form (N : ℕ) :
     let n : ℝ := 4
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)

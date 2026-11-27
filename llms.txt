@@ -1,12 +1,12 @@
 # multinomial-tv-conjecture
 
-> Complete Lean 4.35.0 formal proof (6-kernel verified), independent exact/80-digit Python verification, interactive Blueprint, and AMS-LaTeX preprint resolving Conjecture 7.7 of Banić & Elezović (arXiv:2610.17046v1, 2026) on the second-order variance constant of multinomial discrete total variation (`a_triangle = 1/32 - 4*sqrt(3)/243`).
+> Complete Lean 4.35.0 formal proof (replayed in six checker runs of `lake comparator --paranoid`), independent exact/80-digit Python verification, interactive Blueprint, and AMS-LaTeX preprint resolving Conjecture 7.7 and quantitative $O(L^{-2})$ Lemma 7.3 of Banić & Elezović (`arXiv:2610.17046v1`, 2026, unrefereed arXiv v1 preprint) on the second-order variance constant of multinomial discrete total variation (`a_triangle = 1/32 - 4*sqrt(3)/243`).
 
 Author: Alexander S. Donahue (Independent Researcher, Spokane, WA, USA; ORCID 0009-0006-8168-9648).
 License: Apache-2.0 (code/Lean) · CC-BY-4.0 (paper/docs).
 
 ## Key Entry Points
-- [README.md](README.md): Overview, Quickstart, verbatim `#print axioms` 5-second proof block, and 6-kernel verification summary.
+- [README.md](README.md): Overview, Quickstart, `#print axioms` excerpt (23 of 55 lines + summary), and comparator verification summary.
 - [AGENTS.md](AGENTS.md): Canonical instructions, workflow rules, and verification invariants.
 - [CLAIMS.md](CLAIMS.md): Numbered claims ledger with explicit falsification criteria.
 - [LIMITATIONS.md](LIMITATIONS.md): Formal verification boundary and real-vs-metaphor disclosures.
@@ -15,16 +15,16 @@ License: Apache-2.0 (code/Lean) · CC-BY-4.0 (paper/docs).
 - [formalization.yaml](formalization.yaml): Palomar-compatible provenance, toolchain, and AI disclosure metadata.
 
 ## Lean 4 Formalization
-- [lean/Challenge.lean](lean/Challenge.lean): Isolated Mathlib-only specification of the 9 target theorems (including quantitative $O(L^{-2})$ Lemma 7.3).
-- [lean/Solution.lean](lean/Solution.lean): Sorry-free proofs checked against `Challenge.lean` by 6 independent kernels.
-- [lean/VerifyAxioms.lean](lean/VerifyAxioms.lean): Exhaustive `Lean.collectAxioms` metaprogram (`892` theorems) and 55 explicit `#print axioms`.
-- [lean/MultinomialTVConjecture/Main.lean](lean/MultinomialTVConjecture/Main.lean): Main proof of `conjecture_7_7`, `lemma_7_3_O_inv_sq`, `gamma_closed_form`, `gamma_cyclic_closed_form`, `gamma3_closed_form`, `gamma4_closed_form`.
-- [lean/MultinomialTVConjecture/NonVacuity.lean](lean/MultinomialTVConjecture/NonVacuity.lean): 20 concrete small-L, small-n, sign, and adversarial false-constant refutation witnesses.
+- [lean/Challenge.lean](lean/Challenge.lean): Isolated Mathlib-only specification of the 9 target theorems (153 lines, incl. quantitative $O(L^{-2})$ Lemma 7.3).
+- [lean/Solution.lean](lean/Solution.lean): Sorry-free proofs checked against `Challenge.lean` in six comparator checker runs.
+- [lean/VerifyAxioms.lean](lean/VerifyAxioms.lean): Exhaustive `Lean.collectAxioms` metaprogram (`187` author-written theorems and lemmas; `892` audited theorem constants) and 55 explicit `#print axioms`.
+- [lean/MultinomialTVConjecture/Main.lean](lean/MultinomialTVConjecture/Main.lean): Main proof of `conjecture_7_7`, `lemma_7_3_O_inv_sq`, and the four algebraic identities `gamma_closed_form`, `gamma_cyclic_closed_form`, `gamma3_closed_form`, `gamma4_closed_form`.
+- [lean/MultinomialTVConjecture/NonVacuity.lean](lean/MultinomialTVConjecture/NonVacuity.lean): 20 theorems (6 direct `hAdj 0..5` definition checks + 14 sign, witness, and false-constant refutation corollaries).
 
 ## Paper, Scripts & Docs
-- [paper/main.tex](paper/main.tex): Complete AMS-LaTeX preprint (v2.4.0).
+- [paper/main.tex](paper/main.tex): Complete AMS-LaTeX preprint (v2.5.0).
 - [blueprint/src/content.tex](blueprint/src/content.tex): Lean 4 theorem dependency Blueprint source.
 - [scripts/verify_conjecture.py](scripts/verify_conjecture.py): Independent exact rational and 80-digit `mpmath` verification.
 - [docs/architecture.md](docs/architecture.md): Proof and verification architecture.
-- [docs/verification.md](docs/verification.md): 6-kernel and Python test-ladder audit specification.
-- [docs/reviews/red-team-2026-11-25.md](docs/reviews/red-team-2026-11-25.md): Complete 3-cycle, 10-class hardening audit log.
+- [docs/verification.md](docs/verification.md): Lean kernel, six-run comparator, code-mutation, and Python test-ladder audit specification.
+- [docs/reviews/red-team-2026-11-25.md](docs/reviews/red-team-2026-11-25.md): Complete multi-cycle, 10-class hardening audit log.

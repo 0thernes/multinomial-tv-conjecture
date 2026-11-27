@@ -3,7 +3,7 @@
 ## Getting Help
 
 1. Check [README.md](README.md) for quickstart and verbatim 5-second proof verification.
-2. Check [docs/faq.md](docs/faq.md) and [docs/glossary.md](docs/glossary.md) for common questions about the proof, 6-kernel verification, and reproduction.
+2. Check [docs/faq.md](docs/faq.md) and [docs/glossary.md](docs/glossary.md) for common questions about the proof, comparator verification (six checker runs), and reproduction.
 3. Check [REPLICATION.md](REPLICATION.md) and [docs/configuration.md](docs/configuration.md) for toolchain troubleshooting (`elan`, Lean 4.35.0, `bubblewrap`, Tectonic, Python).
 
 ## Asking Questions or Reporting Problems

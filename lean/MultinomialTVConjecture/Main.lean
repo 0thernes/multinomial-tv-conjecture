@@ -332,9 +332,10 @@ theorem conjecture_7_7 :
   simp only [mem_insert, mem_singleton] at hr
   exact bRes_cosine_formula r hr
 
-/-- Unconditional consequence of Conjecture 7.7 + Theorem 7.6 (arXiv:2610.17046v1, p. 35):
-algebraic recombination closed form of the second-order variance coefficient `γ(n)` (stated
-over real `n ≠ 0`, specializing to integer bin counts `n ≥ 5` of Part 2). -/
+/-- Algebraic identity behind Corollary 1.2(i) (Banić & Elezović Part 2, arXiv:2610.17046v1,
+Theorem 7.6, pp. 59–60): substituting the proved `aTriangle` into the `(p_1, q_1, r_1)`
+combination yields the printed closed form for `γ(n)` (proved over real `n ≠ 0`, specializing to
+integer bin counts `n ≥ 5`; Lean defines no random variable or variance). -/
 theorem gamma_closed_form (n : ℝ) (hn : n ≠ 0) :
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
     let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
@@ -347,9 +348,10 @@ theorem gamma_closed_form (n : ℝ) (hn : n ≠ 0) :
   have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
   field_simp; ring
 
-/-- Unconditional consequence for Part 5 (arXiv:2611.14735v1, Theorem 3.10):
-algebraic recombination closed form of the cyclic second-order variance coefficient `γ_c(n)`
-(stated over real `n ≠ 0`, specializing to integer bin counts `n ≥ 5` of Part 5). -/
+/-- Algebraic identity behind Corollary 1.2(ii) (Banić & Elezović Part 5, arXiv:2611.14735v1,
+Theorem 3.10): substituting the proved `aTriangle` into the cyclic `(p_1, q_1, r_1)` combination
+yields the printed closed form for `γ_c(n)` (proved over real `n ≠ 0`, specializing to integer
+bin counts `n ≥ 5`; the variance statement itself is cited and not formalized). -/
 theorem gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
     let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
@@ -361,9 +363,9 @@ theorem gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
   have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
   field_simp; ring
 
-/-- Unconditional degenerate small-bin formula `γ(3; N)` (Part 2, §7.2; Corollary 1.2(iii)):
-combines the static `n = 3` block `2 p_1(3) + 2 q_1(3)` with the oscillating residue
-contribution `2 (b_{N mod 3} - d_0)`. -/
+/-- Algebraic identity behind Corollary 1.2(iii) for `n = 3` (Part 2, §7.2): combines the static
+`n = 3` block `2 p_1(3) + 2 q_1(3)` with the oscillating residue contribution `2 (b_{N mod 3} - d_0)`
+(an equal rearrangement of the source's left side; variance statement cited, not formalized). -/
 theorem gamma3_closed_form (N : ℕ) :
     let n : ℝ := 3
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
@@ -387,9 +389,9 @@ theorem gamma3_closed_form (N : ℕ) :
   have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
   field_simp; ring
 
-/-- Unconditional degenerate small-bin formula `γ(4; N)` (Part 2, §8; Corollary 1.2(iii)):
-combines the static `n = 4` block `3 p_1(4) + 4 q_1(4) + 2 r_1(4)` with the bipartite
-parity term `(-1)^N / (2π)` imported algebraically from Part 2 §8. -/
+/-- Algebraic identity behind Corollary 1.2(iii) for `n = 4` (Part 2, §8): combines the static
+`n = 4` block `3 p_1(4) + 4 q_1(4) + 2 r_1(4)` with the bipartite parity term `(-1)^N / (2π)`,
+which appears identically on both sides (carried algebraically from Part 2 §8, not derived). -/
 theorem gamma4_closed_form (N : ℕ) :
     let n : ℝ := 4
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)

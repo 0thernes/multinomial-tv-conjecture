@@ -318,7 +318,7 @@ def test_blueprint_and_site_build_cleanly() -> None:
     assert 'http-equiv="Content-Security-Policy"' in bp_html
     ax_m = cra.EXHAUSTIVE_RE.search((ROOT / "results" / "lean-axioms-all.log").read_text(encoding="utf-8"))
     assert ax_m is not None
-    assert f"{ax_m.group(1)} Exhaustively Audited Theorems" in portal_html
+    assert f"{ax_m.group(1)} Exhaustively Audited Constants" in portal_html
     for html_txt in (portal_html, bp_html):
         for tag in re.findall(r"<(?:script|link)\b[^>]+https?://[^>]+>", html_txt):
             assert 'integrity="sha384-' in tag, f"External CDN resource missing sha384 SRI: {tag}"
@@ -532,3 +532,42 @@ def test_manifest_text_artifacts_strictly_lf_cross_platform() -> None:
         if p.suffix.lower() in binary_ext:
             continue
         assert b"\r\n" not in p.read_bytes(), f"CRLF detected in manifest-tracked text file {rel}"
+
+
+def test_regression_e2026_018_statement_audit_honesty_and_zero_conflict_markers() -> None:
+    """Regression test (E-2026-018, F-63): forbid overclaimed 'six independent kernels' & git merge markers."""
+    overclaim_re = re.compile(
+        r"six\s+independent\s+(?:proof\s+)?kernels|6\s+independent\s+(?:proof\s+)?kernels|6-kernel",
+        re.I,
+    )
+    active_docs = [
+        "README.md",
+        "CLAIMS.md",
+        "LIMITATIONS.md",
+        "ROADMAP.md",
+        "AGENTS.md",
+        "SUPPORT.md",
+        "llms.txt",
+        "CITATION.cff",
+        "formalization.yaml",
+        "repo.yaml",
+        "justfile",
+        "paper/main.tex",
+        "blueprint/src/content.tex",
+        "docs/index.md",
+        "docs/architecture.md",
+        "docs/configuration.md",
+        "docs/faq.md",
+        "docs/glossary.md",
+        "docs/statement-fidelity.md",
+        "docs/threat-model.md",
+        "docs/verification.md",
+        "docs/media/social-preview.svg",
+        "lean/Challenge.lean",
+        "lean/Solution.lean",
+    ]
+    for rel in active_docs:
+        txt = (ROOT / rel).read_text(encoding="utf-8")
+        assert not overclaim_re.search(txt), f"Overclaimed kernel wording found in {rel}"
+        assert "<<<<<<<" not in txt and ">>>>>>>" not in txt, f"Unresolved git conflict marker in {rel}"
+

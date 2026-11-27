@@ -21,8 +21,12 @@ public import Mathlib.Topology.Instances.Real.Lemmas
 This file imports ONLY Mathlib (ZERO imports from our proof library). It defines the exact
 multinomial expectation `h_adj(L) = E[|X_2 - X_1| |X_3 - X_2|]` under `Mult(L; 1/3, 1/3, 1/3)`,
 the linear/constant terms `c_L`, `a_*`, the residue limits `b_r`, and the derived constants
-`d_0`, `a_△`, `γ_2` verbatim from Banić & Elezović (arXiv:2610.17046v1, Sec. 7.2 / Conjecture 7.7;
-arXiv:2611.14735v1, Thm. 3.10).
+`d_0`, `a_△`, `γ_2` from Banić & Elezović (arXiv:2610.17046v1, Sec. 7.2 / Conjecture 7.7;
+arXiv:2611.14735v1, Thm. 3.10). Targets 1–4 and 9 state the residue limits, Conjecture 7.7,
+and the quantitative `O(L^{-2})` remainder of Lemma 7.3; Targets 5–8 state the algebraic
+identities behind Corollary 1.2(i)–(iii) (Target 7 uses an equal rearrangement of the source's
+left side; Target 8 carries `(-1)^N / (2π)` unchanged on both sides; variance statements remain
+cited outside Lean).
 
 NOTE: Every `sorry` in this file is intentional — `Challenge.lean` is the isolated statement
 specification checked against sorry-free `Solution.lean` by
@@ -98,7 +102,7 @@ theorem target_conjecture_7_7 :
       bRes r = d0 + 4 * Real.sqrt 3 / (9 * Real.pi) * Real.cos (2 * Real.pi * (r : ℝ) / 3)) := by
   sorry
 
-/-- Target 5: Unconditional linear second-order variance coefficient `γ(n)` (Part 2, Thm. 7.6). -/
+/-- Target 5: Algebraic identity behind linear `γ(n)` (Part 2, Thm. 7.6, pp. 59–60; variance cited). -/
 theorem target_gamma_closed_form (n : ℝ) (hn : n ≠ 0) :
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
     let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
@@ -108,7 +112,7 @@ theorem target_gamma_closed_form (n : ℝ) (hn : n ≠ 0) :
         (n - 1) / (8 * Real.pi * n) := by
   sorry
 
-/-- Target 6: Unconditional cyclic second-order variance coefficient `γ_c(n)` (Part 5, Thm. 3.10). -/
+/-- Target 6: Algebraic identity behind cyclic `γ_c(n)` (Part 5, Thm. 3.10; variance cited). -/
 theorem target_gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
     let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
@@ -117,7 +121,7 @@ theorem target_gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
       -(n * (n + 4) / (32 * Real.pi)) - 8 * Real.sqrt 3 * n ^ 2 / (243 * Real.pi) := by
   sorry
 
-/-- Target 7: Unconditional degenerate `n = 3` variance coefficient `γ(3; N)` (Part 2, §7.2). -/
+/-- Target 7: Algebraic identity behind degenerate `γ(3; N)` (Part 2, §7.2; equal rearrangement; variance cited). -/
 theorem target_gamma3_closed_form (N : ℕ) :
     let n : ℝ := 3
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
@@ -127,7 +131,7 @@ theorem target_gamma3_closed_form (N : ℕ) :
         8 * Real.sqrt 3 / (9 * Real.pi) * Real.cos (2 * Real.pi * (N : ℝ) / 3) := by
   sorry
 
-/-- Target 8: Unconditional degenerate `n = 4` variance coefficient `γ(4; N)` (Part 2, §8). -/
+/-- Target 8: Algebraic identity behind degenerate `γ(4; N)` (Part 2, §8; `(-1)^N/(2π)` carried on both sides). -/
 theorem target_gamma4_closed_form (N : ℕ) :
     let n : ℝ := 4
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)

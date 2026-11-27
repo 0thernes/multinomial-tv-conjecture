@@ -29,9 +29,20 @@ def parse_nonvacuity_count() -> int:
     return 0
 
 
+def parse_author_theorem_count() -> int:
+    decl_re = re.compile(r"^\s*(?:(?:public|private|protected)\s+)*(?:theorem|lemma)\s+\S+", re.M)
+    count = 0
+    for lf in sorted((ROOT / "lean").rglob("*.lean")):
+        if ".lake" in lf.parts or lf.name in {"Challenge.lean", "VerifyAxioms.lean"}:
+            continue
+        count += len(decl_re.findall(lf.read_text(encoding="utf-8", errors="ignore")))
+    return count
+
+
 def render_portal() -> str:
     version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     theorem_count = parse_audited_theorem_count()
+    author_count = parse_author_theorem_count()
     nonvac_count = parse_nonvacuity_count()
     return f"""<!doctype html>
 <html lang="en">
@@ -40,9 +51,9 @@ def render_portal() -> str:
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none';"/>
   <title>Multinomial TV Conjecture · v{version}</title>
-  <meta name="description" content="Complete Lean 4.35.0 6-kernel verified proof of Conjecture 7.7 of Banić &amp; Elezović (arXiv:2610.17046v1) on the second-order variance constant of multinomial discrete total variation."/>
+  <meta name="description" content="Lean 4.35.0 proof of Conjecture 7.7 and quantitative O(L^-2) Lemma 7.3 of Banić &amp; Elezović (arXiv:2610.17046v1) replayed via lake comparator --paranoid."/>
   <meta property="og:title" content="Multinomial TV Conjecture · v{version}"/>
-  <meta property="og:description" content="Lean 4.35.0 (module-header Palomar spec) 6-kernel verified proof of Conjecture 7.7 of Banić &amp; Elezović (arXiv:2610.17046v1)."/>
+  <meta property="og:description" content="Lean 4.35.0 (module-header Palomar spec) proof of Conjecture 7.7 and quantitative Lemma 7.3 of Banić &amp; Elezović (arXiv:2610.17046v1)."/>
   <meta property="og:image" content="media/social-preview.svg"/>
   <style>
     :root {{ color-scheme: dark; }}
@@ -74,15 +85,15 @@ def render_portal() -> str:
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <header>
     <div class="wrap">
-      <div class="eyebrow">Lean 4.35.0 (Palomar module spec) · Mathlib v4.35.0 · 6-Kernel Verified · v{version}</div>
-      <h1>Proof of Conjecture 7.7 on Multinomial Discrete Total Variation</h1>
-      <p class="lead">Machine-checked Lean 4.35.0 resolution of Conjecture 7.7 (<code>conj:atriangle</code>) of Banić &amp; Elezović (arXiv:2610.17046v1, 2026) and its cyclic corollary (arXiv:2611.14735v1), independently checked across 6 proof kernels and 80-digit arithmetic.</p>
+      <div class="eyebrow">Lean 4.35.0 (Palomar module spec) · Mathlib v4.35.0 · Comparator Replay · v{version}</div>
+      <h1>Proof of Conjecture 7.7 &amp; Lemma 7.3 on Multinomial Discrete Total Variation</h1>
+      <p class="lead">Machine-checked Lean 4.35.0 proof of Conjecture 7.7 (<code>conj:atriangle</code>) and the quantitative <em>O</em>(&ell;<sup>&minus;2</sup>) remainder of Lemma 7.3 of Banić &amp; Elezović (unrefereed arXiv v1 preprint <code>arXiv:2610.17046v1</code>; Part 5 <code>arXiv:2611.14735v1</code>, Theorem 3.10), replayed in six comparator checker runs and cross-checked in 80-digit arithmetic.</p>
       <div class="formula" role="region" aria-label="Main proved constants">a_△ = 1/32 &minus; 4&radic;3/243 &nbsp;&middot;&nbsp; &gamma;<sub>2</sub> = &minus;1/(32&pi;) &minus; 8&radic;3/(243&pi;) &nbsp;&middot;&nbsp; d<sub>0</sub> = &minus;4&radic;3/(81&pi;)</div>
       <nav class="pills" aria-label="Primary verification artifacts">
         <a class="pill primary" href="blueprint/">Interactive Lean 4 Blueprint</a>
         <a class="pill" href="paper/Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf">Preprint PDF</a>
         <a class="pill" href="results/lean-axioms-all.log">Verbatim Axiom Log</a>
-        <a class="pill" href="results/comparator-paranoid.log">6-Kernel Comparator Log</a>
+        <a class="pill" href="results/comparator-paranoid.log">Comparator Log (6 Runs)</a>
         <a class="pill" href="data/MANIFEST.sha256">SHA-256 Manifest</a>
         <a class="pill" href="data/MANIFEST.sha256.tsr">RFC 3161 TSA (.tsr)</a>
         <a class="pill" href="data/MANIFEST.sha256.ots">OpenTimestamps (.ots)</a>
@@ -95,20 +106,20 @@ def render_portal() -> str:
   <main id="main-content" class="wrap">
     <div class="grid">
       <article class="card">
-        <h2>6-Kernel Palomar Isolation</h2>
-        <p>Every Lean file carries a Lean 4.35.0 <code>module</code> header. Isolated Mathlib-only <code>Challenge.lean</code> is matched against sorry-free <code>Solution.lean</code> via sandboxed <code>lake comparator --paranoid</code> (Lean 4.35.0, leanchecker-paranoid, lean4lean, nanoda, con-leche, con-ron) plus live negative kernel rejection in CI.</p>
+        <h2>Palomar Isolation &amp; 6 Comparator Runs</h2>
+        <p>Every Lean file carries a Lean 4.35.0 <code>module</code> header. Isolated Mathlib-only <code>Challenge.lean</code> (9 targets) is matched against sorry-free <code>Solution.lean</code> via sandboxed <code>lake comparator --paranoid</code> (six checker runs: Lean paranoid/default, <code>lean4lean</code>, <code>nanoda</code>, <code>con-leche</code>, <code>con-ron</code>).</p>
       </article>
       <article class="card">
-        <h2>{theorem_count} Exhaustively Audited Theorems</h2>
-        <p>Zero <code>sorry</code>, zero <code>admit</code>, zero custom axioms, zero <code>native_decide</code>, zero Batteries or Mathlib style-linter warnings. All {theorem_count} named and module-private theorems under <code>MultinomialTV</code> depend strictly on <code>[propext, Classical.choice, Quot.sound]</code>.</p>
+        <h2>{theorem_count} Exhaustively Audited Constants</h2>
+        <p>{author_count} author-written theorems and lemmas ({theorem_count} compiler-emitted theorem constants audited by <code>Lean.collectAxioms</code>). Zero <code>sorry</code>, <code>admit</code>, custom axioms, or <code>native_decide</code> in proof modules; strictly within <code>[propext, Classical.choice, Quot.sound]</code>.</p>
       </article>
       <article class="card">
         <h2>Non-Vacuity, Oracles &amp; Provenance</h2>
-        <p>{nonvac_count} concrete small-L, sign, small-n, and adversarial false-constant refutation witnesses in <code>NonVacuity.lean</code>, independent exact rational (L=3..45) &amp; 80-digit <code>mpmath</code> checks (&lt;3e-55), Sigstore SLSA Rekor attestations, DigiCert RFC 3161 TSA, and Bitcoin OpenTimestamps.</p>
+        <p>{nonvac_count} theorems in <code>NonVacuity.lean</code> (6 direct <code>hAdj 0..5</code> definition checks + 14 closed-form corollaries and proved refutations such as <code>adversarial_aTriangle_ne_one_div_32</code>), exact rational (L=3..45) &amp; 80-digit checks (&lt;3e-55), 20/20 code mutation kills, Sigstore SLSA, RFC 3161 TSA, and Bitcoin OpenTimestamps.</p>
       </article>
     </div>
     <div class="note">
-      <strong>Verification &amp; Epistemic Disclosure:</strong> Unreviewed research preprint by Alexander S. Donahue (Independent Researcher, Spokane, WA, USA; ORCID <a href="https://orcid.org/0009-0006-8168-9648" style="color:#fcd34d">0009-0006-8168-9648</a>), produced with AI assistance under human direction. Independent human line-by-line statement-fidelity review remains open; see <code>docs/statement-fidelity.md</code> and <code>LIMITATIONS.md</code>.
+      <strong>Verification &amp; Epistemic Disclosure:</strong> Unreviewed research preprint by Alexander S. Donahue (Independent Researcher, Spokane, WA, USA; ORCID <a href="https://orcid.org/0009-0006-8168-9648" style="color:#fcd34d">0009-0006-8168-9648</a>), produced with AI assistance under human direction. Source conjecture is from unrefereed arXiv v1 preprint <code>arXiv:2610.17046v1</code>. Independent human line-by-line statement-fidelity review and outside operator replication remain open; see <code>docs/statement-fidelity.md</code>, <code>REPLICATION.md</code>, and <code>LIMITATIONS.md</code>.
     </div>
   </main>
   <footer>

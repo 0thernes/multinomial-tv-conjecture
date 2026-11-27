@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this proof, Lean 4 formalization, or verification code, please cite it as below."
 type: software
 title: "Proof of Conjecture 7.7 on the Second-Order Variance Constant of Multinomial Discrete Total Variation"
-version: "2.4.0"
+version: "2.5.0"
 date-released: "2026-11-26"
 url: "https://github.com/0thernes/multinomial-tv-conjecture"
 repository-code: "https://github.com/0thernes/multinomial-tv-conjecture"
@@ -20,7 +20,7 @@ keywords:
   - Euler-Maclaurin summation
   - Lean 4
   - formal verification
-  - six-kernel verification
+  - lake comparator
   - Conjecture 7.7
 references:
   - type: article
