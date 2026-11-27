@@ -36,7 +36,7 @@ jobs:
           lake build MultinomialTVConjecture Challenge Solution VerifyAxioms
       - name: Forbidden-token & zero-nolint scan (scripts/check_lean_tokens.py)
         run: python3 scripts/check_lean_tokens.py
-      - name: Run exhaustive #print axioms audit (VerifyAxioms.lean)
+      - name: "Run exhaustive #print axioms & theorem+definition audit (VerifyAxioms.lean)"
         working-directory: lean
         shell: bash
         run: |

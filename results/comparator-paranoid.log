@@ -1,10 +1,11 @@
 Comparator Independent Verification Report (Lean 4.35.0 — Sandboxed Ubuntu 24.04 CI, Six Checker Runs)
 ======================================================================================================
-CI Run: https://github.com/0thernes/multinomial-tv-conjecture/actions/runs/45951940106
-Commit / Tag: 729416c956a498a0fd81a8cf8b346916e8102062 (v2.6.0, Palomar module headers + weak.linter.mathlibStandardSet = true)
-Sigstore Rekor Log: https://search.sigstore.dev?logIndex=4143298863
-GitHub Attestation: https://github.com/0thernes/multinomial-tv-conjecture/attestations/72967371
-Standalone NonVacuity Check: lake env leanchecker MultinomialTVConjecture.NonVacuity (PASS in run 45951940106)
+CI Run: https://github.com/0thernes/multinomial-tv-conjecture/actions/runs/46048238909
+Commit / Tag: b8874b7659ecbf16eceb26adbc679370b233320c (v2.7.0, zero @[nolint] suppressions, theorem+def axiom audit, live negative tamper check)
+Sigstore Rekor Log: https://search.sigstore.dev?logIndex=4150767694
+GitHub Attestation: https://github.com/0thernes/multinomial-tv-conjecture/attestations/73235116
+Standalone NonVacuity Check: lake env leanchecker MultinomialTVConjecture.NonVacuity (PASS in run 46048238909)
+Negative Tamper Check: sorry-injected Solution.lean rejected by lake comparator --paranoid with "error: Illegal axiom detected: 'sorryAx'" (exit 1, PASS in run 46048238909)
 Command: cd lean && lake comparator --config comparator.json --paranoid
 Targets (10):
   - MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0
