@@ -6,16 +6,16 @@ It proves **Conjecture 7.7** (`conj:atriangle`) and the complete quantitative $O
 ### 2. Is this problem listed in the 1,900-problem Unsolved Problems Mega-Atlas?
 **No.** Conjecture 7.7 is a specialized 2026 preprint conjecture in discrete probability/asymptotics; it is not one of the 1,900 grand macro open problems in `0thernes/unsolved-problems-mega-atlas`. We explicitly do **not** claim retirement of any Mega-Atlas grand problem.
 
-### 3. Why does `lean/Challenge.lean` contain 9 `sorry` statements?
-By design of Lean's `lake comparator` (Palomar-style specification isolation): `Challenge.lean` imports **only Mathlib** (zero files from our proof library) and states the 9 target theorems with `sorry` stubs. `lake comparator --config comparator.json --paranoid` then checks that sorry-free `Solution.lean` exports the same statements as `Challenge.lean` and replays the proof terms in **six checker runs** (the Lean kernel in paranoid and default mode, `lean4lean`, `nanoda`, `con-leche`, `con-ron`). None of our proof modules (`MultinomialTVConjecture/*`, `Solution.lean`) contain any `sorry`.
+### 3. Why does `lean/Challenge.lean` contain 10 `sorry` statements?
+By design of Lean's `lake comparator` (Palomar-style specification isolation): `Challenge.lean` imports **only Mathlib** (zero files from our proof library) and states the 10 target theorems with `sorry` stubs. `lake comparator --config comparator.json --paranoid` then checks that sorry-free `Solution.lean` exports the same statements as `Challenge.lean` and replays the proof terms in **six checker runs** (the Lean kernel in paranoid and default mode, `lean4lean`, `nanoda`, `con-leche`, `con-ron`). None of our proof modules (`MultinomialTVConjecture/*`, `Solution.lean`) contain any `sorry`.
 
 ### 4. Does Lean 4 prove Banić & Elezović's Theorem 7.6 and Part 5 Theorem 3.10?
-**No.** Lean 4 proves Conjecture 7.7 and the quantitative $O(L^{-2})$ Lemma 7.3 remainder from Mathlib with only the three standard axioms, and proves the algebraic identities `gamma_closed_form`, `gamma_cyclic_closed_form`, `gamma3_closed_form`, and `gamma4_closed_form` for the $(p_1, q_1, r_1)$ combinations stated in Part 2 (Theorem 7.6, §7.2, §8) and Part 5 (Theorem 3.10). Lean defines no random variable or variance. Those upstream variance decompositions are cited literature results outside our Lean boundary (see [LIMITATIONS.md](../LIMITATIONS.md)).
+**No.** Lean 4 proves Conjecture 7.7 and the quantitative $O(L^{-2})$ Lemma 7.3 remainder from Mathlib with only the three standard axioms, and proves the algebraic identities `gamma_closed_form`, `gamma_cyclic_closed_form`, `gamma3_closed_form`, `gamma3_source_form`, and `gamma4_closed_form` for the $(p_1, q_1, r_1)$ combinations stated in Part 2 (Theorem 7.6, §7.2, §8) and Part 5 (Theorem 3.10). Lean defines no random variable or variance. Those upstream variance decompositions are cited literature results outside our Lean boundary (see [LIMITATIONS.md](../LIMITATIONS.md)).
 
 ### 5. Why are there both `LICENSE` (Apache-2.0) and `LICENSE-DOCS` (CC-BY-4.0)?
 Following independent scientific publishing best practices (Playbook v1.3 and Mathlib4 upstream compatibility), software and Lean formalizations use **Apache-2.0** (patent grant + clean upstreaming to Mathlib4), while the research manuscript, figures, blueprint, and documentation use **CC-BY-4.0** (attribution-preserving scholarly reuse).
 
 ### 6. How can I verify the proof in under a minute without trusting the author?
-1. Read `lean/Challenge.lean` (153 lines, Mathlib-only, Lean 4.35.0 `module` header, 9 targets) to confirm the theorem statements match Banić & Elezović (`arXiv:2610.17046v1`).
-2. Run `cd lean && lake exe cache get && lake build MultinomialTVConjecture Challenge Solution VerifyAxioms && lake env lean VerifyAxioms.lean`.
+1. Read `lean/Challenge.lean` (164 lines, Mathlib-only, Lean 4.35.0 `module` header, 10 targets) to confirm the theorem statements match Banić & Elezović (`arXiv:2610.17046v1`).
+2. Run `cd lean && lake exe cache get && lake build MultinomialTVConjecture Challenge Solution VerifyAxioms && lake env lean VerifyAxioms.lean && lake env leanchecker MultinomialTVConjecture.NonVacuity`.
 3. On Linux with `bubblewrap` (or WSL2/Docker), run `lake comparator --config comparator.json --paranoid`.

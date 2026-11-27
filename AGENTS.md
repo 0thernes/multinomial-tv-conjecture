@@ -16,13 +16,13 @@ This file is the **single canonical instruction file** for all AI coding agents 
 3. **R4 (Zero banned files):** Never create `PULL_REQUEST_TEMPLATE.md`, `dependabot.yml`, `renovate.json`, `.github/copilot-instructions.md`, or `FUNDING.yml`.
 4. **R5 / R6 (Zero fabrication):** Never fabricate `#print axioms` output, test passes, SHA-256 hashes, DOIs, arXiv IDs, or external peer-review claims. Always run the real tool on the current code.
 5. **R7 (10-class finding taxonomy):** Classify every defect/finding into exactly one of: `bug`, `error`, `issue`, `problem`, `concern`, `dilemma`, `conflict`, `gap`, `hole`, `blindspot`.
-6. **Lean soundness invariant:** Zero `sorry`, `admit`, `axiom`, `native_decide`, `unsafe`, `implemented_by`, or `@[extern]` in `lean/MultinomialTVConjecture/` or `lean/Solution.lean`. (`lean/Challenge.lean` intentionally holds 9 target `sorry` stubs verified against sorry-free `lean/Solution.lean` by `lake comparator`.)
+6. **Lean soundness invariant:** Zero `sorry`, `admit`, `axiom`, `native_decide`, `unsafe`, `implemented_by`, or `@[extern]` in `lean/MultinomialTVConjecture/` or `lean/Solution.lean`. (`lean/Challenge.lean` intentionally holds 10 target `sorry` stubs verified against sorry-free `lean/Solution.lean` by `lake comparator`.)
 7. **Single version source:** `VERSION` must match `CHANGELOG.md`, `CITATION.cff`, `formalization.yaml`, and `lean/lakefile.toml`.
 
 ## Repository Map
 
 - `lean/MultinomialTVConjecture/` — Modular Lean 4.35.0 proof (`Combinatorial`, `StirlingRefined`, `GaussianEulerMaclaurin`, `LocalAsymptotics`, `Main`, `NonVacuity`).
-- `lean/Challenge.lean`, `lean/Solution.lean`, `lean/comparator.json` — Isolated Mathlib-only target statements (9 targets) & comparator bridge (six checker runs).
+- `lean/Challenge.lean`, `lean/Solution.lean`, `lean/comparator.json` — Isolated Mathlib-only target statements (10 targets) & comparator bridge (six checker runs).
 - `lean/VerifyAxioms.lean` — Exhaustive `Lean.collectAxioms` metaprogram + explicit `#print axioms` audit.
 - `paper/main.tex`, `paper/refs.bib` — AMS-LaTeX manuscript compiled via Tectonic to `dist/Donahue_2026_Conjecture_7_7_Multinomial_TV.pdf`.
 - `blueprint/src/content.tex` — Dependency blueprint validated against `lean/` by `scripts/build_blueprint.py`.

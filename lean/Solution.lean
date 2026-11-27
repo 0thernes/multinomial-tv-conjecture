@@ -197,6 +197,19 @@ theorem target_lemma_7_3_O_inv_sq :
   rw [hAdj_eq_core, cL_eq_core, aStar_eq_core, bRes_eq_core]
   exact hbd L hL
 
+/-- Target 10: Literal Part 2 §7.2 source form of `γ(3; N)` and bridge `q_1(3) - d_0 = -7/(96π)`. -/
+theorem target_gamma3_source_form (N : ℕ) :
+    let n : ℝ := 3
+    let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
+    let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
+    (q1 - d0 = -(7 / (96 * Real.pi))) ∧
+      (2 * p1 + 2 * (bRes (N % 3) - 7 / (96 * Real.pi)) =
+        -(7 / (24 * Real.pi)) - 8 * Real.sqrt 3 / (81 * Real.pi) +
+          8 * Real.sqrt 3 / (9 * Real.pi) * Real.cos (2 * Real.pi * (N : ℝ) / 3)) := by
+  dsimp only
+  rw [aTriangle_eq_core, bRes_eq_core, d0_eq_core]
+  exact MultinomialTV.gamma3_source_form N
+
 end MultinomialTV.ComparatorTarget
 
 end

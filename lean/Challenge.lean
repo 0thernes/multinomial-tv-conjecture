@@ -23,10 +23,10 @@ multinomial expectation `h_adj(L) = E[|X_2 - X_1| |X_3 - X_2|]` under `Mult(L; 1
 the linear/constant terms `c_L`, `a_*`, the residue limits `b_r`, and the derived constants
 `d_0`, `a_△`, `γ_2` from Banić & Elezović (arXiv:2610.17046v1, Sec. 7.2 / Conjecture 7.7;
 arXiv:2611.14735v1, Thm. 3.10). Targets 1–4 and 9 state the residue limits, Conjecture 7.7,
-and the quantitative `O(L^{-2})` remainder of Lemma 7.3; Targets 5–8 state the algebraic
-identities behind Corollary 1.2(i)–(iii) (Target 7 uses an equal rearrangement of the source's
-left side; Target 8 carries `(-1)^N / (2π)` unchanged on both sides; variance statements remain
-cited outside Lean).
+and the quantitative `O(L^{-2})` remainder of Lemma 7.3; Targets 5–8 and 10 state the algebraic
+identities behind Corollary 1.2(i)–(iii) (Target 10 states the literal Part 2 §7.2 `n = 3` source
+form and proves its equivalence `q_1(3) - d_0 = -7/(96π)` with Target 7; Target 8 carries
+`(-1)^N / (2π)` unchanged on both sides; variance statements remain cited outside Lean).
 
 NOTE: Every `sorry` in this file is intentional — `Challenge.lean` is the isolated statement
 specification checked against sorry-free `Solution.lean` by
@@ -146,6 +146,17 @@ theorem target_gamma4_closed_form (N : ℕ) :
 theorem target_lemma_7_3_O_inv_sq :
     ∃ C : ℝ, 0 ≤ C ∧ ∀ L : ℕ, 1 ≤ L →
       |hAdj L - cL * (L : ℝ) - aStar - bRes (L % 3) / (L : ℝ)| ≤ C / (L : ℝ) ^ 2 := by
+  sorry
+
+/-- Target 10: Literal Part 2 §7.2 source form of `γ(3; N)` and bridge `q_1(3) - d_0 = -7/(96π)`. -/
+theorem target_gamma3_source_form (N : ℕ) :
+    let n : ℝ := 3
+    let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
+    let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
+    (q1 - d0 = -(7 / (96 * Real.pi))) ∧
+      (2 * p1 + 2 * (bRes (N % 3) - 7 / (96 * Real.pi)) =
+        -(7 / (24 * Real.pi)) - 8 * Real.sqrt 3 / (81 * Real.pi) +
+          8 * Real.sqrt 3 / (9 * Real.pi) * Real.cos (2 * Real.pi * (N : ℝ) / 3)) := by
   sorry
 
 end MultinomialTV.ComparatorTarget

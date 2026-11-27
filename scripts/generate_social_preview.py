@@ -51,25 +51,25 @@ def render_svg() -> str:
   </defs>
   <rect width="1280" height="640" fill="url(#bg)"/>
   <rect x="64" y="56" width="1152" height="528" rx="24" fill="#0f172a" fill-opacity="0.72" stroke="#1e3a8a" stroke-width="2"/>
-  <rect x="108" y="102" width="620" height="36" rx="18" fill="#0c4a6e" stroke="#38bdf8" stroke-width="1.5"/>
-  <text x="418" y="126" fill="#e0f2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle" letter-spacing="1.2">LEAN 4.35.0 (MODULE SPEC) · COMPARATOR REPLAY · V{version}</text>
+  <rect x="108" y="102" width="644" height="36" rx="18" fill="#0c4a6e" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="430" y="126" fill="#e0f2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle" letter-spacing="1.2">LEAN 4.35.0 (MODULE SPEC) · COMPARATOR REPLAY · V{version}</text>
   <text x="108" y="212" fill="#f8fafc" font-family="Segoe UI, system-ui, sans-serif" font-size="52" font-weight="800">Conjecture 7.7 &amp; Lemma 7.3 Proved</text>
   <text x="108" y="264" fill="#cbd5e1" font-family="Segoe UI, system-ui, sans-serif" font-size="25" font-weight="500">Second-Order Variance Constant of Multinomial Discrete Total Variation</text>
-  <rect x="108" y="302" width="1064" height="106" rx="14" fill="#0b1224" stroke="#334155" stroke-width="1.5"/>
+  <rect x="96" y="302" width="1088" height="106" rx="14" fill="#0b1224" stroke="#334155" stroke-width="1.5"/>
   <text x="640" y="352" fill="#38bdf8" font-family="Consolas, Menlo, monospace" font-size="30" font-weight="700" text-anchor="middle">a_△ = 1/32 − 4√3/243     ·     γ₂ = −1/(32π) − 8√3/(243π)</text>
   <text x="640" y="388" fill="#94a3b8" font-family="Consolas, Menlo, monospace" font-size="20" text-anchor="middle">b₀ = 32√3/(81π)   ·   b₁ = b₂ = −22√3/(81π)   ·   d₀ = −4√3/(81π)   ·   O(ℓ⁻²) proved</text>
-  <rect x="108" y="438" width="336" height="68" rx="12" fill="#064e3b" fill-opacity="0.55" stroke="#4ade80" stroke-width="1.5"/>
-  <text x="276" y="468" fill="#6ee7b7" font-family="Segoe UI, system-ui, sans-serif" font-size="18" font-weight="700" text-anchor="middle">6 Checker Runs · {targets} Targets</text>
-  <text x="276" y="492" fill="#d1fae5" font-family="Segoe UI, system-ui, sans-serif" font-size="14" text-anchor="middle">Lean (paranoid/default) · lean4lean · nanoda · con-leche · con-ron</text>
-  <rect x="472" y="438" width="336" height="68" rx="12" fill="#1e1b4b" fill-opacity="0.7" stroke="#818cf8" stroke-width="1.5"/>
-  <text x="640" y="468" fill="#c7d2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="18" font-weight="700" text-anchor="middle">{author_decls} Author Theorems ({constants} Constants)</text>
-  <text x="640" y="492" fill="#e0e7ff" font-family="Segoe UI, system-ui, sans-serif" font-size="14" text-anchor="middle">Strictly [propext, Classical.choice, Quot.sound]</text>
-  <rect x="836" y="438" width="336" height="68" rx="12" fill="#172554" fill-opacity="0.8" stroke="#38bdf8" stroke-width="1.5"/>
-  <text x="1004" y="468" fill="#bae6fd" font-family="Segoe UI, system-ui, sans-serif" font-size="18" font-weight="700" text-anchor="middle">Exact + 80-Digit Verified</text>
-  <text x="1004" y="492" fill="#e0f2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="14" text-anchor="middle">{nonvac} NonVacuity theorems · Banić &amp; Elezović (2026)</text>
-  <line x1="108" y1="532" x2="1172" y2="532" stroke="url(#accent)" stroke-width="2" stroke-opacity="0.5"/>
-  <text x="108" y="562" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="17">Alexander S. Donahue · Independent Researcher · ORCID 0009-0006-8168-9648</text>
-  <text x="1172" y="562" fill="#38bdf8" font-family="Consolas, monospace" font-size="17" text-anchor="end">github.com/0thernes/multinomial-tv-conjecture</text>
+  <rect x="96" y="438" width="352" height="68" rx="12" fill="#064e3b" fill-opacity="0.55" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="272" y="467" fill="#6ee7b7" font-family="Segoe UI, system-ui, sans-serif" font-size="17" font-weight="700" text-anchor="middle">6 Checker Runs · {targets} Targets</text>
+  <text x="272" y="492" fill="#d1fae5" font-family="Segoe UI, system-ui, sans-serif" font-size="12.5" text-anchor="middle">Lean · lean4lean · nanoda · con-leche · con-ron</text>
+  <rect x="464" y="438" width="352" height="68" rx="12" fill="#1e1b4b" fill-opacity="0.7" stroke="#818cf8" stroke-width="1.5"/>
+  <text x="640" y="467" fill="#c7d2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="16.5" font-weight="700" text-anchor="middle">{author_decls} Author Theorems ({constants} Constants)</text>
+  <text x="640" y="492" fill="#e0e7ff" font-family="Segoe UI, system-ui, sans-serif" font-size="12.5" text-anchor="middle">Strictly [propext, Classical.choice, Quot.sound]</text>
+  <rect x="832" y="438" width="352" height="68" rx="12" fill="#172554" fill-opacity="0.8" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="1008" y="467" fill="#bae6fd" font-family="Segoe UI, system-ui, sans-serif" font-size="17" font-weight="700" text-anchor="middle">Exact + 80-Digit Verified</text>
+  <text x="1008" y="492" fill="#e0f2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="12.5" text-anchor="middle">{nonvac} NonVacuity theorems · Banić &amp; Elezović (2026)</text>
+  <line x1="96" y1="532" x2="1184" y2="532" stroke="url(#accent)" stroke-width="2" stroke-opacity="0.5"/>
+  <text x="96" y="562" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="17">Alexander S. Donahue · Independent Researcher · ORCID 0009-0006-8168-9648</text>
+  <text x="1184" y="562" fill="#38bdf8" font-family="Consolas, monospace" font-size="17" text-anchor="end">github.com/0thernes/multinomial-tv-conjecture</text>
 </svg>
 """
 

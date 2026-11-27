@@ -23,6 +23,7 @@
 'MultinomialTV.gamma_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
 'MultinomialTV.gamma_cyclic_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
 'MultinomialTV.gamma3_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MultinomialTV.gamma3_source_form' depends on axioms: [propext, Classical.choice, Quot.sound]
 'MultinomialTV.gamma4_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
 'MultinomialTV.NonVacuity.hAdj_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
 'MultinomialTV.NonVacuity.hAdj_one' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -61,4 +62,5 @@
 'MultinomialTV.ComparatorTarget.target_gamma3_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
 'MultinomialTV.ComparatorTarget.target_gamma4_closed_form' depends on axioms: [propext, Classical.choice, Quot.sound]
 'MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
-ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 892 theorems across MultinomialTV — 0 disallowed axioms.
+'MultinomialTV.ComparatorTarget.target_gamma3_source_form' depends on axioms: [propext, Classical.choice, Quot.sound]
+ALL_THEOREMS_AXIOM_AUDIT_PASS: checked 894 theorems across MultinomialTV — 0 disallowed axioms.

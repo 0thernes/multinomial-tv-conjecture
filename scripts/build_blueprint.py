@@ -140,7 +140,7 @@ def parse_blueprint(tex: str) -> list[dict[str, Any]]:
                 "lean": lean_decls,
                 "uses": uses,
                 "leanok": leanok,
-                "summary": prose[:380],
+                "summary": prose,
             }
         )
     return nodes
@@ -336,7 +336,7 @@ a:focus-visible,.btn:focus-visible,.search:focus-visible{{outline:2px solid #38b
 <main id="main">
 <p><a href="../">&larr; Back to Multinomial TV Conjecture Portal</a></p>
 <h1>Lean 4.35.0 Dependency Blueprint (Conjecture 7.7)</h1>
-<p class="sub">{len(nodes)} formal nodes &middot; {total_decls} statically validated Lean 4 declarations linked to exact GitHub source lines across <code>MultinomialTVConjecture</code>, <code>NonVacuity</code> ({nonvac_count}/{nonvac_count}), and the 6-kernel Comparator Bridge. Click any DAG node to highlight its transitive dependency cone.</p>
+<p class="sub">{len(nodes)} formal nodes &middot; {total_decls} statically validated Lean 4 declarations linked to exact GitHub source lines across <code>MultinomialTVConjecture</code>, <code>NonVacuity</code> ({nonvac_count}/{nonvac_count}), and the Comparator Bridge (six checker runs). Click any DAG node to highlight its transitive dependency cone.</p>
 <div class="toolbar" role="region" aria-label="Blueprint filters">
   <input id="q" class="search" type="search" placeholder="Filter nodes or Lean declarations (e.g., hAdj_mod0, NonVacuity, conjecture_7_7)..." aria-label="Filter blueprint nodes"/>
   <button class="btn active" data-stage="all" aria-pressed="true">All ({len(nodes)})</button>
@@ -353,7 +353,7 @@ a:focus-visible,.btn:focus-visible,.search:focus-visible{{outline:2px solid #38b
   <span><i class="swatch" style="background:#818cf8"></i>Stage 2: Stirling &amp; Euler&ndash;Maclaurin</span>
   <span><i class="swatch" style="background:#c084fc"></i>Stage 3: Local Asymptotics</span>
   <span><i class="swatch" style="background:#4ade80"></i>Stage 4: Conjecture 7.7 &amp; &gamma;(n)</span>
-  <span><i class="swatch" style="background:#fbbf24"></i>Stage 5: Non-Vacuity &amp; 6-Kernel Bridge</span>
+  <span><i class="swatch" style="background:#fbbf24"></i>Stage 5: Non-Vacuity &amp; Comparator Bridge</span>
 </div>
 <section class="dag-wrap">{svg}</section>
 <section class="grid" id="cards">{"".join(rows)}</section>

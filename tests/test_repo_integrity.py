@@ -148,7 +148,7 @@ def test_regression_e2026_004_axiom_log_and_readme_sync(tmp_path: Path) -> None:
     assert log_path.is_file()
     log_text = log_path.read_text(encoding="utf-8")
     decls = cra.parse_log(log_text)
-    assert len(decls) == 55
+    assert len(decls) == 57
     for name, axioms in decls.items():
         assert axioms <= cra.ALLOWED, f"Non-standard axiom in {name}: {axioms}"
     assert cra.EXHAUSTIVE_RE.search(log_text), "Missing ALL_THEOREMS_AXIOM_AUDIT_PASS sentinel"
@@ -379,20 +379,74 @@ def test_regression_e2026_006_and_010_statement_fidelity_and_paper_parity() -> N
 
 
 def test_regression_e2026_007_live_citation_audit_preserved() -> None:
-    """Regression test (B07) for E-2026-007: committed citation-audit.json has 100% live checks & 0 retractions."""
+    """Regression & negative tests (B06, B07, F-65): live citation-audit.json, updated-by retractions & title/author match."""
     ca = json.loads((ROOT / "results" / "citation-audit.json").read_text(encoding="utf-8"))
     assert ca["status"] == "pass"
     assert ca["retracted_count"] == 0
+    assert ca.get("metadata_mismatch_count", 0) == 0
     assert len(ca["online_checks"]) >= 16
     assert len(ca["online_checks"]) == ca["arxiv_count"] + ca["doi_count"]
     assert all(item["ok"] for item in ca["online_checks"])
+    assert all(item.get("metadata_match") is True for item in ca["online_checks"])
     scan = cc.scan_citations()
     assert scan["missing_bib_keys"] == []
     assert scan["uncited_bib_keys"] == []
 
+    # Negative check (kills M21_citations_drop_updated_by): Crossref updated-by retraction MUST fail
+    retracted_payload = {
+        "message": {
+            "title": ["The Efficiency of the Mean Moving Range"],
+            "author": [{"family": "Hoel"}],
+            "updated-by": [{"type": "retraction", "label": "Retraction Notice"}],
+        }
+    }
+    res_ret = cc.verify_crossref_payload(
+        "10.1214/aoms/1177730886",
+        retracted_payload,
+        expected={"title": "The Efficiency of the Mean Moving Range", "author": "Paul G. Hoel"},
+    )
+    assert res_ret["retracted"] is True
+    assert res_ret["ok"] is False
 
-def test_regression_e2026_008_no_workstation_path_leaks_and_6kernel_log() -> None:
-    """Regression test (B07) for E-2026-008: zero private local paths in tracked files & verbatim 6-kernel CI log."""
+    # Negative check (kills M22_citations_skip_title_match): wrong title for a valid DOI MUST fail
+    wrong_title_payload = {
+        "message": {
+            "title": ["Completely Unrelated Quantum Gravity Paper"],
+            "author": [{"family": "SomeoneElse"}],
+        }
+    }
+    res_wrong = cc.verify_crossref_payload(
+        "10.1214/aoms/1177730886",
+        wrong_title_payload,
+        expected={"title": "The Efficiency of the Mean Moving Range", "author": "Paul G. Hoel"},
+    )
+    assert res_wrong["metadata_match"] is False
+    assert res_wrong["ok"] is False
+
+    # Negative check for arXiv Atom XML primaryClass mismatch
+    bad_arxiv_xml = """<?xml version="1.0" encoding="UTF-8"?>
+    <feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom">
+      <entry>
+        <title>Discrete total variation under the multinomial, Part 2: variance under the uniform null</title>
+        <author><name>Nikola Banić</name></author>
+        <arxiv:primary_category term="math.PR"/>
+      </entry>
+    </feed>"""
+    res_cls = cc.verify_arxiv_xml(
+        "2610.17046v1",
+        bad_arxiv_xml,
+        expected={
+            "title": "Discrete total variation under the multinomial, Part 2: variance under the uniform null",
+            "author": "Nikola Banić and Neven Elezović",
+            "primaryclass": "math.ST",
+        },
+    )
+    assert res_cls["metadata_match"] is False
+    assert res_cls["ok"] is False
+
+
+def test_regression_e2026_008_no_workstation_path_leaks_and_comparator_log() -> None:
+    """Regression test (B07) for E-2026-008: zero private local paths in tracked files & verbatim comparator CI log."""
     comp_log = (ROOT / "results" / "comparator-paranoid.log").read_text(encoding="utf-8")
     for sentinel in (
         "Lean paranoid kernel accepts the solution",
@@ -403,7 +457,7 @@ def test_regression_e2026_008_no_workstation_path_leaks_and_6kernel_log() -> Non
         "Lean default kernel accepts the solution",
         "Your solution is okay!",
     ):
-        assert sentinel in comp_log, f"Missing 6-kernel sentinel in comparator-paranoid.log: {sentinel}"
+        assert sentinel in comp_log, f"Missing comparator checker sentinel in comparator-paranoid.log: {sentinel}"
 
     tracked = subprocess.check_output(
         ["git", "-C", str(ROOT), "ls-files"], text=True, encoding="utf-8"
@@ -506,19 +560,47 @@ def test_regression_e2026_015_part5_citation_numbers_and_primary_class() -> None
         )
 
 
-def test_comparator_9_targets_and_mutation_report_green() -> None:
-    """Verify comparator.json covers all 9 targets (incl. Lemma 7.3 O(L^-2)) and B13 mutation report is 100%."""
+def test_comparator_10_targets_and_mutation_report_green() -> None:
+    """Verify comparator.json covers all 10 targets (incl. Lemma 7.3 O(L^-2) & literal Part 2 §7.2 γ(3;N)) and B13 mutation report is 100%."""
     comp = json.loads((ROOT / "lean" / "comparator.json").read_text(encoding="utf-8"))
     names = comp["theorem_names"]
-    assert len(names) == 9
+    assert len(names) == 10
     assert "MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq" in names
+    assert "MultinomialTV.ComparatorTarget.target_gamma3_source_form" in names
 
     mut_path = ROOT / "results" / "mutation-report.json"
     assert mut_path.is_file(), "Missing B13 mutation report results/mutation-report.json"
     mut = json.loads(mut_path.read_text(encoding="utf-8"))
-    assert mut["total_mutants"] >= 20
+    assert mut["total_mutants"] >= 22
     assert mut["survived"] == 0
     assert mut["kill_rate_percent"] == 100.0
+
+
+def test_regression_f68_audit_script_honors_b44_partial(tmp_path: Path) -> None:
+    """Regression test (F-68): Audit-Repo must NOT inflate B44 (declared partial in repo.yaml) to PASS."""
+    out_json = tmp_path / "audit.json"
+    if sys.platform == "win32":
+        cmd = [
+            "pwsh",
+            "-NoProfile",
+            "-File",
+            str(ROOT / "scripts" / "Audit-Repo.ps1"),
+            "-Path",
+            str(ROOT),
+            "-Json",
+            str(out_json),
+            "-Quiet",
+        ]
+    else:
+        cmd = ["bash", str(ROOT / "scripts" / "audit-repo.sh"), str(ROOT), "--json", str(out_json), "--quiet"]
+    proc = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, encoding="utf-8")
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    data = json.loads(out_json.read_text(encoding="utf-8-sig"))
+    b44 = next(item for item in data["items"] if item["id"] == "B44")
+    assert b44["result"] == "partial", f"B44 was inflated to {b44['result']} despite repo.yaml partial status"
+    assert data["counts"]["partial"] >= 1
+    assert data["counts"]["fail"] == 0
+    assert data["score"]["core_completion_percent"] == 100.0
 
 
 def test_manifest_text_artifacts_strictly_lf_cross_platform() -> None:
@@ -535,7 +617,7 @@ def test_manifest_text_artifacts_strictly_lf_cross_platform() -> None:
 
 
 def test_regression_e2026_018_statement_audit_honesty_and_zero_conflict_markers() -> None:
-    """Regression test (E-2026-018, F-63): forbid overclaimed 'six independent kernels' & git merge markers."""
+    """Regression test (E-2026-018, F-63, F-64): forbid overclaimed 'six independent kernels' & git merge markers."""
     overclaim_re = re.compile(
         r"six\s+independent\s+(?:proof\s+)?kernels|6\s+independent\s+(?:proof\s+)?kernels|6-kernel",
         re.I,
@@ -565,9 +647,17 @@ def test_regression_e2026_018_statement_audit_honesty_and_zero_conflict_markers(
         "docs/media/social-preview.svg",
         "lean/Challenge.lean",
         "lean/Solution.lean",
+        "scripts/build_blueprint.py",
+        "scripts/build_site.py",
+        "scripts/generate_social_preview.py",
     ]
     for rel in active_docs:
         txt = (ROOT / rel).read_text(encoding="utf-8")
         assert not overclaim_re.search(txt), f"Overclaimed kernel wording found in {rel}"
         assert "<<<<<<<" not in txt and ">>>>>>>" not in txt, f"Unresolved git conflict marker in {rel}"
+    for html_rel in ("build/site/index.html", "build/site/blueprint/index.html"):
+        hp = ROOT / html_rel
+        if hp.is_file():
+            htxt = hp.read_text(encoding="utf-8")
+            assert not overclaim_re.search(htxt), f"Overclaimed kernel wording rendered in {html_rel}"
 

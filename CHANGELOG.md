@@ -5,6 +5,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and Sema
 
 > **Correction (2026-11-26):** Historical entries (`v2.0.0`–`v2.4.0`) below are kept as dated records. Where earlier entries say `"6-kernel"` or `"6 independent kernels"`, read six checker runs of `lake comparator --paranoid` (two of which are the Lean kernel in paranoid and default mode). Where earlier entries cite a `"live negative Lean kernel rejection check"` in CI, note that the actual mathematical refutation of `aTriangle = 1/32` is the proved theorem `adversarial_aTriangle_ne_one_div_32` in `NonVacuity.lean` (upgraded in `v2.5.0` to a mutated-constant elaboration smoke test requiring `unsolved goals`). See [ERRATA.md](ERRATA.md).
 
+## [2.6.0] - 2026-11-26
+
+### Added
+- **Literal Part 2 §7.2 `γ(3; N)` Target 10 (`F-67`, `E-2026-019`):** Proved `gamma3_source_form` in `Main.lean` and promoted `target_gamma3_source_form` as **Target 10** in `Challenge.lean` (`164` lines), `Solution.lean` (`215` lines), `comparator.json`, `VerifyAxioms.lean` (`57` explicit `#print axioms`), and `blueprint/src/content.tex` — proving both the bridge equality `q_1(3) - d_0 = -7/(96π)` linking Target 7 to the source text and the literal `arXiv:2610.17046v1` §7.2 identity `2 p_1(3) + 2 [b_{N mod 3} - 7/(96π)] = γ(3; N)` (**189** author-written theorems and lemmas, **894** exhaustively audited theorem constants, **8,138** exact Lean lines, **0** compiler/Batteries/Mathlib warnings outside the 10 intentional `sorry` stubs of `Challenge.lean`).
+- **Standalone `leanchecker` replay of `NonVacuity.lean` (`F-70`):** Added `lake env leanchecker MultinomialTVConjecture.NonVacuity` to `.github/workflows/lean-verify.yml` and `scripts/dev.sh` so all 20 non-vacuity and adversarial theorems receive independent kernel replay in CI.
+- **Deep live citation verification (`F-65`):** Upgraded `scripts/check_citations.py` to inspect Crossref `updated-by` (in addition to `update-to` and `relation`), parse arXiv Atom XML (`title`, `authors`, `primary_category`), and verify live title/author/`primaryClass` match against `paper/refs.bib` across all 16 identifiers (`0` retractions, `0` metadata mismatches), plus added 2 isolated AST source-code mutants (`M21`, `M22`) in `scripts/run_mutation_audit.py` (**22/22** killed, `100.0%`).
+
+### Fixed
+- **Zero score inflation on `B44: partial` (`F-68`, `E-2026-019`):** Fixed `scripts/Audit-Repo.ps1` and `scripts/audit-repo.sh` so explicit `status: partial` (or `todo`) declarations in `repo.yaml` are never overwritten to `PASS` by auto-matched regex checks, reporting honest **98.5% (`65/66`)** completion with `PART B44` (Structure `100.0%` `66/66`, Core `100.0%` `29/29`, `0` fails), guarded by `test_regression_f68_audit_script_honors_b44_partial`.
+- **Blueprint HTML, SVG preview overflow, figure determinism & hygiene (`F-64`, `F-66`, `F-69`, `F-71`, `F-72`):** Eliminated residual `"6-kernel"` and `prose[:380]` truncation in `scripts/build_blueprint.py` (expanding `test_regression_e2026_018` to scan scripts and rendered HTML); fixed Card 1 text overflow in `scripts/generate_social_preview.py`; fixed stale title, dynamic `10^{-(dps+10)}` cutoff, and deterministic `metadata={"CreationDate": None}` in `scripts/generate_figures.py`; fixed stale `"5-second"` wording in `SUPPORT.md`, documented SWH Anubis PoW accurately in `docs/operations.md`, and renamed `\label{cor:unconditional}` → `\label{cor:variance}` in `paper/main.tex`.
+
 ## [2.5.0] - 2026-11-26
 
 ### Fixed

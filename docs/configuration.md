@@ -10,7 +10,7 @@ This project uses **no runtime environment variables, secrets, API keys, or exte
 | `lean/lean-toolchain` | Pinned Lean 4 release (`leanprover/lean4:v4.35.0`) | Automatically respected by `elan` and `lake`. |
 | `lean/lakefile.toml` | Lean package targets, `autoImplicit = false`, `weak.linter.mathlibStandardSet = true`, Batteries `lintDriver` | Defines `MultinomialTVConjecture`, `Challenge`, `Solution`, `VerifyAxioms`. |
 | `lean/lake-manifest.json` | Exact Git commit lockfile for `mathlib`, `batteries`, `Qq`, `aesop`, etc. | Never edit by hand; update only intentionally with a full `lake comparator --paranoid` re-verification. |
-| `lean/comparator.json` | Target theorems & permitted axioms for `lake comparator --paranoid` (9 targets) | Maps `Challenge` -> `Solution` with `[propext, Quot.sound, Classical.choice]`. |
+| `lean/comparator.json` | Target theorems & permitted axioms for `lake comparator --paranoid` (10 targets) | Maps `Challenge` -> `Solution` with `[propext, Quot.sound, Classical.choice]`. |
 | `requirements.txt` | Pinned Python dependencies for verification, pytest, schema validation, linting | Install via `python3 -m pip install -r requirements.txt`. |
 | `repo.yaml` | Build Standard v1.2.0 machine-readable manifest | Validated against `repo-standard.schema.json`. |
 | `formalization.yaml` | Palomar-compatible authorship, CRediT, toolchain, and AI provenance record | Human- and machine-readable YAML. |

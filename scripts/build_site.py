@@ -107,7 +107,7 @@ def render_portal() -> str:
     <div class="grid">
       <article class="card">
         <h2>Palomar Isolation &amp; 6 Comparator Runs</h2>
-        <p>Every Lean file carries a Lean 4.35.0 <code>module</code> header. Isolated Mathlib-only <code>Challenge.lean</code> (9 targets) is matched against sorry-free <code>Solution.lean</code> via sandboxed <code>lake comparator --paranoid</code> (six checker runs: Lean paranoid/default, <code>lean4lean</code>, <code>nanoda</code>, <code>con-leche</code>, <code>con-ron</code>).</p>
+        <p>Every Lean file carries a Lean 4.35.0 <code>module</code> header. Isolated Mathlib-only <code>Challenge.lean</code> (10 targets) is matched against sorry-free <code>Solution.lean</code> via sandboxed <code>lake comparator --paranoid</code> (six checker runs: Lean paranoid/default, <code>lean4lean</code>, <code>nanoda</code>, <code>con-leche</code>, <code>con-ron</code>), plus standalone <code>leanchecker</code> replay of <code>NonVacuity.lean</code>.</p>
       </article>
       <article class="card">
         <h2>{theorem_count} Exhaustively Audited Constants</h2>
@@ -115,7 +115,7 @@ def render_portal() -> str:
       </article>
       <article class="card">
         <h2>Non-Vacuity, Oracles &amp; Provenance</h2>
-        <p>{nonvac_count} theorems in <code>NonVacuity.lean</code> (6 direct <code>hAdj 0..5</code> definition checks + 14 closed-form corollaries and proved refutations such as <code>adversarial_aTriangle_ne_one_div_32</code>), exact rational (L=3..45) &amp; 80-digit checks (&lt;3e-55), 20/20 code mutation kills, Sigstore SLSA, RFC 3161 TSA, and Bitcoin OpenTimestamps.</p>
+        <p>{nonvac_count} theorems in <code>NonVacuity.lean</code> (6 direct <code>hAdj 0..5</code> definition checks + 14 closed-form corollaries and proved refutations such as <code>adversarial_aTriangle_ne_one_div_32</code>), exact rational (L=3..45) &amp; 80-digit checks (&lt;3e-55), 22/22 code mutation kills, Sigstore SLSA, RFC 3161 TSA, and Bitcoin OpenTimestamps.</p>
       </article>
     </div>
     <div class="note">

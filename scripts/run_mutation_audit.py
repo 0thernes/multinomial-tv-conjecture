@@ -201,6 +201,23 @@ MUTANTS: list[CodeMutant] = [
         "if False and actual != expected:",
         "tests/test_repo_integrity.py",
     ),
+    # --- scripts/check_citations.py (F-65 retraction & title-match guards) ---
+    CodeMutant(
+        "M21_citations_drop_updated_by",
+        "scripts/check_citations.py",
+        "Drop Crossref updated-by retraction check in verify_crossref_payload",
+        'for field_name in ("update-to", "updated-by"):',
+        'for field_name in ("update-to",):',
+        "tests/test_repo_integrity.py",
+    ),
+    CodeMutant(
+        "M22_citations_skip_title_match",
+        "scripts/check_citations.py",
+        "Weaken DOI title/author metadata mismatch check to always True",
+        "metadata_match = False",
+        "metadata_match = True",
+        "tests/test_repo_integrity.py",
+    ),
 ]
 
 
@@ -230,11 +247,12 @@ def run_mutants(*, write_report: bool = False) -> int:
         ws.mkdir(parents=True, exist_ok=True)
         stage_isolated_workspace(ws)
 
-        # Initialize minimal git repo so git ls-files works in test_repo_integrity.py
-        subprocess.run(["git", "init", "-q"], cwd=ws, check=True)
-        subprocess.run(["git", "config", "user.email", "audit@localhost"], cwd=ws, check=True)
-        subprocess.run(["git", "config", "user.name", "Mutation Audit"], cwd=ws, check=True)
+        # Initialize minimal git repo on branch `main` with an initial commit so git ls-files & Audit-Repo A23 pass
+        subprocess.run(["git", "init", "-q", "-b", "main"], cwd=ws, check=True)
+        subprocess.run(["git", "config", "user.email", "0_0@0thernes.art"], cwd=ws, check=True)
+        subprocess.run(["git", "config", "user.name", "Alexander S. Donahue"], cwd=ws, check=True)
         subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
+        subprocess.run(["git", "commit", "-q", "-m", "chore: mutation audit baseline"], cwd=ws, check=True)
 
         # MANDATORY ANTI-THEATER GATE: unmutated baseline MUST pass 100% before testing any mutant!
         for target_suite in sorted({m.pytest_target for m in MUTANTS}):

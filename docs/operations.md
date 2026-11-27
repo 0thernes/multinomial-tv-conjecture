@@ -33,7 +33,7 @@ Store the verified `.bundle` file on an external drive or secondary cloud storag
 ## 3. Offsite Mirrors & Archival Preservation
 
 1. **Master Research Archive mirror:** Pinned as a Git submodule with frozen PDF, arXiv tarball, and SHA-256 registry entry inside [`0thernes/0thernes-research-archive`](https://github.com/0thernes/0thernes-research-archive) (`0TH-2026-006`).
-2. **Software Heritage (SWH) public archival:** Tagged releases are submitted to Software Heritage's Save Code Now API (`https://archive.softwareheritage.org/api/1/origin/save/git/url/https://github.com/0thernes/multinomial-tv-conjecture/`) to obtain an immutable `swh:1:rev:` identifier independent of GitHub (tracked in `docs/run-log.md`).
+2. **Software Heritage (SWH) public archival:** Software Heritage's unauthenticated Save Code Now endpoint (`https://archive.softwareheritage.org/api/1/origin/save/git/url/https://github.com/0thernes/multinomial-tv-conjecture/`) is currently gated by an Anubis proof-of-work anti-bot challenge, so obtaining an immutable `swh:1:rev:` identifier requires a manual browser submission at `https://archive.softwareheritage.org/save/` (tracked honestly as open in `docs/run-log.md` and `ROADMAP.md`).
 3. **Optional Git remote mirror:** To mirror to a secondary host (e.g., Codeberg or GitLab):
    ```bash
    git remote add mirror <mirror-url>

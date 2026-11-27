@@ -21,9 +21,9 @@ import all Solution
 # Exhaustive Axiom Audit for Multinomial TV Conjecture (Conjecture 7.7)
 
 Prints `#print axioms` for:
-  - All 26 primary theorems in `MultinomialTV`
+  - All 27 primary theorems in `MultinomialTV`
   - All 20 non-vacuity and adversarial-refutation theorems in `MultinomialTV.NonVacuity`
-  - All 9 isolated comparator target theorems in `MultinomialTV.ComparatorTarget`
+  - All 10 isolated comparator target theorems in `MultinomialTV.ComparatorTarget`
 PLUS runs an exhaustive `Lean.collectAxioms` metaprogram auditing EVERY single `theorem`
 declaration across the entire `MultinomialTV` namespace tree.
 
@@ -31,7 +31,7 @@ Run: `cd lean && lake env lean VerifyAxioms.lean`
 Every theorem must depend strictly on `[propext, Classical.choice, Quot.sound]` (or fewer).
 -/
 
--- Primary exported theorems (26 declarations)
+-- Primary exported theorems (27 declarations)
 #print axioms MultinomialTV.hAdj_eq_nested_sum
 #print axioms MultinomialTV.hAdj_mod0
 #print axioms MultinomialTV.hAdj_mod1
@@ -57,6 +57,7 @@ Every theorem must depend strictly on `[propext, Classical.choice, Quot.sound]` 
 #print axioms MultinomialTV.gamma_closed_form
 #print axioms MultinomialTV.gamma_cyclic_closed_form
 #print axioms MultinomialTV.gamma3_closed_form
+#print axioms MultinomialTV.gamma3_source_form
 #print axioms MultinomialTV.gamma4_closed_form
 
 -- Non-vacuity witnesses and adversarial definition checks (20 declarations)
@@ -81,7 +82,7 @@ Every theorem must depend strictly on `[propext, Classical.choice, Quot.sound]` 
 #print axioms MultinomialTV.NonVacuity.gamma3_closed_form_witness_N0
 #print axioms MultinomialTV.NonVacuity.gamma4_closed_form_witness_N0
 
--- Isolated Mathlib-only Comparator solution bridge (9 declarations)
+-- Isolated Mathlib-only Comparator solution bridge (10 declarations)
 #print axioms MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0
 #print axioms MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1
 #print axioms MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2
@@ -91,6 +92,7 @@ Every theorem must depend strictly on `[propext, Classical.choice, Quot.sound]` 
 #print axioms MultinomialTV.ComparatorTarget.target_gamma3_closed_form
 #print axioms MultinomialTV.ComparatorTarget.target_gamma4_closed_form
 #print axioms MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq
+#print axioms MultinomialTV.ComparatorTarget.target_gamma3_source_form
 
 -- Exhaustive Metaprogram Audit: EVERY named & module-private theorem across all project modules
 open Lean Elab Command in

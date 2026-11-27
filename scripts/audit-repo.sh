@@ -148,6 +148,8 @@ while IFS='	' read -r id tier applies check name; do
     if [ "$res" = pass ] && [ -n "$matched" ]; then
       while IFS= read -r m; do [ -n "$m" ] && [ -f "$m" ] && grep -q 'TODO(fill)' "$m" && { res=partial; det="$det (still has TODO(fill) markers)"; break; }; done <<< "$matched"
     fi
+    if [ "$src" = auto ] && [ "$res" = pass ] && [ "$declared" = "partial" ]; then res=partial; det="$det (declared partial in repo.yaml)"; fi
+    if [ "$src" = auto ] && [ "$res" = pass ] && [ "$declared" = "todo" ]; then res=fail; det="$det (declared todo in repo.yaml)"; fi
     if [ "$src" = auto ] && [ "$res" = fail ] && [ "$declared" = "done" ]; then det="$det; declared done but not detected"; fi
   fi
   printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$id" "$tier" "$res" "$src" "$applies" "$name" "$det" >> "$OUT"

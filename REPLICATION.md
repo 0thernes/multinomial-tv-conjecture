@@ -26,8 +26,9 @@ cd lean
 lake exe cache get
 lake build MultinomialTVConjecture Challenge Solution VerifyAxioms
 
-# 3. Run exhaustive axiom audit (verify ALL_THEOREMS_AXIOM_AUDIT_PASS & strict 3-axiom allowlist)
+# 3. Run exhaustive axiom audit (verify ALL_THEOREMS_AXIOM_AUDIT_PASS & strict 3-axiom allowlist) and standalone NonVacuity kernel replay
 lake env lean VerifyAxioms.lean
+lake env leanchecker MultinomialTVConjecture.NonVacuity
 
 # 4. Run comparator (six checker runs; Linux with bubblewrap, or WSL2/Docker on Windows/macOS)
 lake comparator --config comparator.json --paranoid
@@ -49,7 +50,7 @@ bash scripts/audit-repo.sh .
 2. `lake comparator --config comparator.json --paranoid` exits `0` across all six checker runs (`Lean paranoid`, `lean4lean`, `nanoda`, `con-leche`, `con-ron`, `Lean default`; two of the six runs are the Lean kernel).
 3. `python3 scripts/verify_conjecture.py` exits `0` with `PASS: Exact rational equality verified for all 43 values L = 3..45 (0/1 error)` and `PASS: All 6 constants match closed forms to > 40 decimal digits!` (actual Richardson errors $< 3\times 10^{-55}$).
 4. `python3 -m pytest -v tests/` passes 100% of exact, property-based (`hypothesis`), negative, regression, golden, differential, metamorphic, numeric stability, mutation, and repo-integrity tests.
-5. `python3 scripts/check_readme_axioms.py --require-exhaustive` confirms `README.md`'s 23-line excerpt and exact theorem count match `results/lean-axioms-all.log`.
+5. `python3 scripts/check_readme_axioms.py --require-exhaustive` confirms `README.md`'s 25-line excerpt and exact theorem count match `results/lean-axioms-all.log`.
 
 ## 4. Replication Log
 

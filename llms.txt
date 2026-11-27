@@ -6,7 +6,7 @@ Author: Alexander S. Donahue (Independent Researcher, Spokane, WA, USA; ORCID 00
 License: Apache-2.0 (code/Lean) · CC-BY-4.0 (paper/docs).
 
 ## Key Entry Points
-- [README.md](README.md): Overview, Quickstart, `#print axioms` excerpt (23 of 55 lines + summary), and comparator verification summary.
+- [README.md](README.md): Overview, Quickstart, `#print axioms` excerpt (25 of 57 lines + summary), and comparator verification summary.
 - [AGENTS.md](AGENTS.md): Canonical instructions, workflow rules, and verification invariants.
 - [CLAIMS.md](CLAIMS.md): Numbered claims ledger with explicit falsification criteria.
 - [LIMITATIONS.md](LIMITATIONS.md): Formal verification boundary and real-vs-metaphor disclosures.
@@ -15,14 +15,14 @@ License: Apache-2.0 (code/Lean) · CC-BY-4.0 (paper/docs).
 - [formalization.yaml](formalization.yaml): Palomar-compatible provenance, toolchain, and AI disclosure metadata.
 
 ## Lean 4 Formalization
-- [lean/Challenge.lean](lean/Challenge.lean): Isolated Mathlib-only specification of the 9 target theorems (153 lines, incl. quantitative $O(L^{-2})$ Lemma 7.3).
+- [lean/Challenge.lean](lean/Challenge.lean): Isolated Mathlib-only specification of the 10 target theorems (164 lines, incl. quantitative $O(L^{-2})$ Lemma 7.3 & literal Part 2 §7.2 $\gamma(3; N)$).
 - [lean/Solution.lean](lean/Solution.lean): Sorry-free proofs checked against `Challenge.lean` in six comparator checker runs.
-- [lean/VerifyAxioms.lean](lean/VerifyAxioms.lean): Exhaustive `Lean.collectAxioms` metaprogram (`187` author-written theorems and lemmas; `892` audited theorem constants) and 55 explicit `#print axioms`.
-- [lean/MultinomialTVConjecture/Main.lean](lean/MultinomialTVConjecture/Main.lean): Main proof of `conjecture_7_7`, `lemma_7_3_O_inv_sq`, and the four algebraic identities `gamma_closed_form`, `gamma_cyclic_closed_form`, `gamma3_closed_form`, `gamma4_closed_form`.
-- [lean/MultinomialTVConjecture/NonVacuity.lean](lean/MultinomialTVConjecture/NonVacuity.lean): 20 theorems (6 direct `hAdj 0..5` definition checks + 14 sign, witness, and false-constant refutation corollaries).
+- [lean/VerifyAxioms.lean](lean/VerifyAxioms.lean): Exhaustive `Lean.collectAxioms` metaprogram (`189` author-written theorems and lemmas; `894` audited theorem constants) and 57 explicit `#print axioms`.
+- [lean/MultinomialTVConjecture/Main.lean](lean/MultinomialTVConjecture/Main.lean): Main proof of `conjecture_7_7`, `lemma_7_3_O_inv_sq`, and the five algebraic identities `gamma_closed_form`, `gamma_cyclic_closed_form`, `gamma3_closed_form`, `gamma3_source_form`, `gamma4_closed_form`.
+- [lean/MultinomialTVConjecture/NonVacuity.lean](lean/MultinomialTVConjecture/NonVacuity.lean): 20 theorems (6 direct `hAdj 0..5` definition checks + 14 sign, witness, and false-constant refutation corollaries, independently replayed via `leanchecker`).
 
 ## Paper, Scripts & Docs
-- [paper/main.tex](paper/main.tex): Complete AMS-LaTeX preprint (v2.5.0).
+- [paper/main.tex](paper/main.tex): Complete AMS-LaTeX preprint (v2.6.0).
 - [blueprint/src/content.tex](blueprint/src/content.tex): Lean 4 theorem dependency Blueprint source.
 - [scripts/verify_conjecture.py](scripts/verify_conjecture.py): Independent exact rational and 80-digit `mpmath` verification.
 - [docs/architecture.md](docs/architecture.md): Proof and verification architecture.

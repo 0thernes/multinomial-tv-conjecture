@@ -1,4 +1,4 @@
-﻿<#
+<#
 SPDX-FileCopyrightText: 2026 Alexander S. Donahue
 SPDX-License-Identifier: Apache-2.0
 .SYNOPSIS
@@ -199,6 +199,8 @@ foreach ($line in $TsvLines) {
     if ($res -eq "pass" -and $matched.Count -gt 0) {
       foreach ($m in $matched) { if ((Test-Path -LiteralPath $m -PathType Leaf) -and (Select-String -LiteralPath $m -SimpleMatch 'TODO(fill)' -Quiet)) { $res = "partial"; $det = "$det (still has TODO(fill) markers)"; break } }
     }
+    if ($src -eq "auto" -and $res -eq "pass" -and $declared -eq "partial") { $res = "partial"; $det = "$det (declared partial in repo.yaml)" }
+    if ($src -eq "auto" -and $res -eq "pass" -and $declared -eq "todo") { $res = "fail"; $det = "$det (declared todo in repo.yaml)" }
     if ($src -eq "auto" -and $res -eq "fail" -and $declared -eq "done") { $det = "$det; declared done but not detected" }
   }
   $Results.Add([pscustomobject][ordered]@{ id = $id; tier = $tier; result = $res; source = $src; applies = $applies; name = $name; detail = $det })

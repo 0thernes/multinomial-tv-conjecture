@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """
 Generate publication-grade vector PDF figures for:
-  "Proof and Lean 4 Verification of Conjecture 7.7 on the Second-Order
+  "Resolution and Lean 4 Formal Verification of Conjecture 7.7 on the Second-Order
    Variance of Multinomial Discrete Total Variation"
 
 Usage:
@@ -59,6 +59,7 @@ def sums_abc_mp(q: int) -> tuple[mp.mpf, mp.mpf, mp.mpf, mp.mpf]:
     C = mp.mpf(0)
     inv_q = mp.mpf(1) / q
     max_right = q // 2
+    tail_tol = mp.power(10, -(mp.mp.dps + 10))
     for k in range(1, q + 1):
         if k <= max_right:
             rp = rp * (q - 2 * k + 2) * (q - 2 * k + 1) / ((q + k) * (q + k))
@@ -69,7 +70,7 @@ def sums_abc_mp(q: int) -> tuple[mp.mpf, mp.mpf, mp.mpf, mp.mpf]:
         A += rp - rm
         B += u * (rp + rm)
         C += (u * u) * (rp - rm)
-        if k > 20 and abs(rp) < mp.mpf("1e-50") and abs(rm) < mp.mpf("1e-50"):
+        if k > 20 and abs(rp) < tail_tol and abs(rm) < tail_tol:
             break
     return p0, A, B, C
 
@@ -190,7 +191,7 @@ def make_fig1(out_path: Path) -> None:
     ax2.legend(loc="lower left", frameon=True, framealpha=0.92, edgecolor="#CCCCCC")
     ax2.grid(True, which="major", lw=0.35, alpha=0.45)
 
-    fig.savefig(out_path, format="pdf")
+    fig.savefig(out_path, format="pdf", metadata={"CreationDate": None})
     plt.close(fig)
     print(f"Wrote {out_path}")
 
@@ -349,7 +350,7 @@ def make_fig2(out_path: Path) -> None:
     ax2.legend(loc="upper right", frameon=True, framealpha=0.93, edgecolor="#CCCCCC", fontsize=7.6)
     ax2.grid(True, lw=0.35, alpha=0.45)
 
-    fig.savefig(out_path, format="pdf")
+    fig.savefig(out_path, format="pdf", metadata={"CreationDate": None})
     plt.close(fig)
     print(f"Wrote {out_path}")
 

@@ -1,8 +1,8 @@
 {
-  "generated_utc": "2026-11-27T04:57:12Z",
+  "generated_utc": "2026-11-27T06:25:29Z",
   "tool": "scripts/run_mutation_audit.py (isolated AST-validated source mutation)",
-  "total_mutants": 20,
-  "killed": 20,
+  "total_mutants": 22,
+  "killed": 22,
   "survived": 0,
   "kill_rate_percent": 100.0,
   "mutants": [
@@ -165,6 +165,22 @@
       "pytest_target": "tests/test_repo_integrity.py",
       "status": "killed",
       "evidence": "FAILED tests/test_repo_integrity.py::test_negative_timestamp_and_manifest_tamper_detection"
+    },
+    {
+      "id": "M21_citations_drop_updated_by",
+      "file": "scripts/check_citations.py",
+      "description": "Drop Crossref updated-by retraction check in verify_crossref_payload",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_regression_e2026_007_live_citation_audit_preserved"
+    },
+    {
+      "id": "M22_citations_skip_title_match",
+      "file": "scripts/check_citations.py",
+      "description": "Weaken DOI title/author metadata mismatch check to always True",
+      "pytest_target": "tests/test_repo_integrity.py",
+      "status": "killed",
+      "evidence": "FAILED tests/test_repo_integrity.py::test_regression_e2026_007_live_citation_audit_preserved"
     }
   ]
 }

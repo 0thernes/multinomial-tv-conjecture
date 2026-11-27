@@ -42,6 +42,7 @@ case "$cmd" in
       fi
       echo "PASS: Elaboration smoke test failed with expected 'unsolved goals' on mutated constant."
     )
+    (cd lean && lake env leanchecker MultinomialTVConjecture.NonVacuity)
     (cd lean && lake comparator --config comparator.json --paranoid) | tee results/comparator-paranoid-ci.log
     ;;
   verify-numeric)

@@ -129,6 +129,9 @@ jobs:
             exit 1
           fi
           rm -f /tmp/neg_smoke_test.lean
+      - name: Replay NonVacuity.lean independently via leanchecker
+        working-directory: lean
+        run: lake env leanchecker MultinomialTVConjecture.NonVacuity
       - name: Run sandboxed lake comparator --paranoid (six checker runs)
         working-directory: lean
         shell: bash

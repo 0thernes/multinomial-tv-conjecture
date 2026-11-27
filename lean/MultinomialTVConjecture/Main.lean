@@ -365,7 +365,8 @@ theorem gamma_cyclic_closed_form (n : ℝ) (hn : n ≠ 0) :
 
 /-- Algebraic identity behind Corollary 1.2(iii) for `n = 3` (Part 2, §7.2): combines the static
 `n = 3` block `2 p_1(3) + 2 q_1(3)` with the oscillating residue contribution `2 (b_{N mod 3} - d_0)`
-(an equal rearrangement of the source's left side; variance statement cited, not formalized). -/
+(an equal rearrangement of the source's left side; see `gamma3_source_form` for the literal source
+expression; variance statement cited, not formalized). -/
 theorem gamma3_closed_form (N : ℕ) :
     let n : ℝ := 3
     let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
@@ -388,6 +389,28 @@ theorem gamma3_closed_form (N : ℕ) :
   rw [hbr, hcos, conjecture_7_7_aTriangle]
   have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
   field_simp; ring
+
+/-- Literal Part 2 §7.2 source expression for `γ(3; N)` (`arXiv:2610.17046v1`, §7.2): proves
+both the bridge equality `q_1(3) - d_0 = -7 / (96π)` linking `gamma3_closed_form` to the source
+text and the literal source identity `2 p_1(3) + 2 [b_{N mod 3} - 7 / (96π)] = γ(3; N)` (variance
+decomposition cited, not formalized). -/
+theorem gamma3_source_form (N : ℕ) :
+    let n : ℝ := 3
+    let p1 := (n ^ 2 - 4 * n - 4) / (32 * Real.pi * n)
+    let q1 := aTriangle * n / Real.pi - (n + 1) / (8 * Real.pi * n)
+    (q1 - d0 = -(7 / (96 * Real.pi))) ∧
+      (2 * p1 + 2 * (bRes (N % 3) - 7 / (96 * Real.pi)) =
+        -(7 / (24 * Real.pi)) - 8 * Real.sqrt 3 / (81 * Real.pi) +
+          8 * Real.sqrt 3 / (9 * Real.pi) * Real.cos (2 * Real.pi * (N : ℝ) / 3)) := by
+  dsimp only
+  have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
+  have hq : aTriangle * 3 / Real.pi - (3 + 1) / (8 * Real.pi * 3) - d0 = -(7 / (96 * Real.pi)) := by
+    rw [conjecture_7_7_aTriangle, conjecture_7_7_d0]
+    field_simp; ring
+  refine ⟨hq, ?_⟩
+  have h3 := gamma3_closed_form N
+  dsimp only at h3
+  linarith
 
 /-- Algebraic identity behind Corollary 1.2(iii) for `n = 4` (Part 2, §8): combines the static
 `n = 4` block `3 p_1(4) + 4 q_1(4) + 2 r_1(4)` with the bipartite parity term `(-1)^N / (2π)`,

@@ -1,6 +1,6 @@
 {
   "status": "pass",
-  "checked_utc": "2026-11-27T04:56:14Z",
+  "checked_utc": "2026-11-27T06:12:35Z",
   "files_scanned": 3,
   "bib_entry_count": 16,
   "missing_bib_keys": [],
@@ -8,6 +8,7 @@
   "arxiv_count": 4,
   "doi_count": 12,
   "retracted_count": 0,
+  "metadata_mismatch_count": 0,
   "placeholder_hits": [],
   "malformed_hits": [],
   "arxiv_ids": [
@@ -36,6 +37,14 @@
       "id": "2606.01465",
       "url": "https://arxiv.org/abs/2606.01465",
       "status": 200,
+      "title": "Comb Test: Histogram Uniformity Testing Based on Discrete Total Variation",
+      "authors": [
+        "Nikola Bani\u0107",
+        "Neven Elezovi\u0107"
+      ],
+      "primary_category": "stat.ME",
+      "metadata_match": true,
+      "match_note": "title_author_class_match",
       "ok": true
     },
     {
@@ -43,6 +52,14 @@
       "id": "2610.13366",
       "url": "https://arxiv.org/abs/2610.13366",
       "status": 200,
+      "title": "Discrete total variation under the multinomial, Part~1: expectation under the uniform null",
+      "authors": [
+        "N. Bani\u0107",
+        "N. Elezovi\u0107"
+      ],
+      "primary_category": "math.PR",
+      "metadata_match": true,
+      "match_note": "title_author_class_match",
       "ok": true
     },
     {
@@ -50,6 +67,14 @@
       "id": "2610.17046v1",
       "url": "https://arxiv.org/abs/2610.17046v1",
       "status": 200,
+      "title": "Discrete total variation under the multinomial, Part 2: variance under the uniform null",
+      "authors": [
+        "Nikola Bani\u0107",
+        "Neven Elezovi\u0107"
+      ],
+      "primary_category": "math.PR",
+      "metadata_match": true,
+      "match_note": "title_author_class_match",
       "ok": true
     },
     {
@@ -57,6 +82,14 @@
       "id": "2611.14735v1",
       "url": "https://arxiv.org/abs/2611.14735v1",
       "status": 200,
+      "title": "Discrete total variation under the multinomial, Part 5: cyclic total variation",
+      "authors": [
+        "Nikola Bani\u0107",
+        "Neven Elezovi\u0107"
+      ],
+      "primary_category": "math.ST",
+      "metadata_match": true,
+      "match_note": "title_author_class_match",
       "ok": true
     },
     {
@@ -65,7 +98,13 @@
       "url": "https://api.crossref.org/works/10.1007/978-0-8176-8130-2",
       "status": 200,
       "title": "A Distributional Approach to Asymptotics",
+      "authors": [
+        "Estrada",
+        "Kanwal"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "title_and_author_match",
       "ok": true
     },
     {
@@ -74,7 +113,13 @@
       "url": "https://api.crossref.org/works/10.1007/978-3-030-79876-5_37",
       "status": 200,
       "title": "The Lean 4 Theorem Prover and Programming Language",
+      "authors": [
+        "Moura",
+        "Ullrich"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "title_and_author_match",
       "ok": true
     },
     {
@@ -83,7 +128,15 @@
       "url": "https://api.crossref.org/works/10.1080/00029890.1955.11988576",
       "status": 200,
       "title": "Mathematical Notes",
+      "authors": [
+        "Robbins",
+        "Meyer",
+        "Klee",
+        "Beatty"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "composite_column_author_year_vol_match",
       "ok": true
     },
     {
@@ -92,7 +145,13 @@
       "url": "https://api.crossref.org/works/10.1093/biomet/37.3-4.409",
       "status": 200,
       "title": "TESTING FOR SERIAL CORRELATION IN LEAST SQUARES REGRESSION. I",
+      "authors": [
+        "DURBIN",
+        "WATSON"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "title_and_author_match",
       "ok": true
     },
     {
@@ -101,7 +160,12 @@
       "url": "https://api.crossref.org/works/10.1093/biomet/40.1-2.116",
       "status": 200,
       "title": "ON THE MEAN SUCCESSIVE DIFFERENCE AND ITS RATIO TO THE ROOT MEAN SQUARE",
+      "authors": [
+        "KAMAT"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "title_and_author_match",
       "ok": true
     },
     {
@@ -110,7 +174,12 @@
       "url": "https://api.crossref.org/works/10.1093/biomet/73.1.165",
       "status": 200,
       "title": "Cumulative chi-squared statistic as a tool for testing goodness of fit",
+      "authors": [
+        "HIROTSU"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "title_and_author_match",
       "ok": true
     },
     {
@@ -119,7 +188,13 @@
       "url": "https://api.crossref.org/works/10.1109/ACCESS.2020.3047342",
       "status": 200,
       "title": "TVOR: Finding Discrete Total Variation Outliers Among Histograms",
+      "authors": [
+        "Banic",
+        "Elezovic"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "title_and_author_match",
       "ok": true
     },
     {
@@ -128,7 +203,13 @@
       "url": "https://api.crossref.org/works/10.1109/LSP.2026.3728406",
       "status": 200,
       "title": "Comb Test: Histogram Uniformity Testing Based on Discrete Total Variation",
+      "authors": [
+        "Banic",
+        "Elezovic"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "title_and_author_match",
       "ok": true
     },
     {
@@ -137,7 +218,12 @@
       "url": "https://api.crossref.org/works/10.1145/3372885.3373824",
       "status": 200,
       "title": "The lean mathematical library",
+      "authors": [
+        "The mathlib Community"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "title_and_author_match",
       "ok": true
     },
     {
@@ -146,7 +232,12 @@
       "url": "https://api.crossref.org/works/10.1214/aoms/1177730886",
       "status": 200,
       "title": "The Efficiency of the Mean Moving Range",
+      "authors": [
+        "Hoel"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "title_and_author_match",
       "ok": true
     },
     {
@@ -155,7 +246,12 @@
       "url": "https://api.crossref.org/works/10.1214/aoms/1177731677",
       "status": 200,
       "title": "Distribution of the Ratio of the Mean Square Successive Difference to the Variance",
+      "authors": [
+        "von Neumann"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "title_and_author_match",
       "ok": true
     },
     {
@@ -164,7 +260,13 @@
       "url": "https://api.crossref.org/works/10.1214/ss/1177011699",
       "status": 200,
       "title": "Closed Form Summation for Classical Distributions: Variations on a Theme of De Moivre",
+      "authors": [
+        "Diaconis",
+        "Zabell"
+      ],
       "retracted": false,
+      "metadata_match": true,
+      "match_note": "title_and_author_match",
       "ok": true
     }
   ]

@@ -16,6 +16,6 @@
 
 ## Consequences
 
-- **Positive:** Auditors can verify statement fidelity by reading the 153 lines of `Challenge.lean` (9 targets as of `v2.5.0`, evolved from the initial 108-line / 6-target stub) and replay it in six checker runs (the Lean kernel in paranoid and default mode, `lean4lean`, `nanoda`, `con-leche`, `con-ron`).
+- **Positive:** Auditors can verify statement fidelity by reading the 164 lines of `Challenge.lean` (10 targets as of `v2.6.0`, evolved from the initial 108-line / 6-target stub) and replay it in six checker runs (the Lean kernel in paranoid and default mode, `lean4lean`, `nanoda`, `con-leche`, `con-ron`), alongside standalone `leanchecker` replay of `NonVacuity.lean`.
 - **Positive:** Code is 100% license-compatible with Mathlib4 and JOSS; papers remain freely reusable under CC-BY-4.0.
-- **Trade-off:** `Challenge.lean` contains intentional `sorry` stubs (initially 6, expanded to 9 as of `v2.4.0`/`v2.5.0`), so the CI forbidden-token lexer explicitly excludes `Challenge.lean` while strictly policing every proof module and `Solution.lean`.
+- **Trade-off:** `Challenge.lean` contains intentional `sorry` stubs (initially 6, expanded to 10 as of `v2.6.0`), so the CI forbidden-token lexer explicitly excludes `Challenge.lean` while strictly policing every proof module and `Solution.lean`.
