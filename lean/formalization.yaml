@@ -25,9 +25,15 @@ project:
     arXiv:2610.17046v1; Theorem 3.10 of arXiv:2611.14735v1) are cited from the source
     preprints and lie outside the Lean 4 proof boundary.
   authors:
-    - "Alexander Stephen Donahue (ORCID: 0009-0006-8168-9648, Independent Researcher, Spokane, WA, USA)"
+    - name: "Alexander S. Donahue"
+      orcid: "0009-0006-8168-9648"
+      email: "0_0@0thernes.art"
+      affiliation: "Independent Researcher, Spokane, WA, USA"
   responsible_maintainers:
-    - "Alexander Stephen Donahue (@0thernes, 0_0@0thernes.art)"
+    - name: "Alexander S. Donahue"
+      github: "0thernes"
+      orcid: "0009-0006-8168-9648"
+      email: "0_0@0thernes.art"
   license: "Apache-2.0"
 
 classification:
@@ -61,7 +67,6 @@ sources:
     type: "paper"
     location: "Lemma 7.3, Theorem 7.6, Conjecture 7.7, Sections 7.2 and 8"
     relationship: "background"
-    author_endorsement: "not-contacted"
     note: "Poses Conjecture 7.7 for a_triangle and Lemma 7.3; upstream variance-transfer lemmas (Theorem 7.6, Lemmas 7.2 and 7.5, Sections 7.2 and 8) remain cited from this unrefereed v1 preprint outside the Lean proof boundary."
   - title: "Discrete total variation under the multinomial, Part 5: cyclic total variation"
     authors:
@@ -71,7 +76,6 @@ sources:
     type: "paper"
     location: "Theorem 3.10, Remarks 3.11 and 3.13, Proposition 4.2"
     relationship: "background"
-    author_endorsement: "not-contacted"
     note: "Confirms Conjecture 7.7 remains open in v1 and provides context for the cyclic variance algebraic recombination identity gamma_c(n)."
 
 related_formalizations: []
