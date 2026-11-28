@@ -13,7 +13,7 @@
   <rect width="1280" height="640" fill="url(#bg)"/>
   <rect x="64" y="56" width="1152" height="528" rx="24" fill="#0f172a" fill-opacity="0.72" stroke="#1e3a8a" stroke-width="2"/>
   <rect x="108" y="102" width="644" height="36" rx="18" fill="#0c4a6e" stroke="#38bdf8" stroke-width="1.5"/>
-  <text x="430" y="126" fill="#e0f2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle" letter-spacing="1.2">LEAN 4.35.0 (MODULE SPEC) · COMPARATOR REPLAY · V2.7.0</text>
+  <text x="430" y="126" fill="#e0f2fe" font-family="Segoe UI, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle" letter-spacing="1.2">LEAN 4.35.0 (MODULE SPEC) · COMPARATOR REPLAY · V2.7.1</text>
   <text x="108" y="212" fill="#f8fafc" font-family="Segoe UI, system-ui, sans-serif" font-size="52" font-weight="800">Conjecture 7.7 &amp; Lemma 7.3 Proved</text>
   <text x="108" y="264" fill="#cbd5e1" font-family="Segoe UI, system-ui, sans-serif" font-size="25" font-weight="500">Second-Order Variance Constant of Multinomial Discrete Total Variation</text>
   <rect x="96" y="302" width="1088" height="106" rx="14" fill="#0b1224" stroke="#334155" stroke-width="1.5"/>

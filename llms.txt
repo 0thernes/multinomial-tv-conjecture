@@ -22,7 +22,7 @@ License: Apache-2.0 (code/Lean) · CC-BY-4.0 (paper/docs).
 - [lean/MultinomialTVConjecture/NonVacuity.lean](lean/MultinomialTVConjecture/NonVacuity.lean): 22 theorems (6 direct `hAdj 0..5` definition checks + 16 sign, witness, and false-constant/non-degeneracy refutation corollaries covering all 10 targets, independently replayed via `leanchecker`).
 
 ## Paper, Scripts & Docs
-- [paper/main.tex](paper/main.tex): Complete AMS-LaTeX preprint (v2.7.0).
+- [paper/main.tex](paper/main.tex): Complete AMS-LaTeX preprint (v2.7.1).
 - [blueprint/src/content.tex](blueprint/src/content.tex): Lean 4 theorem dependency Blueprint source.
 - [scripts/verify_conjecture.py](scripts/verify_conjecture.py): Independent exact rational and 80-digit `mpmath` verification.
 - [docs/architecture.md](docs/architecture.md): Proof and verification architecture.

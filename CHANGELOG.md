@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and Sema
 
 > **Correction (2026-11-26):** Historical entries (`v2.0.0`–`v2.4.0`) below are kept as dated records. Where earlier entries say `"6-kernel"` or `"6 independent kernels"`, read six checker runs of `lake comparator --paranoid` (two of which are the Lean kernel in paranoid and default mode). Where earlier entries cite a `"live negative Lean kernel rejection check"` in CI, note that the actual mathematical refutation of `aTriangle = 1/32` is the proved theorem `adversarial_aTriangle_ne_one_div_32` in `NonVacuity.lean` (upgraded in `v2.5.0` to a mutated-constant elaboration smoke test requiring `unsolved goals`). See [ERRATA.md](ERRATA.md).
 
+## [2.7.1] - 2026-11-27
+
+### Added
+- **Palomar `v0.4` metadata (`lean/formalization.yaml`) & Zenodo DOI metadata (`.zenodo.json`):** Added schema-validated (`0` errors against `v0.4.schema.json`) `lean/formalization.yaml` listing all 10 isolated comparator targets with `background`/`other` source relationships verified against Palomar's live validator (`submit.palomar-registry.org`), plus `.zenodo.json` (`ORCID 0009-0006-8168-9648`, honest AI disclosure) enabled for automatic GitHub-to-Zenodo DOI minting and ORCID synchronization.
+
+### Fixed
+- **Verbatim `v2.7.0` CI comparator log harvest & quoted YAML step:** Harvested verbatim `v2.7.0` Ubuntu CI run `#46048238909` comparator output and Rekor/attestation IDs (`4150767694` / `73235116`, Release `4150752299` / `73232706`) into `results/comparator-paranoid.log`, `README.md`, `REPLICATION.md`, and `docs/run-log.md`, and quoted step 7 in `.github/workflows/lean-verify.yml` so `#print` renders verbatim in GitHub Actions.
+
 ## [2.7.0] - 2026-11-27
 
 ### Added

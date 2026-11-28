@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
 # SPDX-License-Identifier: Apache-2.0
 version: "v0.4"
-release_version: "2.7.0"
+release_version: "2.7.1"
 
 project:
   name: "Proof of Conjecture 7.7 and Quantitative O(L^-2) Remainder of Lemma 7.3 for Multinomial Discrete Total Variation"
