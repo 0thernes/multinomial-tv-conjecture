@@ -1,7 +1,9 @@
 {
-  "title": "Proof of Conjecture 7.7 and Quantitative O(L^-2) Remainder of Lemma 7.3 for Multinomial Discrete Total Variation",
-  "description": "Lean 4.35.0 / Mathlib v4.35.0 formalization resolving Conjecture 7.7 (a_triangle = 1/32 - 4*sqrt(3)/243, gamma_2 = -1/(32*pi) - 8*sqrt(3)/(243*pi)) and the quantitative O(L^-2) remainder of Lemma 7.3 from Banic & Elezovic (arXiv:2610.17046v1), with 10 isolated Palomar Comparator targets, 191 theorems/lemmas, 22 NonVacuity witnesses, six-kernel CI verification, and independent exact/80-digit Python oracles.",
+  "title": "Resolution and Lean 4 Formal Verification of Conjecture 7.7 on the Second-Order Variance of Multinomial Discrete Total Variation",
+  "description": "Lean 4.35.0 / Mathlib v4.35.0 formalization resolving Conjecture 7.7 (a_triangle = 1/32 - 4*sqrt(3)/243, gamma_2 = -1/(32*pi) - 8*sqrt(3)/(243*pi)) and the quantitative O(L^-2) remainder of Lemma 7.3 from Nikola Banić and Neven Elezović (arXiv:2610.17046v1), with 10 isolated Palomar Comparator targets, 191 author-written theorems and lemmas (896 audited theorem constants + 65 audited definitions), 0 @[nolint] suppressions, 22 NonVacuity theorems replayed via leanchecker, six comparator checker runs + live negative sorry-tamper rejection in CI, and independent exact/80-digit Python oracles.",
   "upload_type": "software",
+  "version": "2.7.0",
+  "publication_date": "2026-11-27",
   "license": "apache-2.0",
   "creators": [
     {

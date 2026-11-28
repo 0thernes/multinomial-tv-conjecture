@@ -25,15 +25,9 @@ project:
     arXiv:2610.17046v1; Theorem 3.10 of arXiv:2611.14735v1) are cited from the source
     preprints and lie outside the Lean 4 proof boundary.
   authors:
-    - name: "Alexander S. Donahue"
-      orcid: "0009-0006-8168-9648"
-      email: "0_0@0thernes.art"
-      affiliation: "Independent Researcher, Spokane, WA, USA"
+    - "Alexander Stephen Donahue (ORCID: 0009-0006-8168-9648, Independent Researcher, Spokane, WA, USA)"
   responsible_maintainers:
-    - name: "Alexander S. Donahue"
-      github: "0thernes"
-      orcid: "0009-0006-8168-9648"
-      email: "0_0@0thernes.art"
+    - "Alexander Stephen Donahue (@0thernes, 0_0@0thernes.art)"
   license: "Apache-2.0"
 
 classification:
