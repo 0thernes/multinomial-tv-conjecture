@@ -7,22 +7,23 @@ project:
   name: "Proof of Conjecture 7.7 and Quantitative O(L^-2) Remainder of Lemma 7.3 for Multinomial Discrete Total Variation"
   description: >-
     Lean 4.35.0 / Mathlib v4.35.0 formalization resolving Conjecture 7.7 and the
-    quantitative O(L^-2) remainder of Lemma 7.3 of Banić and Elezović (Discrete total
-    variation under the multinomial, Part 2: variance under the uniform null,
+    quantitative O(L^-2) remainder of Lemma 7.3 of Nikola Banić and Neven Elezović
+    (Discrete total variation under the multinomial, Part 2: variance under the uniform null,
     arXiv:2610.17046v1). Across 10 isolated Mathlib-only Palomar Comparator targets
-    (backed by 191 author-written theorems and lemmas and 22 NonVacuity witnesses):
+    (backed by 191 author-written theorems and lemmas, 896 audited theorem constants +
+    65 audited definitions, 0 @[nolint] suppressions, and 22 NonVacuity theorems):
     (1) proves the residue-class 1/L asymptotic limits b_0 = 32*sqrt(3)/(81*pi) and
-    b_1 = b_2 = -22*sqrt(3)/(81*pi) for the adjacent multinomial covariance h(L) =
-    E[|X_2 - X_1| |X_3 - X_2|] via exact 2D-to-1D combinatorial reduction, refined
-    Stirling asymptotics, and 3rd/4th-order Gaussian Euler-Maclaurin summation;
-    (2) proves the quantitative O(L^-2) remainder bound (Lemma 7.3); (3) establishes
+    b_1 = b_2 = -22*sqrt(3)/(81*pi) for the adjacent multinomial expectation h_adj(L) =
+    E[|X_2 - X_1| |X_3 - X_2|] under Mult(L; 1/3, 1/3, 1/3) via exact 2D-to-1D combinatorial
+    reduction, refined Stirling asymptotics, and 3rd/4th-order Gaussian Euler-Maclaurin
+    summation; (2) proves the quantitative O(L^-2) remainder bound (Lemma 7.3); (3) establishes
     the exact closed forms a_triangle = 1/32 - 4*sqrt(3)/243 and gamma_2 =
     -1/(32*pi) - 8*sqrt(3)/(243*pi) (Conjecture 7.7); and (4) certifies five exact
     algebraic recombination identities for linear gamma(n), cyclic gamma_c(n),
     gamma(3;N) (including literal Part 2 §7.2 source form), and gamma(4;N). The
     upstream variance-transfer decomposition lemmas (Theorem 7.6 and §7.2/§8 of
-    arXiv:2610.17046v1) are cited from the source preprint and lie outside the
-    Lean 4 proof boundary.
+    arXiv:2610.17046v1; Theorem 3.10 of arXiv:2611.14735v1) are cited from the source
+    preprints and lie outside the Lean 4 proof boundary.
   authors:
     - name: "Alexander S. Donahue"
       orcid: "0009-0006-8168-9648"
@@ -48,34 +49,34 @@ classification:
     - "41A60"
 
 sources:
-  - title: "Proof of Conjecture 7.7 on the Second-Order Variance Constant of Multinomial Discrete Total Variation"
+  - title: "Resolution and Lean 4 Formal Verification of Conjecture 7.7 on the Second-Order Variance of Multinomial Discrete Total Variation"
     authors:
       - "Alexander S. Donahue"
     id: "https://github.com/0thernes/multinomial-tv-conjecture"
     type: "original-proof"
     relationship: "other"
     note: >-
-      Original Lean 4.35.0 formalization and companion AMS-LaTeX preprint first
-      presented in this repository. No external peer review, arXiv ID, or external
+      Original Lean 4.35.0 formalization and companion 22-page AMS-LaTeX preprint first
+      presented in this repository (v2.7.0). No external peer review, arXiv ID, or external
       DOI is claimed prior to confirmed deposit.
   - title: "Discrete total variation under the multinomial, Part 2: variance under the uniform null"
     authors:
-      - "Neven Banić"
+      - "Nikola Banić"
       - "Neven Elezović"
-    id: "https://arxiv.org/abs/2610.17046"
+    id: "https://arxiv.org/abs/2610.17046v1"
     type: "paper"
     location: "Lemma 7.3, Theorem 7.6, Conjecture 7.7, Sections 7.2 and 8"
-    relationship: "background"
-    note: "Poses Conjecture 7.7 for a_triangle and Lemma 7.3; upstream variance-transfer lemmas (Theorem 7.6) remain cited from this unrefereed v1 preprint outside the Lean proof boundary."
-  - title: "Discrete total variation under the multinomial, Part 5"
+    relationship: "independently-proves"
+    note: "Poses Conjecture 7.7 for a_triangle and Lemma 7.3; upstream variance-transfer lemmas (Theorem 7.6, Lemmas 7.2 and 7.5, Sections 7.2 and 8) remain cited from this unrefereed v1 preprint outside the Lean proof boundary."
+  - title: "Discrete total variation under the multinomial, Part 5: cyclic total variation"
     authors:
-      - "Neven Banić"
+      - "Nikola Banić"
       - "Neven Elezović"
-    id: "https://arxiv.org/abs/2611.14735"
+    id: "https://arxiv.org/abs/2611.14735v1"
     type: "paper"
-    location: "Theorem 3.10"
+    location: "Theorem 3.10, Remarks 3.11 and 3.13, Proposition 4.2"
     relationship: "background"
-    note: "Context for the algebraic recombination identities gamma(n), gamma_c(n), gamma(3;N), and gamma(4;N)."
+    note: "Confirms Conjecture 7.7 remains open in v1 and provides context for the cyclic variance algebraic recombination identity gamma_c(n)."
 
 related_formalizations: []
 
@@ -85,8 +86,9 @@ status:
     Comparator targets covering the residue-class 1/L limits b_0, b_1, b_2, the
     quantitative O(L^-2) remainder (Lemma 7.3), exact constants a_triangle and
     gamma_2 (Conjecture 7.7), and five algebraic recombination identities, paired
-    with 22 NonVacuity witnesses. Upstream variance-transfer steps (Theorem 7.6 of
-    arXiv:2610.17046v1) are explicitly outside the Lean proof boundary.
+    with 22 NonVacuity theorems replayed standalone via leanchecker. Upstream
+    variance-transfer steps (Theorem 7.6 of arXiv:2610.17046v1; Theorem 3.10 of
+    arXiv:2611.14735v1) are explicitly outside the Lean proof boundary.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms:
@@ -94,16 +96,6 @@ status:
     - "Classical.choice"
     - "Quot.sound"
   main_results:
-    - declaration: "MultinomialTV.ComparatorTarget.target_conjecture_7_7"
-      file: "lean/Solution.lean"
-      sorry_count: 0
-      axioms: ["propext", "Classical.choice", "Quot.sound"]
-      comparator_config: "lean/comparator.json"
-    - declaration: "MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq"
-      file: "lean/Solution.lean"
-      sorry_count: 0
-      axioms: ["propext", "Classical.choice", "Quot.sound"]
-      comparator_config: "lean/comparator.json"
     - declaration: "MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0"
       file: "lean/Solution.lean"
       sorry_count: 0
@@ -119,11 +111,68 @@ status:
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
       comparator_config: "lean/comparator.json"
+    - declaration: "MultinomialTV.ComparatorTarget.target_conjecture_7_7"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+    - declaration: "MultinomialTV.ComparatorTarget.target_gamma_closed_form"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+      literature_dependencies:
+        - statement: "Variance decomposition reducing linear gamma(n) to a_triangle (Theorem 7.6)"
+          source: "https://arxiv.org/abs/2610.17046v1"
+    - declaration: "MultinomialTV.ComparatorTarget.target_gamma_cyclic_closed_form"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+      literature_dependencies:
+        - statement: "Cyclic variance decomposition reducing gamma_c(n) to a_triangle (Theorem 3.10)"
+          source: "https://arxiv.org/abs/2611.14735v1"
+    - declaration: "MultinomialTV.ComparatorTarget.target_gamma3_closed_form"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+      literature_dependencies:
+        - statement: "Small-bin n=3 variance formula in terms of d_0 (Section 7.2 / Section 8)"
+          source: "https://arxiv.org/abs/2610.17046v1"
+    - declaration: "MultinomialTV.ComparatorTarget.target_gamma4_closed_form"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+      literature_dependencies:
+        - statement: "Small-bin n=4 variance formula in terms of a_triangle (Section 8)"
+          source: "https://arxiv.org/abs/2610.17046v1"
+    - declaration: "MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+    - declaration: "MultinomialTV.ComparatorTarget.target_gamma3_source_form"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+
+fidelity:
+  divergences: >-
+    Targets 1-4 and 9 formalize Lemma 7.3 (strengthened to uniform O(L^-2) remainder)
+    and Conjecture 7.7 directly from the verbatim nested multinomial sum hAdj(L) =
+    E[|X_2 - X_1| |X_3 - X_2|] under Mult(L; 1/3, 1/3, 1/3). Targets 5-8 and 10 formalize
+    only the algebraic recombination identities for gamma(n), gamma_c(n), gamma(3;N), and
+    gamma(4;N); the upstream variance decompositions linking those constants to Var(D_N)
+    remain unformalized and cited from unrefereed preprints arXiv:2610.17046v1 and
+    arXiv:2611.14735v1. Full line-by-line mapping is in docs/statement-fidelity.md.
 
 automation:
   methods:
     - method: "manual"
-      notes: "Alexander S. Donahue directed the problem selection, audited statement fidelity against arXiv:2610.17046v1, verified non-vacuity and epistemic boundaries, and reviewed all artifacts."
+      notes: "Alexander S. Donahue directed the problem selection, audited statement fidelity against arXiv:2610.17046v1 and arXiv:2611.14735v1, verified non-vacuity and epistemic boundaries, and reviewed all artifacts."
     - method: "agent"
       models:
         - "Gemini (Antigravity)"
@@ -131,8 +180,9 @@ automation:
       notes: >-
         Assisted with analytic Stirling/Euler-Maclaurin proof engineering in Lean 4.35.0
         / Mathlib, 80-digit computational verification, and AMS-LaTeX manuscript drafting
-        under human supervision. All 10 isolated targets pass six Lean 4.35.0 kernel
-        checker runs plus a live sorry-tamper negative comparator gate in Ubuntu CI.
+        under human supervision. All 10 isolated targets pass all six checker runs of
+        lake comparator --paranoid (two of which are the Lean kernel) plus a live
+        sorry-tamper negative comparator gate in Ubuntu CI.
 
 review:
   status: "self-assessed"
