@@ -1,0 +1,144 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+# SPDX-License-Identifier: Apache-2.0
+version: "v0.4"
+release_version: "2.7.0"
+
+project:
+  name: "Proof of Conjecture 7.7 and Quantitative O(L^-2) Remainder of Lemma 7.3 for Multinomial Discrete Total Variation"
+  description: >-
+    Lean 4.35.0 / Mathlib v4.35.0 formalization resolving Conjecture 7.7 and the
+    quantitative O(L^-2) remainder of Lemma 7.3 of Banić and Elezović (Discrete total
+    variation under the multinomial, Part 2: variance under the uniform null,
+    arXiv:2610.17046v1). Across 10 isolated Mathlib-only Palomar Comparator targets
+    (backed by 191 author-written theorems and lemmas and 22 NonVacuity witnesses):
+    (1) proves the residue-class 1/L asymptotic limits b_0 = 32*sqrt(3)/(81*pi) and
+    b_1 = b_2 = -22*sqrt(3)/(81*pi) for the adjacent multinomial covariance h(L) =
+    E[|X_2 - X_1| |X_3 - X_2|] via exact 2D-to-1D combinatorial reduction, refined
+    Stirling asymptotics, and 3rd/4th-order Gaussian Euler-Maclaurin summation;
+    (2) proves the quantitative O(L^-2) remainder bound (Lemma 7.3); (3) establishes
+    the exact closed forms a_triangle = 1/32 - 4*sqrt(3)/243 and gamma_2 =
+    -1/(32*pi) - 8*sqrt(3)/(243*pi) (Conjecture 7.7); and (4) certifies five exact
+    algebraic recombination identities for linear gamma(n), cyclic gamma_c(n),
+    gamma(3;N) (including literal Part 2 §7.2 source form), and gamma(4;N). The
+    upstream variance-transfer decomposition lemmas (Theorem 7.6 and §7.2/§8 of
+    arXiv:2610.17046v1) are cited from the source preprint and lie outside the
+    Lean 4 proof boundary.
+  authors:
+    - name: "Alexander S. Donahue"
+      orcid: "0009-0006-8168-9648"
+      email: "0_0@0thernes.art"
+      affiliation: "Independent Researcher, Spokane, WA, USA"
+  responsible_maintainers:
+    - name: "Alexander S. Donahue"
+      github: "0thernes"
+      orcid: "0009-0006-8168-9648"
+      email: "0_0@0thernes.art"
+  license: "Apache-2.0"
+
+classification:
+  arxiv:
+    - "math.PR"
+    - "math.ST"
+    - "math.CA"
+    - "cs.LO"
+  msc2020:
+    - "60C05"
+    - "60F05"
+    - "62E20"
+    - "41A60"
+
+sources:
+  - title: "Proof of Conjecture 7.7 on the Second-Order Variance Constant of Multinomial Discrete Total Variation"
+    authors:
+      - "Alexander S. Donahue"
+    id: "https://github.com/0thernes/multinomial-tv-conjecture"
+    type: "original-proof"
+    relationship: "other"
+    note: >-
+      Original Lean 4.35.0 formalization and companion AMS-LaTeX preprint first
+      presented in this repository. No external peer review, arXiv ID, or external
+      DOI is claimed prior to confirmed deposit.
+  - title: "Discrete total variation under the multinomial, Part 2: variance under the uniform null"
+    authors:
+      - "Neven Banić"
+      - "Neven Elezović"
+    id: "https://arxiv.org/abs/2610.17046"
+    type: "paper"
+    location: "Lemma 7.3, Theorem 7.6, Conjecture 7.7, Sections 7.2 and 8"
+    relationship: "background"
+    note: "Poses Conjecture 7.7 for a_triangle and Lemma 7.3; upstream variance-transfer lemmas (Theorem 7.6) remain cited from this unrefereed v1 preprint outside the Lean proof boundary."
+  - title: "Discrete total variation under the multinomial, Part 5"
+    authors:
+      - "Neven Banić"
+      - "Neven Elezović"
+    id: "https://arxiv.org/abs/2611.14735"
+    type: "paper"
+    location: "Theorem 3.10"
+    relationship: "background"
+    note: "Context for the algebraic recombination identities gamma(n), gamma_c(n), gamma(3;N), and gamma(4;N)."
+
+related_formalizations: []
+
+status:
+  scope: >-
+    Complete Lean 4.35.0 / Mathlib v4.35.0 formalization of all 10 isolated Palomar
+    Comparator targets covering the residue-class 1/L limits b_0, b_1, b_2, the
+    quantitative O(L^-2) remainder (Lemma 7.3), exact constants a_triangle and
+    gamma_2 (Conjecture 7.7), and five algebraic recombination identities, paired
+    with 22 NonVacuity witnesses. Upstream variance-transfer steps (Theorem 7.6 of
+    arXiv:2610.17046v1) are explicitly outside the Lean proof boundary.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms:
+    - "propext"
+    - "Classical.choice"
+    - "Quot.sound"
+  main_results:
+    - declaration: "MultinomialTV.ComparatorTarget.target_conjecture_7_7"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+    - declaration: "MultinomialTV.ComparatorTarget.target_lemma_7_3_O_inv_sq"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+    - declaration: "MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod0"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+    - declaration: "MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod1"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+    - declaration: "MultinomialTV.ComparatorTarget.target_tendsto_hAdj_mod2"
+      file: "lean/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "lean/comparator.json"
+
+automation:
+  methods:
+    - method: "manual"
+      notes: "Alexander S. Donahue directed the problem selection, audited statement fidelity against arXiv:2610.17046v1, verified non-vacuity and epistemic boundaries, and reviewed all artifacts."
+    - method: "agent"
+      models:
+        - "Gemini (Antigravity)"
+      framework: "Antigravity"
+      notes: >-
+        Assisted with analytic Stirling/Euler-Maclaurin proof engineering in Lean 4.35.0
+        / Mathlib, 80-digit computational verification, and AMS-LaTeX manuscript drafting
+        under human supervision. All 10 isolated targets pass six Lean 4.35.0 kernel
+        checker runs plus a live sorry-tamper negative comparator gate in Ubuntu CI.
+
+review:
+  status: "self-assessed"
+  notes: >-
+    Not externally peer-reviewed. Machine-checked in Lean 4.35.0 / Mathlib v4.35.0
+    (10/10 module headers, weak.linter.mathlibStandardSet = true, zero sorry outside
+    Challenge.lean, strictly [propext, Classical.choice, Quot.sound]) and cross-checked
+    against 80-digit mpmath and exact Python Fraction oracles; independent session
+    statement audit recorded as R1 in 0thernes-research-archive/registry/RESULTS_LEDGER.json.

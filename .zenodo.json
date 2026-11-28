@@ -1,0 +1,36 @@
+{
+  "title": "Proof of Conjecture 7.7 and Quantitative O(L^-2) Remainder of Lemma 7.3 for Multinomial Discrete Total Variation",
+  "description": "Lean 4.35.0 / Mathlib v4.35.0 formalization resolving Conjecture 7.7 (a_triangle = 1/32 - 4*sqrt(3)/243, gamma_2 = -1/(32*pi) - 8*sqrt(3)/(243*pi)) and the quantitative O(L^-2) remainder of Lemma 7.3 from Banic & Elezovic (arXiv:2610.17046v1), with 10 isolated Palomar Comparator targets, 191 theorems/lemmas, 22 NonVacuity witnesses, six-kernel CI verification, and independent exact/80-digit Python oracles.",
+  "upload_type": "software",
+  "license": "apache-2.0",
+  "creators": [
+    {
+      "name": "Donahue, Alexander Stephen",
+      "affiliation": "Independent Researcher, Spokane, WA, USA",
+      "orcid": "0009-0006-8168-9648"
+    }
+  ],
+  "keywords": [
+    "multinomial distribution",
+    "total variation distance",
+    "Euler-Maclaurin summation",
+    "asymptotic analysis",
+    "Lean 4",
+    "Mathlib",
+    "formal verification",
+    "Palomar Registry"
+  ],
+  "notes": "Code and Lean 4.35.0 proofs are licensed under Apache-2.0; manuscripts and figures are licensed under CC-BY-4.0. Independent research preprint (v2.7.0); not externally peer-reviewed. AI tools (Antigravity / Google DeepMind) assisted with Lean proof engineering and manuscript drafting under human direction and audit.",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/0thernes/multinomial-tv-conjecture",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://arxiv.org/abs/2610.17046",
+      "relation": "references",
+      "scheme": "url"
+    }
+  ]
+}
