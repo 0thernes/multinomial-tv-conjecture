@@ -60,7 +60,8 @@ sources:
     id: "https://arxiv.org/abs/2610.17046v1"
     type: "paper"
     location: "Lemma 7.3, Theorem 7.6, Conjecture 7.7, Sections 7.2 and 8"
-    relationship: "independently-proves"
+    relationship: "background"
+    author_endorsement: "not-contacted"
     note: "Poses Conjecture 7.7 for a_triangle and Lemma 7.3; upstream variance-transfer lemmas (Theorem 7.6, Lemmas 7.2 and 7.5, Sections 7.2 and 8) remain cited from this unrefereed v1 preprint outside the Lean proof boundary."
   - title: "Discrete total variation under the multinomial, Part 5: cyclic total variation"
     authors:
@@ -70,6 +71,7 @@ sources:
     type: "paper"
     location: "Theorem 3.10, Remarks 3.11 and 3.13, Proposition 4.2"
     relationship: "background"
+    author_endorsement: "not-contacted"
     note: "Confirms Conjecture 7.7 remains open in v1 and provides context for the cyclic variance algebraic recombination identity gamma_c(n)."
 
 related_formalizations: []
